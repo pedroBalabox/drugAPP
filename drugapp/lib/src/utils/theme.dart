@@ -79,7 +79,6 @@ BoxDecoration estiloBotonSecundary = BoxDecoration(boxShadow: [
   )
 ], gradient: gradientBlueLight);
 
-
 var colorRed = Colors.red[600];
 inputPrimarystyle(context, icon, labelText, hintText) {
   return InputDecoration(
@@ -118,5 +117,19 @@ inputPrimarystyle(context, icon, labelText, hintText) {
       ));
 }
 
+Gradient gradientGreen = LinearGradient(
+    // begin: Alignment.centerLeft,
+    // end: Alignment.bottomLeft,
+    colors: [const Color(0xfd56ab2f), const Color(0xff45B649)]);
 
-
+BoxDecoration estiloValidar = BoxDecoration(boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(0, 0, 0, 0.1),
+    blurRadius: 5.0, // soften the shadow
+    spreadRadius: 1.0, //extend the shadow
+    offset: Offset(
+      0.0, // Move to right 10  horizontally
+      3.0, // Move to bottom 10 Vertically867
+    ),
+  )
+], gradient: gradientGreen);

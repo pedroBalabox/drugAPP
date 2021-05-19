@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:drugapp/src/pages/vendedor/miVenta_page.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
-import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -23,57 +23,108 @@ class TabVentas extends StatefulWidget {
 }
 
 class _TabVentasState extends State<TabVentas> {
-  var venta = [];
   List<Vent> ventaData = [];
+
+  var orden;
+
+  var jsonOrden;
+  var jsonTienda;
+
+  RestFun rest = RestFun();
+
+  String errorStr;
+  bool load = true;
+  bool error = false;
+
+  List searchList = [];
+  bool _isSearching = false;
+
   @override
   void initState() {
-    getVenta().then((venta) {
-      for (var i = 0; i < venta.length; i++) {
-        ventaData.add(Vent(venta[i]['id'], venta[i]['fecha'],
-            venta[i]['estado'], venta[i]['total'], venta[i]['product_list']));
-      }
-      setState(() {
-        // loadInfo = false;
-      });
-    });
     super.initState();
+    sharedPrefs.init();
+    getTienda();
   }
 
-  getVenta() async {
-    var jsonVenta = jsonDecode(dummyVenta);
-    return jsonVenta;
+  getTienda() {
+    rest
+        .restService('', '${urlApi}obtener/mi-farmacia',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        setState(() {
+          jsonTienda = jsonDecode(value['response']);
+        });
+        getProductos();
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
+  }
+
+  getProductos() async {
+    var arrayData = {"farmacia_id": jsonTienda[1]['farmacia_id']};
+    await rest
+        .restService(arrayData, '${urlApi}obtener/ordenes',
+            sharedPrefs.partnerUserToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var ordenResp = value['response'];
+        ordenResp = jsonDecode(ordenResp)[1];
+        setState(() {
+          orden = ordenResp;
+          // orden = ordenResp.values.toList();
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Container(
-      color: bgGrey,
-      height: MediaQuery.of(context).size.height,
-      child: Column(
-        children: [
-          SizedBox(
-            height: medPadding * 1.6,
-          ),
-          Expanded(
-            child: ListView(children: [
-              Container(
-                padding: EdgeInsets.all(
-                  size.width > 850 ? medPadding * .75 : medPadding * .5),
-                color: bgGrey,
-                width: MediaQuery.of(context).size.width / 6,
-                child: misVentas(),
-              ),
-              footerVendedor(context),
-            ]),
-          ),
-        ],
-      ),
-    );
+        color: bgGrey,
+        height: MediaQuery.of(context).size.height,
+        child: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : Column(
+                    children: [
+                      SizedBox(
+                        height: medPadding * 1.6,
+                      ),
+                      Expanded(
+                        child: ListView(children: [
+                          Container(
+                            padding: EdgeInsets.all(size.width > 850
+                                ? medPadding * .75
+                                : medPadding * .5),
+                            color: bgGrey,
+                            width: MediaQuery.of(context).size.width / 6,
+                            child: misVentas(),
+                          ),
+                          footerVendedor(context),
+                        ]),
+                      ),
+                    ],
+                  ));
   }
 
   misVentas() {
     return PaginatedDataTable(
+        // rowsPerPage: 7,
         header: MediaQuery.of(context).size.width > 700
             ? Row(
                 children: [
@@ -94,15 +145,39 @@ class _TabVentasState extends State<TabVentas> {
             : search(),
         showCheckboxColumn: false,
         columns: kTableColumns,
-        source: VentaDataSource(mycontext: context, dataVenta: ventaData)
+        source: DataSource(mycontext: context, dataData: _isSearching ? searchList : orden)
         // dataCat: searchList.length == 0 ? userData : searchList),
         );
+  }
+
+  void searchOperation(String searchText) {
+    searchList.clear();
+    _handleSearchStart();
+    if (_isSearching != null) {
+      for (int i = 0; i < orden.length; i++) {
+        String dataId = orden[i]['id_de_orden'];
+        String dataProducto = orden[i]['id_de_producto'];
+        if (dataId.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataProducto.toLowerCase().contains(searchText.toLowerCase())) {
+          setState(() {
+            searchList.add(orden[i]);
+          });
+        }
+      }
+    }
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
   }
 
   search() {
     return Container(
       height: 35,
       child: TextField(
+        onChanged: (value) => searchOperation(value),
         textInputAction: TextInputAction.search,
         textAlignVertical: TextAlignVertical.bottom,
         decoration: InputDecoration(
@@ -114,7 +189,7 @@ class _TabVentasState extends State<TabVentas> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Buscar venta por folio...',
+            hintText: 'Buscar venta por folio ó producto...',
             fillColor: bgGrey,
             filled: true),
       ),
@@ -126,7 +201,49 @@ class _TabVentasState extends State<TabVentas> {
 const kTableColumns = <DataColumn>[
   DataColumn(
     label: Text(
-      'id',
+      'Folio',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Producto',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Cantidad',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Costo Unitario',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Costo Total',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Mayoreo',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Costo Final',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Estatus',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -136,38 +253,20 @@ const kTableColumns = <DataColumn>[
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
-  DataColumn(
-    label: Text(
-      'Estado',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      'Total',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      '',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
 ];
 
 ////// Data source class for obtaining row data for PaginatedDataTable.
-class VentaDataSource extends DataTableSource {
+class DataSource extends DataTableSource {
   BuildContext _context;
   dynamic _ventaData;
-  VentaDataSource({
-    @required List<Vent> dataVenta,
+  DataSource({
+    @required List<dynamic> dataData,
     @required BuildContext mycontext,
-  })  : _ventaData = dataVenta,
+  })  : _ventaData = dataData,
         _context = mycontext,
-        assert(dataVenta != null);
+        assert(dataData != null);
 
-  // VentaDataSource({@required User userData}) : _vendedorData = userData;
+  // DataSource({@required User userData}) : _vendedorData = userData;
 
   int _selectedCount = 0;
 
@@ -184,27 +283,17 @@ class VentaDataSource extends DataTableSource {
 
     return DataRow.byIndex(
         index: index, // DONT MISS THIS
-        onSelectChanged: (bool value) {
-          // _dialogCall(_context, _user.categoria_id, _user);
-          print(value);
-        },
+        onSelectChanged: (bool value) {},
         cells: <DataCell>[
-          DataCell(Text('${_user.id}')),
-          DataCell(Text('${_user.fecha}')),
-          DataCell(Text('${_user.estado}')),
-          DataCell(Text('${_user.total}')),
-          DataCell(InkWell(
-            onTap: () => Navigator.pushNamed(
-              _context,
-              MiVenta.routeName,
-              arguments: VentaDetallesArguments(_user),
-            ),
-            child: Text(
-              'Ver más',
-              style: TextStyle(
-                  color: Colors.blue, decoration: TextDecoration.underline),
-            ),
-          )),
+          DataCell(Text('${_user['id_de_orden']}')),
+          DataCell(Text('${_user['id_de_producto']}')),
+          DataCell(Text('${_user['cantidad']}')),
+          DataCell(Text('${_user['costo_unitario']}')),
+          DataCell(Text('${_user['costo_total']}')),
+          DataCell(Text('${_user['aplica_mayoreo']}')),
+          DataCell(Text('${_user['costo_final']}')),
+          DataCell(Text('${_user['status']}')),
+          DataCell(Text('${_user['fecha_de_creacion']}')),
         ]);
   }
 

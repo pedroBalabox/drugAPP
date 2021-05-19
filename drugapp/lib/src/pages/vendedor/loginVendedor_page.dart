@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/user_model.dart';
-import 'package:drugapp/src/bloc/user_bloc.dart/event_user.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
@@ -12,7 +11,8 @@ import 'package:drugapp/src/widget/buttom_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginVendedor extends StatefulWidget {
-  LoginVendedor({Key key}) : super(key: key);
+  final bool miTienda;
+  LoginVendedor({Key key, this.miTienda = false}) : super(key: key);
 
   @override
   _LoginVendedorState createState() => _LoginVendedorState();
@@ -29,11 +29,22 @@ class _LoginVendedorState extends State<LoginVendedor> {
   void initState() {
     sharedPrefs.init();
     super.initState();
+    print('---ok');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar:
+          MediaQuery.of(context).size.width < 700 ? false : true,
+      appBar: widget.miTienda
+          ? AppBar(
+              shadowColor: Colors.transparent,
+              backgroundColor: MediaQuery.of(context).size.width < 700
+                  ? Theme.of(context).accentColor
+                  : Colors.white.withOpacity(0.3),
+            )
+          : null,
       key: _scaffoldKey,
       body: LayoutBuilder(builder: (context, constraints) {
         return constraints.maxWidth < 700
@@ -172,36 +183,70 @@ class _LoginVendedorState extends State<LoginVendedor> {
                     ),
                     SizedBox(height: medPadding),
                     _formLogin(),
-                    SizedBox(height: medPadding),
-                    Text(
-                      '¿Olvidaste tu contraseña?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey),
-                    ),
-                    SizedBox(height: smallPadding * 1.25),
-                    InkWell(
-                      onTap: () =>
-                          Navigator.pushNamed(context, '/farmacia/registro'),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: '¿Aún no tienes cuenta?, ',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: 'Dirígite aqui',
+                    widget.miTienda
+                        ? Container()
+                        : SizedBox(height: medPadding),
+                    widget.miTienda
+                        ? Container()
+                        : Text(
+                            '¿Olvidaste tu contraseña?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey),
+                          ),
+                    widget.miTienda
+                        ? Container()
+                        : SizedBox(height: smallPadding * 1.25),
+                    widget.miTienda
+                        ? Container()
+                        : InkWell(
+                            onTap: () => Navigator.pushNamed(
+                                context, '/farmacia/registro'),
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text: '¿Aún no tienes cuenta?, ',
                                 style: TextStyle(
-                                    color: Theme.of(context).primaryColor)),
-                          ],
-                        ),
-                      ),
-                    ),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'Dirígite aqui',
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).primaryColor)),
+                                ],
+                              ),
+                            ),
+                          ),
+                    widget.miTienda
+                        ? Container()
+                        : SizedBox(height: smallPadding * 1.25),
+                    widget.miTienda
+                        ? Container()
+                        : InkWell(
+                            onTap: () => Navigator.pushNamed(context, '/login'),
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text: 'Entra como ',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'comprador',
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).primaryColor)),
+                                ],
+                              ),
+                            ),
+                          ),
                     constraints.maxWidth > 700
                         ? Container()
                         : SizedBox(height: medPadding),
@@ -396,8 +441,14 @@ class _LoginVendedorState extends State<LoginVendedor> {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);
         savePartnerModel(userModel).then((value) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/farmacia/miCuenta', (route) => false);
+          widget.miTienda
+              ? Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/miTienda',
+                  ModalRoute.withName('/home'),
+                ).then((value) => setState(() {}))
+              : Navigator.pushNamedAndRemoveUntil(
+                  context, '/farmacia/miCuenta', (route) => false);
         });
       }
     });

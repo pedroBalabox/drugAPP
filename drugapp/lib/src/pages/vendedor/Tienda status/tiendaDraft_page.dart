@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/farmacia_model.dart';
 import 'package:drugapp/model/user_model.dart';
-import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
@@ -15,22 +14,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
-class TabRechazada extends StatefulWidget {
+class TabDraft extends StatefulWidget {
   final dynamic miTienda;
-  TabRechazada({Key key, @required this.miTienda}) : super(key: key);
+  TabDraft({Key key, @required this.miTienda}) : super(key: key);
 
   @override
-  _TabRechazadaState createState() => _TabRechazadaState();
+  _TabDraftState createState() => _TabDraftState();
 }
 
-class _TabRechazadaState extends State<TabRechazada> {
+class _TabDraftState extends State<TabDraft> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UserModel userModel = UserModel();
+  FarmaciaModel farmaciaModel = FarmaciaModel();
   var mediaData;
   Image pickedImage;
-
-  FarmaciaModel farmaciaModel = FarmaciaModel();
-
   var imagePath;
   String base64Image;
 
@@ -46,30 +43,11 @@ class _TabRechazadaState extends State<TabRechazada> {
   var ine;
   var cedula;
 
-  RestFun rest = RestFun();
-
-  var jsonDetalles;
-
   @override
   void initState() {
     super.initState();
     sharedPrefs.init();
     farmaciaModel = FarmaciaModel.fromJson(widget.miTienda[1]);
-    getDetalles();
-  }
-
-  getDetalles() async {
-    var arrayData = {
-      'farmacia_id': farmaciaModel.farmacia_id,
-    };
-    await rest
-        .restService(arrayData, '${urlApi}detalles/farmacia',
-            sharedPrefs.partnerUserToken, 'post')
-        .then((value) {
-      setState(() {
-        jsonDetalles = jsonDecode(value['response'])[1]['documentos'];
-      });
-    });
   }
 
   @override
@@ -79,24 +57,12 @@ class _TabRechazadaState extends State<TabRechazada> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Mi tienda',
+          'Termina de registrar tu tienda',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
-        // SizedBox(
-        //   height: smallPadding,
-        // ),
-        // Text(
-        //   'Status',
-        //   style: TextStyle(
-        //       color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        // ),
         SizedBox(
           height: smallPadding,
-        ),
-        Container(child: statusTienda()),
-        SizedBox(
-          height: smallPadding * 4,
         ),
         Text(
           'Datos de mi tienda',
@@ -128,18 +94,16 @@ class _TabRechazadaState extends State<TabRechazada> {
           padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
           child: BotonRestTest(
               token: sharedPrefs.partnerUserToken,
-              url: '$apiUrl/actualizar/farmacia',
+              url: '$apiUrl/cargar/documentos',
               method: 'post',
               formkey: formKey,
               arrayData: {
                 "farmacia_id": farmaciaModel.farmacia_id,
-                "nombre": farmaciaModel.nombre,
-                "nombre_propietario": farmaciaModel.nombrePropietario,
-                "rfc": farmaciaModel.rfc,
-                "tipo_persona": farmaciaModel.tipoPersona,
-                "correo": farmaciaModel.correo,
-                "giro": farmaciaModel.giro,
-                "base64": base64Image == null ? null : base64Image
+                "aviso_de_funcionamiento": aviso,
+                "acta_constitutiva": acta,
+                "comprobante_de_domicilio": comprobante,
+                "ine": ine,
+                "cedula_fiscal": cedula
               },
               contenido: Text(
                 'Enviar a revisión',
@@ -151,102 +115,22 @@ class _TabRechazadaState extends State<TabRechazada> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              action: (value) => saveDocuments(),
+              action: (value) => Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/farmacia/miTienda',
+                    ModalRoute.withName('/farmacia/miCuenta'),
+                  ).then((value) => setState(() {})),
               errorStyle: TextStyle(
                 color: Colors.red[700],
+                fontWeight: FontWeight.w600,
+              ),
+              succesStyle: TextStyle(
+                color: Colors.green[700],
                 fontWeight: FontWeight.w600,
               ),
               estilo: estiloBotonPrimary),
         ),
       ],
-    );
-  }
-
-  saveDocuments() async {
-    var arrayData = {
-      "farmacia_id": farmaciaModel.farmacia_id,
-      "aviso_de_funcionamiento": aviso,
-      "acta_constitutiva": acta,
-      "comprobante_de_domicilio": comprobante,
-      "ine": ine,
-      "cedula_fiscal": cedula
-    };
-    await rest
-        .restService(arrayData, '${urlApi}cargar/documentos',
-            sharedPrefs.partnerUserToken, 'post')
-        .then((value) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/farmacia/miTienda',
-        ModalRoute.withName('/farmacia/miCuenta'),
-      ).then((value) => setState(() {}));
-      // print(jsonDetalles['avi_func']['status']);
-    });
-  }
-
-  statusTienda() {
-    var size = MediaQuery.of(context).size;
-    return Container(
-      padding: EdgeInsets.all(smallPadding * 2),
-      width: size.width,
-      // height: size.height,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.1),
-            blurRadius: 5.0, // soften the shadow
-            spreadRadius: 1.0, //extend the shadow
-            offset: Offset(
-              0.0, // Move to right 10  horizontally
-              3.0, // Move to bottom 10 Vertically
-            ),
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 17,
-                width: 17,
-                decoration: BoxDecoration(
-                    color: Colors.red[200],
-                    borderRadius: BorderRadius.circular(100)),
-              ),
-              SizedBox(
-                width: 3,
-              ),
-              Flexible(
-                child: Text(
-                  'Encontramos un problema',
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 17,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: smallPadding,
-          ),
-          Text(
-            'Revisa tu correo electrónico para ver mas detalles del status de tu tienda.',
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-                fontSize: 15,
-                color: Colors.black54,
-                fontWeight: FontWeight.bold),
-          )
-        ],
-      ),
     );
   }
 
@@ -319,7 +203,7 @@ class _TabRechazadaState extends State<TabRechazada> {
             ),
             SizedBox(height: smallPadding),
             Text(
-              'Toca para subir el logo de tu tienda',
+              'Toca para subir el logo de tu famracia',
               style: TextStyle(color: Colors.black54),
             ),
             SizedBox(height: smallPadding),
@@ -411,6 +295,48 @@ class _TabRechazadaState extends State<TabRechazada> {
               });
             },
           ),
+          SizedBox(
+            height: smallPadding * 2,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
+            child: BotonRestTest(
+                showSuccess: true,
+                token: sharedPrefs.partnerUserToken,
+                url: '$apiUrl/actualizar/farmacia',
+                method: 'post',
+                formkey: formKey,
+                arrayData: {
+                  'farmacia_id': farmaciaModel.farmacia_id,
+                  "nombre": farmaciaModel.nombre,
+                  "nombre_propietario": farmaciaModel.nombrePropietario,
+                  "rfc": farmaciaModel.rfc,
+                  "tipo_persona": farmaciaModel.tipoPersona,
+                  "correo": farmaciaModel.correo,
+                  "giro": farmaciaModel.giro,
+                  "base64": base64Image == null ? null : base64Image
+                },
+                contenido: Text(
+                  'Guardar',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                action: (value) => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/farmacia/miTienda',
+                      ModalRoute.withName('/farmacia/miCuenta'),
+                    ).then((value) => setState(() {})),
+                errorStyle: TextStyle(
+                  color: Colors.red[700],
+                  fontWeight: FontWeight.w600,
+                ),
+                estilo: estiloBotonPrimary),
+          ),
         ],
       ),
     );
@@ -499,43 +425,6 @@ class _TabRechazadaState extends State<TabRechazada> {
   }
 
   document(doc) {
-    Widget botonDoc;
-    String status;
-
-    switch (doc) {
-      case 'Aviso de funcionamiento':
-        botonDoc = jsonDetalles['avi_func']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
-        status = jsonDetalles['avi_func']['status'];
-        break;
-      case 'Acta constitutiva':
-        botonDoc = jsonDetalles['act_cons']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
-        status = jsonDetalles['act_cons']['status'];
-        break;
-      case 'Comprobante de domicilio':
-        botonDoc = jsonDetalles['comp_dom']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
-        status = jsonDetalles['comp_dom']['status'];
-        break;
-      case 'INE vigente':
-        botonDoc = jsonDetalles['ine']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
-        status = jsonDetalles['ine']['status'];
-        break;
-      case 'Cédula fiscal SAT':
-        botonDoc = jsonDetalles['ced_fis']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
-        status = jsonDetalles['ced_fis']['status'];
-        break;
-      default:
-    }
-
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.black12, width: 1.5)),
@@ -555,217 +444,62 @@ class _TabRechazadaState extends State<TabRechazada> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                   maxLines: 3,
                 ),
-                statusDoc(doc, status)
+                statusDoc(doc)
               ],
             ),
           ),
-          botonDoc
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: smallPadding),
+            child: BotonSimple(
+                contenido: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: smallPadding),
+                  child: Text(
+                    'Adjuntar',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                action: () => subirDoc(doc),
+                estilo: estiloBotonSecundary),
+          ),
         ],
       ),
     );
   }
 
-  Widget botonAdjuntar(doc) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: smallPadding),
-      child: BotonSimple(
-          contenido: Padding(
-            padding: EdgeInsets.symmetric(horizontal: smallPadding),
-            child: Text(
-              'Adjuntar',
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          action: () => subirDoc(doc),
-          estilo: estiloBotonSecundary),
-    );
-  }
-
-  Widget botonVer(doc) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: smallPadding),
-      child: BotonSimple(
-          contenido: Padding(
-            padding: EdgeInsets.symmetric(horizontal: smallPadding),
-            child: Text(
-              'Ver',
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          action: () {
-            switch (doc) {
-              case 'Aviso de funcionamiento':
-                launchURL(jsonDetalles['avi_func']['file']);
-                break;
-              case 'Acta constitutiva':
-                launchURL(jsonDetalles['act_cons']['file']);
-                break;
-              case 'Comprobante de domicilio':
-                launchURL(jsonDetalles['comp_dom']['file']);
-                break;
-              case 'INE vigente':
-                launchURL(jsonDetalles['ine']['file']);
-                break;
-              case 'Cédula fiscal SAT':
-                launchURL(jsonDetalles['ced_fis']['file']);
-                break;
-              default:
-            }
-          },
-          estilo: estiloBotonSecundary),
-    );
-  }
-
-  Widget statusWidget(status) {
-    Widget myWidget;
-    switch (status) {
-      case 'rejected':
-        myWidget = docRechazado();
-        break;
-      case 'active':
-        myWidget = docActive();
-        break;
-      case 'approved':
-        myWidget = docAceptado();
-        break;
-      default:
-    }
-    return myWidget;
-  }
-
-  statusDoc(docType, status) {
+  statusDoc(docType) {
     Widget myWidget;
 
     switch (docType) {
       case 'Aviso de funcionamiento':
-        myWidget =
-            fileaviso == null ? statusWidget(status) : docCargado(fileaviso);
+        myWidget = fileaviso == null ? Container() : docCargado(fileaviso);
         break;
       case 'Acta constitutiva':
-        myWidget =
-            fileacta == null ? statusWidget(status) : docCargado(fileacta);
+        myWidget = fileacta == null ? Container() : docCargado(fileacta);
 
         break;
       case 'Comprobante de domicilio':
-        myWidget = filecomprobante == null
-            ? statusWidget(status)
-            : docCargado(filecomprobante);
+        myWidget =
+            filecomprobante == null ? Container() : docCargado(filecomprobante);
 
         break;
       case 'INE vigente':
-        myWidget = fileine == null ? statusWidget(status) : docCargado(fileine);
+        myWidget = fileine == null ? Container() : docCargado(fileine);
 
         break;
       case 'Cédula fiscal SAT':
-        myWidget =
-            filecedula == null ? statusWidget(status) : docCargado(filecedula);
+        myWidget = filecedula == null ? Container() : docCargado(filecedula);
 
         break;
       default:
     }
 
     return myWidget;
-  }
-
-  Widget docActive() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          height: 12,
-          width: 12,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: Colors.blue[200],
-          ),
-        ),
-        SizedBox(
-          width: 3,
-        ),
-        Flexible(
-          child: Text(
-            'Documento cargado',
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.black45,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget docRechazado() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          height: 13,
-          width: 13,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: Colors.red.withOpacity(0.8),
-          ),
-          child: Icon(
-            Icons.close,
-            size: 8,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(
-          width: 3,
-        ),
-        Flexible(
-          child: Text(
-            'Documento rechazado',
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.black45,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget docAceptado() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.check_circle,
-          size: 13,
-          color: Colors.green.withOpacity(0.8),
-        ),
-        SizedBox(
-          width: 3,
-        ),
-        Flexible(
-          child: Text(
-            'Documento validado',
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.black45,
-            ),
-          ),
-        )
-      ],
-    );
   }
 
   Widget docCargado(nombreDoc) {

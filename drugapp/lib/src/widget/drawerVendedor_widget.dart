@@ -236,22 +236,19 @@ class _DrawerUserState extends State<DrawerUser> {
                     onTap: () {
                       Navigator.pushNamed(context, '/miCuenta');
                     },
-                    child: Hero(
-                      tag: "profile_picture",
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        // margin: EdgeInsets.only(top: 0, bottom: 10),
-                        decoration: new BoxDecoration(
-                          color: Colors.grey.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(100),
-                          border: Border.all(width: 1, color: Colors.white),
-                          image: DecorationImage(
-                            image: userModel.imgUrl == null
-                                ? AssetImage('images/logoDrug.png')
-                                : NetworkImage(userModel.imgUrl),
-                            fit: BoxFit.cover,
-                          ),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      // margin: EdgeInsets.only(top: 0, bottom: 10),
+                      decoration: new BoxDecoration(
+                        color: Colors.grey.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(width: 1, color: Colors.white),
+                        image: DecorationImage(
+                          image: userModel.imgUrl == null
+                              ? AssetImage('images/logoDrug.png')
+                              : NetworkImage(userModel.imgUrl),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),

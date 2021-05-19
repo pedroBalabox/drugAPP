@@ -84,3 +84,8 @@ logoutUser() async {
   pref.remove(userData);
   pref.remove(userToken);
 }
+logoutVendor() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  pref.remove(partnerData);
+  pref.remove(partnerToken);
+}

@@ -3,6 +3,7 @@ import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -283,8 +284,8 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(height: smallPadding * 1.25),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-            child: BotonRest(
-                url: '$apiUrl/registro/cliente',
+            child: BotonRestTest(
+                url: '$apiUrl/registro/usuario',
                 method: 'post',
                 formkey: formKey,
                 arrayData: {
@@ -293,6 +294,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'second_lastname': second_lastname,
                   'mail': '$mail',
                   'password': '$password',
+                  'type': 'client'
                 },
                 contenido: Text(
                   'Crear cuenta',

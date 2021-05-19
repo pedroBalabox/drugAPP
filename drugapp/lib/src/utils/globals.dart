@@ -13,7 +13,7 @@ var dummyCat =
     '[{"name": "Antibióticos", "icon": "57619", "img": "drug2.jpg"},{"name": "Dermatología", "icon": "59653", "img": "drug2.jpg"}, {"name": "Pediatría", "icon": "58717", "img": "drug2.jpg"}, {"name": "Vacunas", "icon": "58051", "img": "drug2.jpg"}, {"name": "Más categorías", "icon": "58736", "img": "drug2.jpg"}]';
 
 var dummyProd =
-    '[{"name": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}, {"name": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}, {"name": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}, {"name": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}]';
+    '[{"nombre": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}, {"nombre": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"nombre": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}, {"name": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"nombre": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "fav": true, "priceOferta": null, "stars": "4.7"}, {"name": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "fav": true, "priceOferta": null, "stars": "3.0"}]';
 
 var dummyCompras =
     '[{"name": "Acarbosa 50MG C/30 Tambs Amsa", "img": "med1.png", "farmacia": "Farmacias Guadalajara", "price": "25.0", "stars": null, "status": "preparacion", "idCompra": "123", "fechaEntrga": null, "fechaTent": "16-04-21", "fecha": "04-04-21"}, {"name": "A-D Kan Vitaminas A-D 3 ML C/3 AMP", "img": "med2.jpg", "farmacia": "Farmacias Guadalajara", "price": "25.0", "stars": "4.7", "status": "entregado", "idCompra": "123", "fechaEntrga": "04-04-21", "fechaTent": "16-04-21", "fecha": "04-04-21"}, {"name": "Abrunt desloratadina C/10 Tabs 5MG", "img": "med3.png", "farmacia": "Farmacias Guadalajara", "price": "84.0", "priceOferta": null, "stars": null, "status": "camino", "idCompra": "123", "fechaEntrga": null, "fechaTent": "16-04-21", "fecha": "04-04-21"}]';
@@ -95,4 +95,36 @@ launchURL(myurl) async {
   } else {
     throw 'Could not launch $myurl';
   }
+}
+
+Widget errorWidget(errorStr, context) {
+  return Container(
+    height: MediaQuery.of(context).size.height,
+    width: MediaQuery.of(context).size.width,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.close),
+        SizedBox(height: smallPadding),
+        Text(errorStr)
+      ],
+    ),
+  );
+}
+
+bodyLoad(context) {
+  return Container(
+    height: MediaQuery.of(context).size.height,
+    width: MediaQuery.of(context).size.width,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          child: CircularProgressIndicator(),
+        )
+      ],
+    ),
+  );
 }

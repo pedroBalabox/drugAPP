@@ -150,7 +150,6 @@ class BotonRestTest extends StatefulWidget {
   /// form con un [formkey] y enseña un mensaje de error [errorStyle] cuando la respuesta es false.
   /// También se puede mostrar un [showModalLoader] con un [stringCargando].
   const BotonRestTest(
-    
       {Key key,
       @required this.contenido,
       this.estilo,
@@ -161,9 +160,13 @@ class BotonRestTest extends StatefulWidget {
       this.arrayData,
       this.errorStyle,
       this.showModalLoader = true,
-      this.stringCargando = 'Cargando...', this.action, this.token})
+      this.stringCargando = 'Cargando...',
+      this.action,
+      this.token,
+      this.showSuccess = false,
+      this.succesStyle})
       : super(key: key);
-      
+
   final Function(dynamic) action;
   final Widget contenido;
   final BoxDecoration estilo;
@@ -173,9 +176,11 @@ class BotonRestTest extends StatefulWidget {
   final formkey;
   final dynamic arrayData;
   final TextStyle errorStyle;
+  final TextStyle succesStyle;
   final bool showModalLoader;
   final String stringCargando;
   final String token;
+  final bool showSuccess;
 
   @override
   _BotonRestTestState createState() => _BotonRestTestState();
@@ -186,6 +191,9 @@ class _BotonRestTestState extends State<BotonRestTest> {
   bool error = false;
   String errorString = 'Algo salio mal';
 
+  bool success = false;
+  String succesString = 'Todo bien';
+
   RestFun restFunction = RestFun();
 
   String response;
@@ -194,6 +202,18 @@ class _BotonRestTestState extends State<BotonRestTest> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        widget.showSuccess
+            ? success
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Text(
+                      succesString,
+                      textAlign: TextAlign.center,
+                      style: widget.succesStyle,
+                    ),
+                  )
+                : Container()
+            : Container(),
         error
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 15),
@@ -213,8 +233,43 @@ class _BotonRestTestState extends State<BotonRestTest> {
               highlightColor: Colors.grey.withOpacity(0.2),
               onTap: () {
                 if (!load) {
-                  if (widget.formkey.currentState.validate()) {
-                    widget.formkey.currentState.save();
+                  if (widget.formkey != null) {
+                    if (widget.formkey.currentState.validate()) {
+                      widget.formkey.currentState.save();
+                      setState(() {
+                        load = true;
+                      });
+                      if (widget.showModalLoader) {
+                        loadingDialog(context, widget.stringCargando);
+                      }
+                      restFunction
+                          .restService(widget.arrayData, widget.url,
+                              widget.token, widget.method)
+                          .then((serverResp) {
+                        setState(() {
+                          response = serverResp.toString();
+                        });
+                        if (serverResp['status'] == 'server_true') {
+                          Navigator.pop(context);
+                          widget.action(serverResp);
+                          setState(() {
+                            load = false;
+                            error = false;
+                            success = true;
+                            succesString = serverResp['message'].toString();
+                          });
+                        } else {
+                          Navigator.pop(context);
+                          setState(() {
+                            load = false;
+                            error = true;
+                            success = false;
+                            errorString = serverResp['message'].toString();
+                          });
+                        }
+                      });
+                    }
+                  } else {
                     setState(() {
                       load = true;
                     });
@@ -222,25 +277,27 @@ class _BotonRestTestState extends State<BotonRestTest> {
                       loadingDialog(context, widget.stringCargando);
                     }
                     restFunction
-                        .restService(
-                            widget.arrayData, widget.url, widget.token, widget.method)
+                        .restService(widget.arrayData, widget.url, widget.token,
+                            widget.method)
                         .then((serverResp) {
                       setState(() {
                         response = serverResp.toString();
                       });
                       if (serverResp['status'] == 'server_true') {
-                        widget.action(serverResp);
                         Navigator.pop(context);
+                        widget.action(serverResp);
                         setState(() {
                           load = false;
                           error = false;
+                          success = true;
+                          succesString = serverResp['message'].toString();
                         });
-                        
                       } else {
                         Navigator.pop(context);
                         setState(() {
                           load = false;
                           error = true;
+                          success = false;
                           errorString = serverResp['message'].toString();
                         });
                       }

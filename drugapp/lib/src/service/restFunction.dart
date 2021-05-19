@@ -97,6 +97,7 @@ class RestFun {
         if (jsonResponse['status'] == "true") {
           requestStatus = "server_true";
           requestResponse = jsonEncode(jsonResponse);
+          messageToUser = jsonResponse['message'].toString();
           print("Todo bien:" + jsonResponse.toString());
         } else {
           requestStatus = "server_false";
@@ -108,6 +109,7 @@ class RestFun {
         if (jsonResponse[0]['status'] == "true") {
           requestStatus = "server_true";
           requestResponse = jsonEncode(jsonResponse);
+          messageToUser = jsonResponse[0]['message'].toString();
           print("Todo bien:" + jsonResponse.toString());
         } else {
           requestStatus = "server_false";

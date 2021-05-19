@@ -252,6 +252,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
             tipoEntrada: TextInputType.visiblePassword,
             textCapitalization: TextCapitalization.none,
             action: TextInputAction.done,
+            
             tipo: 'password',
             onChanged: (value) {
               setState(() {
@@ -305,7 +306,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                action: (value) => Navigator.pushNamed(context, '/login'),
+                action: (value) => Navigator.pushNamed(context, '/farmacia/login'),
                 errorStyle: TextStyle(
                   color: Colors.red[700],
                   fontWeight: FontWeight.w600,

@@ -3,11 +3,15 @@ import 'dart:io';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/user_model.dart';
+import 'package:drugapp/src/pages/vendedor/Tienda%20status/tiendaAceptada_page.dart';
+import 'package:drugapp/src/pages/vendedor/Tienda%20status/tiendaBlock_page.dart';
 import 'package:drugapp/src/pages/vendedor/Tienda%20status/tiendaFalse_page.dart';
 import 'package:drugapp/src/pages/vendedor/Tienda%20status/tiendaProceso_page.dart';
 import 'package:drugapp/src/pages/vendedor/Tienda%20status/tiendaRechazada_page.dart';
 import 'package:drugapp/src/pages/vendedor/tabProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/tabVentas_page.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawerVendedor_widget.dart';
@@ -16,6 +20,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+
+import 'Tienda status/tiendaDraft_page.dart';
 
 class MiTiendaVendedor extends StatefulWidget {
   MiTiendaVendedor({Key key}) : super(key: key);
@@ -36,14 +42,37 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
   Image pickedImage;
   var imagePath;
   String base64Image;
+  RestFun rest = RestFun();
+
+  String statusTienda;
+
+  var jsonTienda;
 
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => _displayDialog());
-    // sharedPrefs.init();
+    sharedPrefs.init();
+    getTienda();
     // var jsonUser = jsonDecode(sharedPrefs.clientData);
     // userModel = UserModel.fromJson(jsonUser);
+  }
+
+  getTienda() {
+    rest
+        .restService('', '${urlApi}obtener/mi-farmacia',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      print('-----');
+      setState(() {
+        jsonTienda = jsonDecode(value['response']);
+        if (jsonTienda.length == 1) {
+          statusTienda = 'false';
+        } else {
+          statusTienda = jsonTienda[1]['estatus'];
+        }
+      });
+    });
   }
 
   @override
@@ -51,9 +80,25 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
     return ResponsiveAppBarVendedor(
         drawerMenu: true,
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyTienda('rechazada'),
+        body: jsonTienda == null ? bodyLoad(context) : bodyTienda(statusTienda),
         title: "Mi tienda");
   }
+
+  // bodyLoad() {
+  //   return Container(
+  //     height: MediaQuery.of(context).size.height,
+  //     width: MediaQuery.of(context).size.width,
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         Container(
+  //           child: CircularProgressIndicator(),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   _displayDialog() {
     bool errorMessage = false;
@@ -202,7 +247,7 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
           ),
         );
         break;
-      case 'progress':
+      case 'draft':
         return DefaultTabController(
           length: 1,
           child: Stack(
@@ -221,7 +266,9 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
                           vertical: medPadding * 1.5),
                       color: bgGrey,
                       width: size.width,
-                      child: TabProceso(),
+                      child: TabDraft(
+                        miTienda: jsonTienda,
+                      ),
                     ),
                     footerVendedor(context),
                   ]),
@@ -260,8 +307,8 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
           ),
         );
         break;
-        case 'rechazada':
-         return DefaultTabController(
+      case 'waiting_for_review':
+        return DefaultTabController(
           length: 1,
           child: Stack(
             children: [
@@ -279,7 +326,9 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
                           vertical: medPadding * 1.5),
                       color: bgGrey,
                       width: size.width,
-                      child: TabRechazada(),
+                      child: TabProceso(
+                        miTienda: jsonTienda,
+                      ),
                     ),
                     footerVendedor(context),
                   ]),
@@ -318,7 +367,127 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
           ),
         );
         break;
-      case 'true':
+      case 'rejected':
+        return DefaultTabController(
+          length: 1,
+          child: Stack(
+            children: [
+              TabBarView(
+                children: [
+                  ListView(children: [
+                    SizedBox(
+                      height: medPadding,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: size.width > 1100
+                              ? size.width / 3
+                              : medPadding * .5,
+                          vertical: medPadding * 1.5),
+                      color: bgGrey,
+                      width: size.width,
+                      child: TabRechazada(
+                        miTienda: jsonTienda,
+                      ),
+                    ),
+                    footerVendedor(context),
+                  ]),
+                ],
+              ),
+              Container(
+                width: size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.1),
+                      blurRadius: 5.0, // soften the shadow
+                      spreadRadius: 1.0, //extend the shadow
+                      offset: Offset(
+                        0.0, // Move to right 10  horizontally
+                        3.0, // Move to bottom 10 Vertically
+                      ),
+                    )
+                  ],
+                ),
+                child: TabBar(
+                  indicatorWeight: 3,
+                  isScrollable: true,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: Colors.black87,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: [
+                    Tab(
+                      text: 'Mi tienda',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+        break;
+      case 'blocked':
+        return DefaultTabController(
+          length: 1,
+          child: Stack(
+            children: [
+              TabBarView(
+                children: [
+                  ListView(children: [
+                    SizedBox(
+                      height: medPadding,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: size.width > 1100
+                              ? size.width / 3
+                              : medPadding * .5,
+                          vertical: medPadding * 1.5),
+                      color: bgGrey,
+                      width: size.width,
+                      child: TabBlock(
+                        miTienda: jsonTienda,
+                      ),
+                    ),
+                    footerVendedor(context),
+                  ]),
+                ],
+              ),
+              Container(
+                width: size.width,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.1),
+                      blurRadius: 5.0, // soften the shadow
+                      spreadRadius: 1.0, //extend the shadow
+                      offset: Offset(
+                        0.0, // Move to right 10  horizontally
+                        3.0, // Move to bottom 10 Vertically
+                      ),
+                    )
+                  ],
+                ),
+                child: TabBar(
+                  indicatorWeight: 3,
+                  isScrollable: true,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: Colors.black87,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: [
+                    Tab(
+                      text: 'Mi tienda',
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+        break;
+      case 'approved':
         return DefaultTabController(
           length: 3,
           child: Stack(
@@ -337,7 +506,9 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
                           vertical: medPadding * 1.5),
                       color: bgGrey,
                       width: size.width,
-                      child: tabMiCuenta(),
+                      child: TabAceptada(
+                        miTienda: jsonTienda,
+                      ),
                     ),
                     footerVendedor(context),
                   ]),
@@ -387,98 +558,6 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
     }
   }
 
-  tabProgress() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Mi tienda',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Text(
-          'Status',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Container(child: miTienda(context)),
-        SizedBox(
-          height: smallPadding * 4,
-        ),
-        Text(
-          'Datos de mi tienda',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Container(child: miTienda(context)),
-        SizedBox(
-          height: smallPadding * 4,
-        ),
-        Text(
-          'Documentos',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Container(
-          child: misDocsok(context),
-        ),
-      ],
-    );
-  }
-
-  tabMiCuenta() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Mi tienda',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Text(
-          'Datos de mi tienda',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Container(child: miTienda(context)),
-        SizedBox(
-          height: smallPadding * 4,
-        ),
-        Text(
-          'Documentos',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Container(
-          child: misDocsok(context),
-        ),
-      ],
-    );
-  }
-
   Future<String> networkImageToBase64(String imageUrl) async {
     http.Response response = await http.get(Uri.parse(imageUrl));
     final bytes = response?.bodyBytes;
@@ -510,184 +589,6 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
       imagePath = image;
       base64Image = imgBase64Str.toString();
     });
-  }
-
-  miTienda(context) {
-    var size = MediaQuery.of(context).size;
-    return Container(
-        padding: EdgeInsets.all(smallPadding * 2),
-        width: size.width,
-        // height: size.height,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              blurRadius: 5.0, // soften the shadow
-              spreadRadius: 1.0, //extend the shadow
-              offset: Offset(
-                0.0, // Move to right 10  horizontally
-                3.0, // Move to bottom 10 Vertically
-              ),
-            )
-          ],
-        ),
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                padding: EdgeInsets.all(3),
-                height: 130,
-                width: 130,
-                decoration: BoxDecoration(
-                    gradient: gradientDrug,
-                    borderRadius: BorderRadius.circular(100)),
-                child: Hero(
-                  tag: "store_picture",
-                  child: InkWell(
-                    onTap: () async {
-                      await pickImage();
-                      setState(() {});
-                    },
-                    child: CircleAvatar(
-                      backgroundImage: userModel.imgUrl == null
-                          ? AssetImage('images/logoDrug.png')
-                          : NetworkImage(userModel.imgUrl),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: smallPadding),
-            Text(
-              'Toca para cambiar el logo de tu tienda',
-              style: TextStyle(color: Colors.black54),
-            ),
-            SizedBox(height: smallPadding),
-            formCuenta(),
-          ],
-        ));
-  }
-
-  formCuenta() {
-    return Form(
-      key: formKey,
-      child: Column(
-        children: [
-          EntradaTexto(
-            valorInicial: userModel.name,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Nombre comercial', null),
-            tipoEntrada: TextInputType.emailAddress,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'nombre',
-            onChanged: (value) {
-              setState(() {
-                name = value;
-              });
-            },
-          ),
-          EntradaTexto(
-            valorInicial: userModel.first_lastname,
-            estilo: inputPrimarystyle(
-                context, Icons.person_outline, 'Nombre del propietario', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'nombre',
-            onChanged: (value) {
-              setState(() {
-                first_lastname = value;
-              });
-            },
-          ),
-          EntradaTexto(
-            valorInicial: userModel.second_lastname,
-            estilo:
-                inputPrimarystyle(context, Icons.store_outlined, 'RFC', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'nombre',
-            onChanged: (value) {
-              setState(() {
-                second_lastname = value;
-              });
-            },
-          ),
-          EntradaTexto(
-            valorInicial: userModel.second_lastname,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Moral/física', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'nombre',
-            onChanged: (value) {
-              setState(() {
-                second_lastname = value;
-              });
-            },
-          ),
-          EntradaTexto(
-            valorInicial: userModel.mail.toString(),
-            estilo: inputPrimarystyle(
-                context, Icons.email_outlined, 'Correo oficial', null),
-            tipoEntrada: TextInputType.emailAddress,
-            textCapitalization: TextCapitalization.none,
-            tipo: 'correo',
-            onChanged: (value) {
-              setState(() {
-                mail = value;
-              });
-            },
-          ),
-          EntradaTexto(
-            valorInicial: userModel.second_lastname,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Giro del negocio', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'nombre',
-            onChanged: (value) {
-              setState(() {
-                second_lastname = value;
-              });
-            },
-          ),
-          SizedBox(height: medPadding),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-            child: BotonRest(
-                url: '$apiUrl/registro/cliente',
-                method: 'post',
-                formkey: formKey,
-                arrayData: {
-                  'name': name,
-                  'first_lastname': first_lastname,
-                  'second_lastname': second_lastname,
-                  'mail': '$mail',
-                  'password': '$password',
-                },
-                contenido: Text(
-                  'Actualizar',
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.fade,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                // action: () => Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => LoginPage())),
-                errorStyle: TextStyle(
-                  color: Colors.red[700],
-                  fontWeight: FontWeight.w600,
-                ),
-                estilo: estiloBotonPrimary),
-          ),
-        ],
-      ),
-    );
   }
 
   misDocsok(context) {
@@ -772,7 +673,8 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
                     ),
                   ),
                 ),
-                action: () => launchURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'),
+                action: () => launchURL(
+                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'),
                 estilo: estiloBotonSecundary),
           ),
         ],

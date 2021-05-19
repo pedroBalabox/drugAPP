@@ -20,6 +20,7 @@ class ResponsiveAppBar extends StatefulWidget {
   final Widget body;
   final String title;
   final bool drawerMenu;
+
   ResponsiveAppBar(
       {Key key,
       this.screenWidht,
@@ -36,6 +37,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
   CatalogBloc _catalogBloc = CatalogBloc();
   UserBloc _userBloc = UserBloc();
   UserModel userModel = UserModel();
+  bool tokenTienda = false;
 
   @override
   void initState() {
@@ -50,9 +52,19 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
         userModel = UserModel.fromJson(jsonUser);
       });
     });
-    // sharedPrefs.init();
-    // var jsonUser = jsonDecode(sharedPrefs.clientData);
-    // userModel = UserModel.fromJson(jsonUser);
+
+    sharedPrefs.init().then((value) {
+      if (sharedPrefs.partnerUserToken != '') {
+        setState(() {
+          tokenTienda = true;
+        });
+      } else {
+        setState(() {
+          tokenTienda = false;
+        });
+      }
+    });
+    print('----' + tokenTienda.toString());
   }
 
   @override
@@ -147,8 +159,11 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/miTienda')
+                            onTap: () => tokenTienda
+                                ? Navigator.pushNamed(context, '/miTienda')
+                                    .then((value) => setState(() {}))
+                                : Navigator.pushNamed(
+                                        context, '/farmacia/login/miTienda')
                                     .then((value) => setState(() {})),
                             child: Text('Mi tienda')),
                       ),
@@ -195,7 +210,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                             children: [
                               InkWell(
                                 onTap: () =>
-                                    Navigator.pushNamed(context, '/miCuenta').then((value) => setState(() {})),
+                                    Navigator.pushNamed(context, '/miCuenta')
+                                        .then((value) => setState(() {})),
                                 // child: Text('Hola, ${userModel.name}')
                                 child: StreamBuilder<UserModel>(
                                     initialData: userModel,
@@ -277,6 +293,7 @@ class _DrawerUserState extends State<DrawerUser> {
   CatalogBloc _catalogBloc = CatalogBloc();
   UserBloc _userBloc = UserBloc();
   UserModel userModel = UserModel();
+  bool tokenTienda = false;
 
   @override
   void initState() {
@@ -300,6 +317,15 @@ class _DrawerUserState extends State<DrawerUser> {
     setState(() {
       userModel = UserModel.fromJson(jsonUser);
     });
+    if (sharedPrefs.partnerUserToken != '') {
+      setState(() {
+        tokenTienda = true;
+      });
+    } else {
+      setState(() {
+        tokenTienda = false;
+      });
+    }
     //   SharedPreferences prefs = SharedPreferences.getInstance();
 
     //   var jsonUser = jsonDecode(prefs.getString('user_data'));
@@ -341,7 +367,8 @@ class _DrawerUserState extends State<DrawerUser> {
                 children: <Widget>[
                   InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/miCuenta').then((value) => setState((){}));
+                      Navigator.pushNamed(context, '/miCuenta')
+                          .then((value) => setState(() {}));
                     },
                     child: Hero(
                       tag: "profile_picture",
@@ -437,8 +464,18 @@ class _DrawerUserState extends State<DrawerUser> {
                             .then((value) => setState(() {}));
                       });
                     } else {
-                      Navigator.pushNamed(context, jsonMenu[index]['action'])
-                          .then((value) => setState(() {}));
+                      if (jsonMenu[index]['title'] == 'Mi tienda') {
+                        tokenTienda
+                            ? Navigator.pushNamed(
+                                    context, jsonMenu[index]['action'])
+                                .then((value) => setState(() {}))
+                            : Navigator.pushNamed(
+                                    context, '/farmacia/login/miTienda')
+                                .then((value) => setState(() {}));
+                      } else {
+                        Navigator.pushNamed(context, jsonMenu[index]['action'])
+                            .then((value) => setState(() {}));
+                      }
                     }
                   });
           },

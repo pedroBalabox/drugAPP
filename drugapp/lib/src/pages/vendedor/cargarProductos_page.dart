@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:codigojaguar/codigojaguar.dart';
-import 'package:drugapp/model/user_model.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawerVendedor_widget.dart';
+import 'package:drugapp/src/widget/testRest.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class CargarProductos extends StatefulWidget {
@@ -16,27 +19,68 @@ class CargarProductos extends StatefulWidget {
 
 class _CargarProductosState extends State<CargarProductos> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  String name;
-  String first_lastname;
-  String second_lastname;
-  String mail;
-  String password;
-  UserModel userModel = UserModel();
+  var jsonTienda;
+
+  var docBase64;
+  var docName;
+
+  RestFun rest = RestFun();
+
+  String errorStr;
+  bool load = true;
+  bool error = false;
+
+  String succeString;
 
   @override
   void initState() {
     super.initState();
-    // sharedPrefs.init();
-    // var jsonUser = jsonDecode(sharedPrefs.clientData);
-    // userModel = UserModel.fromJson(jsonUser);
+    sharedPrefs.init().then((value) {
+      getTienda();
+    });
+  }
+
+  getTienda() {
+    rest
+        .restService('', '${urlApi}obtener/mi-farmacia',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        setState(() {
+          jsonTienda = jsonDecode(value['response']);
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
+  }
+
+  subirDoc() async {
+    FilePickerResult result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
+
+    var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+    setState(() {
+      docName = result.files.single.name;
+      docBase64 = uri;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveAppBarVendedor(
-        drawerMenu: true,
+        drawerMenu: false,
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyCuenta(),
+        body: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : bodyCuenta(),
         title: "Aregar productos");
   }
 
@@ -44,6 +88,7 @@ class _CargarProductosState extends State<CargarProductos> {
     var size = MediaQuery.of(context).size;
     return ListView(children: [
       Container(
+        // height: MediaQuery.of(context).size.height - 50,
         padding: EdgeInsets.symmetric(
             horizontal: size.width > 700 ? size.width / 3.5 : medPadding * .5,
             vertical: medPadding * 1.5),
@@ -60,18 +105,7 @@ class _CargarProductosState extends State<CargarProductos> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Text(
-        //   'Datos personales',
-        //   style: TextStyle(
-        //       color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        // ),
-        // SizedBox(
-        //   height: smallPadding,
-        // ),
         Container(child: cargarProductos(context)),
-        // SizedBox(
-        //   height: smallPadding * 4,
-        // ),
       ],
     );
   }
@@ -184,7 +218,7 @@ class _CargarProductosState extends State<CargarProductos> {
             SizedBox(
               height: smallPadding * 2,
             ),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 BotonSimple(
@@ -193,15 +227,124 @@ class _CargarProductosState extends State<CargarProductos> {
                       'Descargar plantilla',
                       style: TextStyle(color: Colors.white),
                     )),
-                BotonSimple(
-                    estilo: estiloBotonSecundary,
-                    contenido: Text(
-                      'Cargar productos',
-                      style: TextStyle(color: Colors.white),
-                    ))
+                SizedBox(
+                  height: smallPadding,
+                ),
+                docBase64 == null
+                    ? BotonSimple(
+                        action: () => subirDoc(),
+                        estilo: estiloBotonSecundary,
+                        contenido: Text(
+                          'Subir CSV',
+                          style: TextStyle(color: Colors.white),
+                        ))
+                    : succeString != null
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 15,
+                                  color: Colors.green.withOpacity(0.8),
+                                ),
+                                SizedBox(
+                                  width: 3,
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    succeString,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ),
+                              ])
+                        : BotonRestTest(
+                            token: sharedPrefs.partnerUserToken,
+                            url: '$apiUrl/publicar/productos',
+                            method: 'post',
+                            arrayData: {
+                              "farmacia_id": jsonTienda[1]['farmacia_id'],
+                              "archivoDeProductos": docBase64
+                            },
+                            errorStyle: TextStyle(
+                              color: Colors.red[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                            action: (value) => setState(() {
+                                  succeString = value['message'];
+                                }),
+                            estilo: estiloBotonSecundary,
+                            showSuccess: true,
+                            stringCargando: 'Subiendo archivo...',
+                            contenido: Text(
+                              'Enviar',
+                              style: TextStyle(color: Colors.white),
+                            )),
+                docName == null
+                    ? Container()
+                    : SizedBox(
+                        height: smallPadding,
+                      ),
+                docName == null
+                    ? Container()
+                    : succeString != null
+                        ? Container()
+                        : docCargado(docName)
               ],
             )
           ],
         ));
+  }
+
+  Widget docCargado(nombreDoc) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.check_circle,
+          size: 15,
+          color: Colors.green.withOpacity(0.8),
+        ),
+        SizedBox(
+          width: 3,
+        ),
+        Flexible(
+          child: Text(
+            nombreDoc,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        InkWell(
+          onTap: () {
+            setState(() {
+              docName = null;
+              docBase64 = null;
+            });
+          },
+          child: Container(
+              padding: EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(100)),
+              child: Icon(
+                Icons.close,
+                color: Colors.white,
+                size: 10,
+              )),
+        )
+      ],
+    );
   }
 }

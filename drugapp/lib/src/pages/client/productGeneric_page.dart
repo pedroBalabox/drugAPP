@@ -59,7 +59,7 @@ class _ProductoViewPageState extends State<ProductoViewPage> {
   @override
   void initState() {
     super.initState();
-     _catalogBloc.sendEvent.add(GetCatalogEvent());
+    _catalogBloc.sendEvent.add(GetCatalogEvent());
     prod = jsonDecode(dummyProd);
   }
 
@@ -555,7 +555,7 @@ class _ProductoViewPageState extends State<ProductoViewPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
-                      prod['name'],
+                      prod['name'].toString(),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
                       textAlign: TextAlign.center,
@@ -677,6 +677,7 @@ class _ProductoViewPageState extends State<ProductoViewPage> {
                                   child: InkWell(
                                     onTap: () {
                                       setState(() {
+                                        print(inCart);
                                         inCart
                                             ? productModel.cantidad =
                                                 snapshot.data[index].cantidad +

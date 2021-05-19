@@ -34,13 +34,18 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
   Image pickedImage;
   var imagePath;
   String base64Image;
+  bool load = true;
 
   @override
   void initState() {
     super.initState();
-    sharedPrefs.init();
-    var jsonUser = jsonDecode(sharedPrefs.partnerUserData);
-    userModel = UserModel.fromJson(jsonUser);
+    sharedPrefs.init().then((value) {
+      var jsonUser = jsonDecode(sharedPrefs.partnerUserData);
+      userModel = UserModel.fromJson(jsonUser);
+      setState(() {
+        load = false;
+      });
+    });
   }
 
   @override
@@ -61,7 +66,7 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
             vertical: medPadding * 1.5),
         color: bgGrey,
         width: size.width,
-        child: tabMiCuenta(),
+        child: load ? CircularProgressIndicator() : tabMiCuenta(),
       ),
       footerVendedor(context),
     ]);
@@ -93,7 +98,8 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
           height: smallPadding * 4,
         ),
         InkWell(
-          onTap: () => Navigator.pushNamed(context, '/farmacia/login'),
+          onTap: () => logoutVendor()
+              .then((value) => Navigator.pushNamed(context, '/farmacia/login')),
           child: Text(
             'Cerrar sesión',
             style: TextStyle(
@@ -165,17 +171,14 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
                 decoration: BoxDecoration(
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
-                child: Hero(
-                  tag: "profile_picture",
-                  child: InkWell(
-                    onTap: () => pickImage(),
-                    child: CircleAvatar(
-                      backgroundImage: imagePath != null
-                          ? !kIsWeb
-                              ? FileImage(File(imagePath.path))
-                              : NetworkImage(imagePath.path)
-                          : NetworkImage(userModel.imgUrl),
-                    ),
+                child: InkWell(
+                  onTap: () => pickImage(),
+                  child: CircleAvatar(
+                    backgroundImage: imagePath != null
+                        ? !kIsWeb
+                            ? FileImage(File(imagePath.path))
+                            : NetworkImage(imagePath.path)
+                        : NetworkImage(userModel.imgUrl),
                   ),
                 ),
               ),

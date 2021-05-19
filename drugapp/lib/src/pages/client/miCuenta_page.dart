@@ -56,12 +56,13 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   }
 
   getUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    var jsonUser = jsonDecode(prefs.getString('partner_data'));
+    // var jsonUser = jsonDecode(prefs.getString('partner_data'));
+
 
     setState(() {
-      userModel = UserModel.fromJson(jsonUser);
+      userModel = UserModel.fromJson(jsonDecode(sharedPrefs.clientData));
     });
   }
 

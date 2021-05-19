@@ -3,53 +3,58 @@ import 'dart:io';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/farmacia_model.dart';
-import 'package:drugapp/model/user_model.dart';
+import 'package:drugapp/model/vendor_model.dart';
+import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/testRest.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-class TabFalse extends StatefulWidget {
-  TabFalse({Key key}) : super(key: key);
+class TabAceptada extends StatefulWidget {
+  final dynamic miTienda;
+  TabAceptada({Key key, @required this.miTienda}) : super(key: key);
 
   @override
-  _TabFalseState createState() => _TabFalseState();
+  _TabAceptadaState createState() => _TabAceptadaState();
 }
 
-class _TabFalseState extends State<TabFalse> {
+class _TabAceptadaState extends State<TabAceptada> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  UserModel userModel = UserModel();
+  VendorModel vendorModel = VendorModel();
   FarmaciaModel farmaciaModel = FarmaciaModel();
   var mediaData;
   Image pickedImage;
   var imagePath;
   String base64Image;
+  RestFun rest = RestFun();
 
-  String fileaviso;
-  String fileacta;
-  String filecomprobante;
-  String fileine;
-  String filecedula;
-
-  var aviso;
-  var acta;
-  var comprobante;
-  var ine;
-  var cedula;
-
+  var jsonDetalles;
 
   @override
   void initState() {
     super.initState();
     sharedPrefs.init();
+    farmaciaModel = FarmaciaModel.fromJson(widget.miTienda[1]);
+    getDetalles();
   }
 
+  getDetalles() async {
+    var arrayData = {
+      'farmacia_id': farmaciaModel.farmacia_id,
+    };
+    await rest
+        .restService(arrayData, '${urlApi}detalles/farmacia',
+            sharedPrefs.partnerUserToken, 'post')
+        .then((value) {
+      setState(() {
+        jsonDetalles = jsonDecode(value['response'])[1]['documentos'];
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +63,7 @@ class _TabFalseState extends State<TabFalse> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Registra tu tienda',
+          'Mi tienda',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
@@ -73,7 +78,7 @@ class _TabFalseState extends State<TabFalse> {
         SizedBox(
           height: smallPadding,
         ),
-        Container(child: nuevaTienda(context)),
+        Container(child: miTienda(context)),
         SizedBox(
           height: smallPadding * 4,
         ),
@@ -87,42 +92,6 @@ class _TabFalseState extends State<TabFalse> {
         ),
         Container(
           child: misDocs(context),
-        ),
-        SizedBox(
-          height: medPadding,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-          child: BotonRestTest(
-              token: sharedPrefs.partnerUserToken,
-              url: '$apiUrl/registro/farmacia',
-              method: 'post',
-              formkey: formKey,
-              arrayData: {
-                "nombre": farmaciaModel.nombre,
-                "nombre_propietario": farmaciaModel.nombrePropietario,
-                "rfc": farmaciaModel.rfc,
-                "tipo_persona": farmaciaModel.tipoPersona,
-                "correo": farmaciaModel.correo,
-                "giro": farmaciaModel.giro,
-                "base64": base64Image == null ? null : base64Image
-              },
-              contenido: Text(
-                'Enviar a revisión',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              action: (value) => print(value),
-              errorStyle: TextStyle(
-                color: Colors.red[700],
-                fontWeight: FontWeight.w600,
-              ),
-              estilo: estiloBotonPrimary),
         ),
       ],
     );
@@ -147,7 +116,7 @@ class _TabFalseState extends State<TabFalse> {
     });
   }
 
-  nuevaTienda(context) {
+  miTienda(context) {
     var size = MediaQuery.of(context).size;
     return Container(
         padding: EdgeInsets.all(smallPadding * 2),
@@ -179,25 +148,27 @@ class _TabFalseState extends State<TabFalse> {
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
                 child: InkWell(
-                  onTap: () async {
-                    await pickImage();
-                    setState(() {});
-                  },
+                  // onTap: () async {
+                  //   await pickImage();
+                  //   setState(() {});
+                  // },
                   child: CircleAvatar(
                     backgroundImage: imagePath != null
                         ? !kIsWeb
                             ? FileImage(File(imagePath.path))
                             : NetworkImage(imagePath.path)
-                        : AssetImage('images/logoDrug.png'),
+                        : farmaciaModel.image_name == null
+                            ? AssetImage('images/logoDrug.png')
+                            : NetworkImage(farmaciaModel.image_name),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: smallPadding),
-            Text(
-              'Toca para subir el logo de tu tienda',
-              style: TextStyle(color: Colors.black54),
-            ),
+            // SizedBox(height: smallPadding),
+            // Text(
+            //   'Toca para cambiar el logo de tu tienda',
+            //   style: TextStyle(color: Colors.black54),
+            // ),
             SizedBox(height: smallPadding),
             formNuevaTienda(),
           ],
@@ -210,6 +181,7 @@ class _TabFalseState extends State<TabFalse> {
       child: Column(
         children: [
           EntradaTexto(
+            valorInicial: farmaciaModel.nombre,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Nombre comercial', null),
             tipoEntrada: TextInputType.emailAddress,
@@ -222,6 +194,8 @@ class _TabFalseState extends State<TabFalse> {
             },
           ),
           EntradaTexto(
+            habilitado: false,
+            valorInicial: farmaciaModel.nombrePropietario,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Nombre del propietario', null),
             tipoEntrada: TextInputType.name,
@@ -234,6 +208,8 @@ class _TabFalseState extends State<TabFalse> {
             },
           ),
           EntradaTexto(
+            habilitado: false,
+            valorInicial: farmaciaModel.rfc,
             estilo:
                 inputPrimarystyle(context, Icons.store_outlined, 'RFC', null),
             tipoEntrada: TextInputType.name,
@@ -246,6 +222,8 @@ class _TabFalseState extends State<TabFalse> {
             },
           ),
           EntradaTexto(
+            habilitado: false,
+            valorInicial: farmaciaModel.tipoPersona,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Moral/física', null),
             tipoEntrada: TextInputType.name,
@@ -258,6 +236,7 @@ class _TabFalseState extends State<TabFalse> {
             },
           ),
           EntradaTexto(
+            valorInicial: farmaciaModel.correo,
             estilo: inputPrimarystyle(
                 context, Icons.email_outlined, 'Correo oficial', null),
             tipoEntrada: TextInputType.emailAddress,
@@ -270,6 +249,8 @@ class _TabFalseState extends State<TabFalse> {
             },
           ),
           EntradaTexto(
+            habilitado: false,
+            valorInicial: farmaciaModel.giro,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Giro del negocio', null),
             tipoEntrada: TextInputType.name,
@@ -289,21 +270,17 @@ class _TabFalseState extends State<TabFalse> {
             child: BotonRestTest(
                 showSuccess: true,
                 token: sharedPrefs.partnerUserToken,
-                url: '$apiUrl/registro/farmacia',
+                url: '$apiUrl/actualizar/farmacia',
                 method: 'post',
                 formkey: formKey,
                 arrayData: {
                   'farmacia_id': farmaciaModel.farmacia_id,
                   "nombre": farmaciaModel.nombre,
-                  "nombre_propietario": farmaciaModel.nombrePropietario,
-                  "rfc": farmaciaModel.rfc,
-                  "tipo_persona": farmaciaModel.tipoPersona,
                   "correo": farmaciaModel.correo,
-                  "giro": farmaciaModel.giro,
-                  "base64": base64Image == null ? null : base64Image
+                  // "base64": base64Image == null ? null : base64Image
                 },
                 contenido: Text(
-                  'Guardar',
+                  'Actualizar',
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -312,11 +289,12 @@ class _TabFalseState extends State<TabFalse> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                action: (value) => Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/farmacia/miTienda',
-                  ModalRoute.withName('/farmacia/miCuenta'),
-                ).then((value) => setState(() {})),
+                action: (value) {},
+                // Navigator.pushNamedAndRemoveUntil(
+                //       context,
+                //       '/farmacia/miTienda',
+                //       ModalRoute.withName('/farmacia/miCuenta'),
+                //     ).then((value) => setState(() {})),
                 errorStyle: TextStyle(
                   color: Colors.red[700],
                   fontWeight: FontWeight.w600,
@@ -362,49 +340,6 @@ class _TabFalseState extends State<TabFalse> {
         ));
   }
 
-  subirDoc(String docType) async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
-
-    if (result != null) {
-      var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
-      switch (docType) {
-        case 'Aviso de funcionamiento':
-          setState(() {
-            fileaviso = result.files.single.name;
-            aviso = uri;
-          });
-          break;
-        case 'Acta constitutiva':
-          setState(() {
-            fileacta = result.files.single.name;
-            acta = uri;
-          });
-          break;
-        case 'Comprobante de domicilio':
-          setState(() {
-            filecomprobante = result.files.single.name;
-            comprobante = uri;
-          });
-          break;
-        case 'INE vigente':
-          setState(() {
-            fileine = result.files.single.name;
-            ine = uri;
-          });
-          break;
-        case 'Cédula fiscal SAT':
-          setState(() {
-            filecedula = result.files.single.name;
-            cedula = uri;
-          });
-          break;
-        default:
-      }
-    } else {
-      // User canceled the picker
-    }
-  }
-
   document(doc) {
     return Container(
       decoration: BoxDecoration(
@@ -416,26 +351,34 @@ class _TabFalseState extends State<TabFalse> {
         children: [
           // Icon(Icons.file_copy_outlined),
           Flexible(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+              child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.attach_file_outlined,
+                size: 15,
+                color: Colors.black.withOpacity(0.8),
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              Flexible(
+                child: Text(
                   doc,
-                  style: TextStyle(fontWeight: FontWeight.bold),
                   maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                 ),
-                statusDoc(doc)
-              ],
-            ),
-          ),
+              )
+            ],
+          )),
           Padding(
             padding: EdgeInsets.symmetric(vertical: smallPadding),
             child: BotonSimple(
                 contenido: Padding(
                   padding: EdgeInsets.symmetric(horizontal: smallPadding),
                   child: Text(
-                    'Adjuntar',
+                    'Ver',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.fade,
                     style: TextStyle(
@@ -445,67 +388,30 @@ class _TabFalseState extends State<TabFalse> {
                     ),
                   ),
                 ),
-                action: () => subirDoc(doc),
+                action: () {
+                  switch (doc) {
+                    case 'Aviso de funcionamiento':
+                      launchURL(jsonDetalles['avi_func']['file']);
+                      break;
+                    case 'Acta constitutiva':
+                      launchURL(jsonDetalles['act_cons']['file']);
+                      break;
+                    case 'Comprobante de domicilio':
+                      launchURL(jsonDetalles['comp_dom']['file']);
+                      break;
+                    case 'INE vigente':
+                      launchURL(jsonDetalles['ine']['file']);
+                      break;
+                    case 'Cédula fiscal SAT':
+                      launchURL(jsonDetalles['ced_fis']['file']);
+                      break;
+                    default:
+                  }
+                },
                 estilo: estiloBotonSecundary),
           ),
         ],
       ),
-    );
-  }
-
-  statusDoc(docType) {
-    Widget myWidget;
-
-    switch (docType) {
-      case 'Aviso de funcionamiento':
-        myWidget = fileaviso == null ? Container() : docCargado(fileaviso);
-        break;
-      case 'Acta constitutiva':
-        myWidget = fileacta == null ? Container() : docCargado(fileacta);
-
-        break;
-      case 'Comprobante de domicilio':
-        myWidget =
-            filecomprobante == null ? Container() : docCargado(filecomprobante);
-
-        break;
-      case 'INE vigente':
-        myWidget = fileine == null ? Container() : docCargado(fileine);
-
-        break;
-      case 'Cédula fiscal SAT':
-        myWidget = filecedula == null ? Container() : docCargado(filecedula);
-
-        break;
-      default:
-    }
-
-    return myWidget;
-  }
-
-  Widget docCargado(nombreDoc) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.check_circle,
-          size: 13,
-          color: Colors.green.withOpacity(0.8),
-        ),
-        SizedBox(
-          width: 3,
-        ),
-        Flexible(
-          child: Text(
-            nombreDoc,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.black45,
-            ),
-          ),
-        )
-      ],
     );
   }
 }

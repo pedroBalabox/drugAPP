@@ -15,15 +15,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
-class TabRechazada extends StatefulWidget {
+class TabBlock extends StatefulWidget {
   final dynamic miTienda;
-  TabRechazada({Key key, @required this.miTienda}) : super(key: key);
+  TabBlock({Key key, @required this.miTienda}) : super(key: key);
 
   @override
-  _TabRechazadaState createState() => _TabRechazadaState();
+  _TabBlockState createState() => _TabBlockState();
 }
 
-class _TabRechazadaState extends State<TabRechazada> {
+class _TabBlockState extends State<TabBlock> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UserModel userModel = UserModel();
   var mediaData;
@@ -121,43 +121,6 @@ class _TabRechazadaState extends State<TabRechazada> {
         Container(
           child: misDocs(context),
         ),
-        SizedBox(
-          height: medPadding,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-          child: BotonRestTest(
-              token: sharedPrefs.partnerUserToken,
-              url: '$apiUrl/actualizar/farmacia',
-              method: 'post',
-              formkey: formKey,
-              arrayData: {
-                "farmacia_id": farmaciaModel.farmacia_id,
-                "nombre": farmaciaModel.nombre,
-                "nombre_propietario": farmaciaModel.nombrePropietario,
-                "rfc": farmaciaModel.rfc,
-                "tipo_persona": farmaciaModel.tipoPersona,
-                "correo": farmaciaModel.correo,
-                "giro": farmaciaModel.giro,
-                "base64": base64Image == null ? null : base64Image
-              },
-              contenido: Text(
-                'Enviar a revisión',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              action: (value) => saveDocuments(),
-              errorStyle: TextStyle(
-                color: Colors.red[700],
-                fontWeight: FontWeight.w600,
-              ),
-              estilo: estiloBotonPrimary),
-        ),
       ],
     );
   }
@@ -222,7 +185,7 @@ class _TabRechazadaState extends State<TabRechazada> {
               ),
               Flexible(
                 child: Text(
-                  'Encontramos un problema',
+                  'Lamentamos los incovenientes pero tu farmacia no puede operar con nosotros.',
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -248,25 +211,6 @@ class _TabRechazadaState extends State<TabRechazada> {
         ],
       ),
     );
-  }
-
-  pickImage() async {
-    final _picker = ImagePicker();
-    PickedFile image =
-        await _picker.getImage(source: ImageSource.gallery, imageQuality: 80);
-    var imgBase64Str;
-    if (kIsWeb) {
-      http.Response response = await http.get(Uri.parse(image.path));
-      final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
-    } else {
-      List<int> imageBytes = await File(image.path).readAsBytes();
-      imgBase64Str = base64Encode(imageBytes);
-    }
-    setState(() {
-      imagePath = image;
-      base64Image = imgBase64Str.toString();
-    });
   }
 
   nuevaTienda(context) {
@@ -300,27 +244,16 @@ class _TabRechazadaState extends State<TabRechazada> {
                 decoration: BoxDecoration(
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
-                child: InkWell(
-                  onTap: () async {
-                    await pickImage();
-                    setState(() {});
-                  },
-                  child: CircleAvatar(
-                    backgroundImage: imagePath != null
-                        ? !kIsWeb
-                            ? FileImage(File(imagePath.path))
-                            : NetworkImage(imagePath.path)
-                        : farmaciaModel.image_name == null
-                            ? AssetImage('images/logoDrug.png')
-                            : NetworkImage(farmaciaModel.image_name),
-                  ),
+                child: CircleAvatar(
+                  backgroundImage: imagePath != null
+                      ? !kIsWeb
+                          ? FileImage(File(imagePath.path))
+                          : NetworkImage(imagePath.path)
+                      : farmaciaModel.image_name == null
+                          ? AssetImage('images/logoDrug.png')
+                          : NetworkImage(farmaciaModel.image_name),
                 ),
               ),
-            ),
-            SizedBox(height: smallPadding),
-            Text(
-              'Toca para subir el logo de tu tienda',
-              style: TextStyle(color: Colors.black54),
             ),
             SizedBox(height: smallPadding),
             formNuevaTienda(),
@@ -504,33 +437,23 @@ class _TabRechazadaState extends State<TabRechazada> {
 
     switch (doc) {
       case 'Aviso de funcionamiento':
-        botonDoc = jsonDetalles['avi_func']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
+        botonDoc = botonVer(doc);
         status = jsonDetalles['avi_func']['status'];
         break;
       case 'Acta constitutiva':
-        botonDoc = jsonDetalles['act_cons']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
+        botonDoc = botonVer(doc);
         status = jsonDetalles['act_cons']['status'];
         break;
       case 'Comprobante de domicilio':
-        botonDoc = jsonDetalles['comp_dom']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
+        botonDoc = botonVer(doc);
         status = jsonDetalles['comp_dom']['status'];
         break;
       case 'INE vigente':
-        botonDoc = jsonDetalles['ine']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
+        botonDoc = botonVer(doc);
         status = jsonDetalles['ine']['status'];
         break;
       case 'Cédula fiscal SAT':
-        botonDoc = jsonDetalles['ced_fis']['status'] == 'rejected'
-            ? botonAdjuntar(doc)
-            : botonVer(doc);
+        botonDoc = botonVer(doc);
         status = jsonDetalles['ced_fis']['status'];
         break;
       default:
@@ -562,28 +485,6 @@ class _TabRechazadaState extends State<TabRechazada> {
           botonDoc
         ],
       ),
-    );
-  }
-
-  Widget botonAdjuntar(doc) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: smallPadding),
-      child: BotonSimple(
-          contenido: Padding(
-            padding: EdgeInsets.symmetric(horizontal: smallPadding),
-            child: Text(
-              'Adjuntar',
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          action: () => subirDoc(doc),
-          estilo: estiloBotonSecundary),
     );
   }
 

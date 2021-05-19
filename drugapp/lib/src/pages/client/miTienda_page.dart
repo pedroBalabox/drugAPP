@@ -5,10 +5,11 @@ import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
+import 'package:drugapp/src/pages/vendedor/loginVendedor_page.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
-import 'package:drugapp/src/widget/buttom_widget.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -561,7 +562,8 @@ class _MiTiendaState extends State<MiTienda> {
                         color: Colors.white,
                       )),
                   estilo: estiloBotonPrimary,
-                  action: () => launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                  action: () => launchURL(
+                      'https://app.drugsiteonline.com/farmacia/login'),
                 )
               ],
             ),

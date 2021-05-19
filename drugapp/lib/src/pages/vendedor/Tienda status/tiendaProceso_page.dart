@@ -1,20 +1,17 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:codigojaguar/codigojaguar.dart';
+import 'package:drugapp/model/farmacia_model.dart';
 import 'package:drugapp/model/user_model.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
-import 'package:drugapp/src/widget/testRest.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TabProceso extends StatefulWidget {
-  TabProceso({Key key}) : super(key: key);
+  final dynamic miTienda;
+  TabProceso({Key key, @required this.miTienda}) : super(key: key);
 
   @override
   _TabProcesoState createState() => _TabProcesoState();
@@ -23,42 +20,30 @@ class TabProceso extends StatefulWidget {
 class _TabProcesoState extends State<TabProceso> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UserModel userModel = UserModel();
-  String nombre = 'Famracias del Ahorro';
-  String correo = 'farmacia@farmacia.com';
-  String giro = 'Farmacia de medicamentos.';
-  String nombre_propietario = 'Andrea Sandoval Gomez Farias';
-  String rfc = 'RFC123456789';
-  String tipo_persona = 'Física';
-  var mediaData;
-  Image pickedImage;
+  FarmaciaModel farmaciaModel = FarmaciaModel();
 
-  var imagePath;
-  String base64Image;
+  RestFun rest = RestFun();
 
-  String fileaviso;
-  String fileacta;
-  String filecomprobante;
-  String fileine;
-  String filecedula;
-
-  var aviso;
-  var acta;
-  var comprobante;
-  var ine;
-  var cedula;
-
-  String token;
+  var jsonDetalles;
 
   @override
   void initState() {
     super.initState();
-    getToken();
+    farmaciaModel = FarmaciaModel.fromJson(widget.miTienda[1]);
+    getDetalles();
   }
 
-  getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    token = prefs.getString('user_token');
+  getDetalles() async {
+    var arrayData = {
+      'farmacia_id': farmaciaModel.farmacia_id,
+    };
+    await rest
+        .restService(arrayData, '${urlApi}detalles/farmacia',
+            sharedPrefs.partnerUserToken, 'post')
+        .then((value) {
+      jsonDetalles = jsonDecode(value['response'])[1]['documentos'];
+      // print(jsonDetalles['avi_func']['status']);
+    });
   }
 
   @override
@@ -72,14 +57,6 @@ class _TabProcesoState extends State<TabProceso> {
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
-        // SizedBox(
-        //   height: smallPadding,
-        // ),
-        // Text(
-        //   'Status',
-        //   style: TextStyle(
-        //       color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        // ),
         SizedBox(
           height: smallPadding,
         ),
@@ -212,19 +189,12 @@ class _TabProcesoState extends State<TabProceso> {
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
-                  backgroundImage: imagePath != null
-                      ? !kIsWeb
-                          ? FileImage(File(imagePath.path))
-                          : NetworkImage(imagePath.path)
+                  backgroundImage: farmaciaModel.image_name != null
+                      ? NetworkImage(farmaciaModel.image_name)
                       : AssetImage('images/logoDrug.png'),
                 ),
               ),
             ),
-            // SizedBox(height: smallPadding),
-            // Text(
-            //   'Toca para subir el logo de tu tienda',
-            //   style: TextStyle(color: Colors.black54),
-            // ),
             SizedBox(height: smallPadding),
             formNuevaTienda(),
           ],
@@ -238,87 +208,57 @@ class _TabProcesoState extends State<TabProceso> {
         children: [
           EntradaTexto(
             habilitado: false,
-            valorInicial: nombre,
+            valorInicial: farmaciaModel.nombre,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Nombre comercial', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
-            onChanged: (value) {
-              setState(() {
-                nombre = value;
-              });
-            },
           ),
           EntradaTexto(
             habilitado: false,
-            valorInicial: nombre_propietario,
+            valorInicial: farmaciaModel.nombrePropietario,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Nombre del propietario', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
-            onChanged: (value) {
-              setState(() {
-                nombre_propietario = value;
-              });
-            },
           ),
           EntradaTexto(
             habilitado: false,
-            valorInicial: rfc,
+            valorInicial: farmaciaModel.rfc,
             estilo:
                 inputPrimarystyle(context, Icons.store_outlined, 'RFC', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
-            onChanged: (value) {
-              setState(() {
-                rfc = value;
-              });
-            },
           ),
           EntradaTexto(
             habilitado: false,
-            valorInicial: tipo_persona,
+            valorInicial: farmaciaModel.tipoPersona,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Moral/física', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
-            onChanged: (value) {
-              setState(() {
-                tipo_persona = value;
-              });
-            },
           ),
           EntradaTexto(
             habilitado: false,
-            valorInicial: correo,
+            valorInicial: farmaciaModel.correo,
             estilo: inputPrimarystyle(
                 context, Icons.email_outlined, 'Correo oficial', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.none,
             tipo: 'correo',
-            onChanged: (value) {
-              setState(() {
-                correo = value;
-              });
-            },
           ),
           EntradaTexto(
             habilitado: false,
-            valorInicial: giro,
+            valorInicial: farmaciaModel.giro,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Giro del negocio', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
-            onChanged: (value) {
-              setState(() {
-                giro = value;
-              });
-            },
           ),
         ],
       ),
@@ -407,8 +347,26 @@ class _TabProcesoState extends State<TabProceso> {
                     ),
                   ),
                 ),
-                action: () => launchURL(
-                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'),
+                action: () {
+                  switch (doc) {
+                    case 'Aviso de funcionamiento':
+                      launchURL(jsonDetalles['avi_func']['file']);
+                      break;
+                    case 'Acta constitutiva':
+                      launchURL(jsonDetalles['act_cons']['file']);
+                      break;
+                    case 'Comprobante de domicilio':
+                      launchURL(jsonDetalles['comp_dom']['file']);
+                      break;
+                    case 'INE vigente':
+                      launchURL(jsonDetalles['ine']['file']);
+                      break;
+                    case 'Cédula fiscal SAT':
+                      launchURL(jsonDetalles['ced_fis']['file']);
+                      break;
+                    default:
+                  }
+                },
                 estilo: estiloBotonSecundary),
           ),
         ],
