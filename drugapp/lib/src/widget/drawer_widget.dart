@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 var itemsMenu =
-    '[{"icon": 59653, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 57910, "title": "Inicio", "action": "/home"}, {"icon": 59170, "title": "Favoritos", "action": "/fav"}, {"icon": 59955, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 58000, "title": "Carrito", "action": "null"}, {"icon": 57740, "title": "Cerrar sesión", "action": "/login"}]';
+    '[{"icon": 62466, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 61703, "title": "Inicio", "action": "/home"}, {"icon": 57948, "title": "Favoritos", "action": "/fav"}, {"icon": 62445, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "null"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/login"}]';
 
 class ResponsiveAppBar extends StatefulWidget {
   final screenWidht;

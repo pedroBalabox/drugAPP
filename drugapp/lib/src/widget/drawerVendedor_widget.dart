@@ -6,7 +6,7 @@ import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 59653, "title": "Mi cuenta", "action": "/farmacia/miCuenta"}, {"icon": 59955, "title": "Mi tienda", "action": "/farmacia/miTienda"},  {"icon": 57740, "title": "Cerrar sesión", "action": "/farmacia/logout"}]';
+    '[{"icon": 62466, "title": "Mi cuenta", "action": "/farmacia/miCuenta"}, {"icon": 62445, "title": "Mi tienda", "action": "/farmacia/miTienda"},  {"icon": 63627, "title": "Cerrar sesión", "action": "/farmacia/logout"}]';
 
 class ResponsiveAppBarVendedor extends StatefulWidget {
   final screenWidht;
