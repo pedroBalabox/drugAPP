@@ -37,19 +37,19 @@ class _TabFalseState extends State<TabFalse> {
   String fileine;
   String filecedula;
 
+  String tipoPersona;
+
   var aviso;
   var acta;
   var comprobante;
   var ine;
   var cedula;
 
-
   @override
   void initState() {
     super.initState();
     sharedPrefs.init();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +245,7 @@ class _TabFalseState extends State<TabFalse> {
               });
             },
           ),
-          EntradaTexto(
+          /* EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Moral/física', null),
             tipoEntrada: TextInputType.name,
@@ -254,6 +254,38 @@ class _TabFalseState extends State<TabFalse> {
             onChanged: (value) {
               setState(() {
                 farmaciaModel.tipoPersona = value;
+              });
+            },
+          ), */
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Tipo de persona"),
+            value: tipoPersona,
+            items: ["Moral", "Física"].map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(Icons.store_outlined),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Tipo de persona: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
+              setState(() {
+                tipoPersona = val;
+                farmaciaModel.tipoPersona =
+                    val == "Física" ? "fisica" : "moral";
               });
             },
           ),
@@ -313,10 +345,10 @@ class _TabFalseState extends State<TabFalse> {
                   ),
                 ),
                 action: (value) => Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/farmacia/miTienda',
-                  ModalRoute.withName('/farmacia/miCuenta'),
-                ).then((value) => setState(() {})),
+                      context,
+                      '/farmacia/miTienda',
+                      ModalRoute.withName('/farmacia/miCuenta'),
+                    ).then((value) => setState(() {})),
                 errorStyle: TextStyle(
                   color: Colors.red[700],
                   fontWeight: FontWeight.w600,

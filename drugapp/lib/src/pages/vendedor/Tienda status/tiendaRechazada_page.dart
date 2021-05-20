@@ -40,6 +40,8 @@ class _TabRechazadaState extends State<TabRechazada> {
   String fileine;
   String filecedula;
 
+  String tipoPersona;
+
   var aviso;
   var acta;
   var comprobante;
@@ -55,6 +57,9 @@ class _TabRechazadaState extends State<TabRechazada> {
     super.initState();
     sharedPrefs.init();
     farmaciaModel = FarmaciaModel.fromJson(widget.miTienda[1]);
+    setState(() {
+      tipoPersona = farmaciaModel.tipoPersona == "fisica" ? "Física" : "Moral";
+    });
     getDetalles();
   }
 
@@ -372,16 +377,35 @@ class _TabRechazadaState extends State<TabRechazada> {
               });
             },
           ),
-          EntradaTexto(
-            valorInicial: farmaciaModel.tipoPersona,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Moral/física', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onChanged: (value) {
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Tipo de persona"),
+            value: tipoPersona,
+            items: ["Moral", "Física"].map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(Icons.store_outlined),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Tipo de persona: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
               setState(() {
-                farmaciaModel.tipoPersona = value;
+                tipoPersona = val;
+                farmaciaModel.tipoPersona =
+                    val == "Física" ? "fisica" : "moral";
               });
             },
           ),

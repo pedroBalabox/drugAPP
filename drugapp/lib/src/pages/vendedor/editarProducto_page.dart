@@ -46,7 +46,7 @@ class _EditarProductoState extends State<EditarProducto> {
   List base64Gallery = [];
 
   var dummyGallery =
-      '[{"id": "001", "path": "med1.png", "type": "network"}, {"id": "002", "path": "med2.jpg", "type": "network"}]';
+      '[{"archivo_id": "001", "url": "med1.png", "type": "network"}, {"archivo_id": "002", "url": "med2.jpg", "type": "network"}]';
   var jsonGallery;
 
   @override
@@ -56,7 +56,7 @@ class _EditarProductoState extends State<EditarProducto> {
     productoModel = ProductoModel.fromJson(widget.jsonProducto.jsonProducto);
     labeltoList();
     setState(() {
-      jsonGallery = jsonDecode(dummyGallery);
+      jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
     });
   }
 
@@ -82,6 +82,22 @@ class _EditarProductoState extends State<EditarProducto> {
     if (productoModel.etiqueta5 != null) {
       labels.add(productoModel.etiqueta5);
     }
+  }
+
+  deletePicture(archivoId) async {
+    var arrayData = {
+      "id_de_producto": productoModel.idDeProducto,
+      "archivo_id": archivoId,
+    };
+    await rest
+        .restService(arrayData, '${urlApi}eliminar/imagen-producto',
+            sharedPrefs.partnerUserToken, 'post')
+        .then((value) {
+      if (value['status'] != 'server_true') {
+        var productosResp = value['response'];
+        print(productosResp);
+      }
+    });
   }
 
   @override
@@ -328,7 +344,7 @@ class _EditarProductoState extends State<EditarProducto> {
           children: [
             Center(
                 child: jsonGallery[index]['type'] == 'network'
-                    ? Image.asset("images/${jsonGallery[index]['path']}",
+                    ? Image.network("${jsonGallery[index]['url']}",
                         fit: BoxFit.cover)
                     : Image.memory(base64Decode(jsonGallery[index]['path']),
                         fit: BoxFit.cover)),
@@ -394,6 +410,8 @@ class _EditarProductoState extends State<EditarProducto> {
                   jsonGallery.remove(photoDetail);
                   if (photoDetail['type'] == 'base64') {
                     base64Gallery.remove(photoDetail['path']);
+                  } else {
+                    deletePicture(photoDetail["archivo_id"]);
                   }
                 });
                 Navigator.pop(context);
@@ -479,7 +497,7 @@ class _EditarProductoState extends State<EditarProducto> {
                 'Laboratorio / Marca', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
+            tipo: 'textoLargo',
             onChanged: (value) {
               setState(() {});
             },
@@ -491,7 +509,7 @@ class _EditarProductoState extends State<EditarProducto> {
                 context, Icons.medical_services_outlined, 'SKU', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
+            tipo: 'textoLargo',
             onChanged: (value) {
               setState(() {});
             },
@@ -500,12 +518,13 @@ class _EditarProductoState extends State<EditarProducto> {
             valorInicial: productoModel.descripcion,
             estilo: inputPrimarystyle(
                 context, Icons.info_outline, 'Descripción', null),
-            tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
-            lineasMax: 3,
+            tipo: 'textoLargo',
+            lineasMax: 10,
             onChanged: (value) {
-              setState(() {});
+              setState(() {
+                productoModel.descripcion = value;
+              });
             },
           ),
           Row(
@@ -518,7 +537,7 @@ class _EditarProductoState extends State<EditarProducto> {
                       context, Icons.attach_money_outlined, 'Precio', null),
                   tipoEntrada: TextInputType.name,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'textolargo',
+                  tipo: 'textoLargo',
                   onChanged: (value) {
                     setState(() {});
                   },

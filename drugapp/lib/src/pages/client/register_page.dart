@@ -228,7 +228,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 context, Icons.lock_outline, 'Segundo apellido', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'apellido',
+            tipo: 'opcional',
             onChanged: (value) {
               setState(() {
                 second_lastname = value;
