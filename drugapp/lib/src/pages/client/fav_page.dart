@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
 import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
@@ -57,18 +59,45 @@ class _FavClientState extends State<FavClient> {
 
   CatalogBloc _catalogBloc = CatalogBloc();
 
-  RestFun restFunction = RestFun();
+  RestFun rest = RestFun();
+
+  String errorStr;
+  bool load = true;
+  bool error = false;
+
+  List searchList = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
-    prod = jsonDecode(dummyProd);
-    // restFunction.restService(null, '', null, 'get').then((value) {
-    //   setState(() {
-    //     prod = jsonDecode(dummyProd);
-    //   });
-    // });
+    // prod = jsonDecode(dummyProd);
+    sharedPrefs.init().then((value) => getProducts());
+  }
+
+  getProducts() async {
+    var arrayData = {"farmacia_id": null, "userQuery": null, "favoritos": null};
+    await rest
+        .restService(arrayData, '$apiUrl/listar/producto',
+            sharedPrefs.clientToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp)[1]['results'];
+        setState(() {
+          prod = dataResp;
+          // orden = dataResp.values.toList();
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
@@ -87,7 +116,11 @@ class _FavClientState extends State<FavClient> {
   Widget build(BuildContext context) {
     return ResponsiveAppBar(
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyFav(),
+        body: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : bodyFav(),
         title: 'Mis favoritos');
   }
 
@@ -379,6 +412,27 @@ class _FavClientState extends State<FavClient> {
     );
   }
 
+  void searchOperation(String searchText) {
+    searchList.clear();
+    _handleSearchStart();
+    if (_isSearching != null) {
+      for (int i = 0; i < prod.length; i++) {
+        String dataNombre = prod[i]['nombre'];
+        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+          setState(() {
+            searchList.add(prod[i]);
+          });
+        }
+      }
+    }
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
+
   search() {
     return Container(
       height: 35,
@@ -418,8 +472,10 @@ class _FavClientState extends State<FavClient> {
                   : 4
               : 5,
           // Generate 100 widgets that display their index in the List.
-          children: List.generate(prod.length, (index) {
-            return productFav(true, prod[index]);
+          children: List.generate(
+              _isSearching ? searchList.length : prod.length, (index) {
+            return productFav(
+                true, _isSearching ? searchList[index] : prod[index]);
           }),
         ))
       ],
@@ -430,8 +486,8 @@ class _FavClientState extends State<FavClient> {
     var size = MediaQuery.of(context).size;
     // final double itemHeight = 280;
     // final double itemWidth = 200;
-    ProductModel productModel = ProductModel();
-    productModel = ProductModel.fromJson(prod);
+    ProductoModel productModel = ProductoModel();
+    productModel = ProductoModel.fromJson(prod);
     return Container(
       margin: EdgeInsets.all(smallPadding * 0.7),
       padding: EdgeInsets.all(smallPadding * 0.4),
@@ -460,7 +516,7 @@ class _FavClientState extends State<FavClient> {
                 children: [
                   Image(
                     fit: BoxFit.contain,
-                    image: AssetImage("images/${prod['img']}"),
+                    image: NetworkImage("${prod['img']}"),
                   ),
                   Align(
                     alignment: Alignment.topRight,
@@ -490,37 +546,37 @@ class _FavClientState extends State<FavClient> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                        width: 45,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            // Icon(Icons.star, color: Colors.amber, size: 15),
-                            RatingBarIndicator(
-                              unratedColor: Colors.white.withOpacity(0.5),
-                              rating:
-                                  double.parse(prod['stars']) * 100 / 5 / 100,
-                              itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              itemCount: 1,
-                              itemSize: 15.0,
-                              direction: Axis.horizontal,
-                            ),
-                            Text(prod['stars'],
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500))
-                          ],
-                        )),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.topLeft,
+                  //   child: Container(
+                  //       width: 45,
+                  //       padding: EdgeInsets.all(5),
+                  //       decoration: BoxDecoration(
+                  //           color: Colors.grey.withOpacity(0.8),
+                  //           borderRadius: BorderRadius.circular(10)),
+                  //       child: Row(
+                  //         children: [
+                  //           // Icon(Icons.star, color: Colors.amber, size: 15),
+                  //           RatingBarIndicator(
+                  //             unratedColor: Colors.white.withOpacity(0.5),
+                  //             rating:
+                  //                 double.parse(prod['stars']) * 100 / 5 / 100,
+                  //             itemBuilder: (context, index) => Icon(
+                  //               Icons.star,
+                  //               color: Colors.amber,
+                  //             ),
+                  //             itemCount: 1,
+                  //             itemSize: 15.0,
+                  //             direction: Axis.horizontal,
+                  //           ),
+                  //           Text(prod['stars'],
+                  //               style: TextStyle(
+                  //                   color: Colors.white,
+                  //                   fontSize: 12,
+                  //                   fontWeight: FontWeight.w500))
+                  //         ],
+                  //       )),
+                  // ),
                 ],
               )),
           Flexible(
@@ -538,7 +594,7 @@ class _FavClientState extends State<FavClient> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
-                      prod['name'],
+                      prod['nombre'],
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
                       textAlign: TextAlign.center,
@@ -559,26 +615,31 @@ class _FavClientState extends State<FavClient> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '\$${prod['price']}',
+                          '\$${prod['precio']}',
                           style: TextStyle(
                               color: Colors.black45,
-                              decoration: TextDecoration.lineThrough),
+                              decoration: prod['precio_con_descuento'] == null
+                                  ? null
+                                  : TextDecoration.lineThrough),
                         ),
-                        Text(
-                          '\$${prod['price']}',
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.w700),
-                        ),
+                        prod['precio_con_descuento'] == null
+                            ? Container()
+                            : Text(
+                                '\$${prod['precio_con_descuento']}',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w700),
+                              ),
                       ],
                     ),
-                    StreamBuilder<List<ProductModel>>(
+                    StreamBuilder<List<ProductoModel>>(
                         initialData: [],
                         stream: _catalogBloc.catalogStream,
                         builder: (context, snapshot) {
                           var index;
                           bool inCart = false;
                           for (int i = 0; i <= snapshot.data.length - 1; i++) {
-                            if (snapshot.data[i].name == prod['name']) {
+                            if (snapshot.data[i].nombre == prod['name']) {
                               index = i;
                               inCart = true;
                             }

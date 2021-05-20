@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:drugapp/model/producto_model.dart';
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
@@ -28,15 +28,13 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
   var prod = [];
   CatalogBloc _catalogBloc = CatalogBloc();
   var tiendas = [];
-  ProductModel productModel = ProductModel();
+  ProductoModel productModel = ProductoModel();
 
   @override
   void initState() {
-    _catalogBloc.sendEvent.add(GetCatalogEvent());
-    prod = jsonDecode(dummyProd);
-    productModel = ProductModel.fromJson(widget.jsonProdcuto.jsonProducto);
-    tiendas = jsonDecode(dummyTienda);
     super.initState();
+    _catalogBloc.sendEvent.add(GetCatalogEvent());
+    productModel = ProductoModel.fromJson(widget.jsonProdcuto.jsonProducto);
   }
 
   @override
@@ -129,19 +127,20 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                   height: MediaQuery.of(context).size.height / 2.7,
                   child: productSwiper(),
                 ),
-                StreamBuilder<List<ProductModel>>(
+                StreamBuilder<List<ProductoModel>>(
                     initialData: [],
                     stream: _catalogBloc.catalogStream,
                     builder: (context, snapshot) {
                       var index;
                       bool inCart = false;
                       for (int i = 0; i <= snapshot.data.length - 1; i++) {
-                        if (snapshot.data[i].name ==
+                        if (snapshot.data[i].nombre ==
                             widget.jsonProdcuto.jsonProducto['name']) {
                           index = i;
                           inCart = true;
                         }
                       }
+
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -260,7 +259,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                           height: MediaQuery.of(context).size.height / 2.5,
                           child: productSwiper(),
                         ),
-                        StreamBuilder<List<ProductModel>>(
+                        StreamBuilder<List<ProductoModel>>(
                             initialData: [],
                             stream: _catalogBloc.catalogStream,
                             builder: (context, snapshot) {
@@ -269,7 +268,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                               for (int i = 0;
                                   i <= snapshot.data.length - 1;
                                   i++) {
-                                if (snapshot.data[i].name ==
+                                if (snapshot.data[i].nombre ==
                                     widget.jsonProdcuto.jsonProducto['name']) {
                                   index = i;
                                   inCart = true;

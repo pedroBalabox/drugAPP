@@ -1,17 +1,21 @@
 import 'dart:convert';
 
-import 'package:drugapp/model/producto_model.dart';
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
+import 'package:drugapp/src/widget/productView_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter/services.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+
 class Categorie {
   final String name;
 
@@ -19,8 +23,6 @@ class Categorie {
     this.name,
   });
 }
-
-
 
 class TiendaProductos extends StatefulWidget {
   static const routeName = '/tiendaProductos';
@@ -34,10 +36,19 @@ class TiendaProductos extends StatefulWidget {
 }
 
 class _TiendaProductosState extends State<TiendaProductos> {
-  var prod = [];
-var _fieldList = ['precio', 'popularidad', 'calificación'];
+  var _fieldList = ['precio', 'popularidad', 'calificación'];
 
   CatalogBloc _catalogBloc = CatalogBloc();
+
+  RestFun rest = RestFun();
+
+  var prod;
+  String errorStr;
+  bool load = true;
+  bool error = false;
+
+  List searchList = [];
+  bool _isSearching = false;
 
   static List<Categorie> _cat = [
     Categorie(name: "Antibióticos"),
@@ -61,7 +72,35 @@ var _fieldList = ['precio', 'popularidad', 'calificación'];
   void initState() {
     super.initState();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
-    prod = jsonDecode(dummyProd);
+    sharedPrefs.init().then((value) => getProducts());
+  }
+
+  getProducts() async {
+    var arrayData = {
+      "farmacia_id": widget.jsonTienda.jsonTienda['farmacia_id'],
+      "userQuery": null,
+      "favoritos": null
+    };
+    await rest
+        .restService(arrayData, '$apiUrl/listar/producto',
+            sharedPrefs.clientToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp)[1]['results'];
+        setState(() {
+          prod = dataResp;
+          // orden = dataResp.values.toList();
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
@@ -70,15 +109,19 @@ var _fieldList = ['precio', 'popularidad', 'calificación'];
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return ResponsiveAppBar(
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyTienda(),
-        title: "${widget.jsonTienda.jsonTienda['name']}");
+        body: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : bodyTienda(),
+        title: "${widget.jsonTienda.jsonTienda['nombre']}");
   }
-bodyTienda() {
+
+  bodyTienda() {
     return Container(
       color: bgGrey,
       child: Column(
@@ -116,12 +159,11 @@ bodyTienda() {
                     // physics: NeverScrollableScrollPhysics(),
                     children: [
                       Container(
-                          
                           height: 50,
                           color: Colors.white,
                           child: ListView(
                             padding: EdgeInsets.symmetric(
-                              horizontal: smallPadding * 0.7),
+                                horizontal: smallPadding * 0.7),
                             scrollDirection: Axis.horizontal,
                             children: [
                               Row(
@@ -140,13 +182,13 @@ bodyTienda() {
                                       height: 2,
                                       color: Colors.black12,
                                     ),
-                                    
+
                                     hint: Text(
                                       "Ordenar por",
                                       style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black54,
-                                            fontSize: 15),
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black54,
+                                          fontSize: 15),
                                     ),
                                     // value: null,
                                     items: _fieldList.map((value) {
@@ -161,7 +203,9 @@ bodyTienda() {
                                     }).toList(),
                                     onChanged: (String val) {},
                                   ),
-                                  SizedBox(width: smallPadding,),
+                                  SizedBox(
+                                    width: smallPadding,
+                                  ),
                                   Row(
                                     children: [
                                       Text(
@@ -204,10 +248,12 @@ bodyTienda() {
                                             color: Colors.black54,
                                             fontSize: 15),
                                       ),
-                                      buttonIcon: Icon(Icons.arrow_drop_down, color: Colors.black54,),
+                                      buttonIcon: Icon(
+                                        Icons.arrow_drop_down,
+                                        color: Colors.black54,
+                                      ),
                                       title: Padding(
-                                        padding:
-                                            EdgeInsets.only(left: 0),
+                                        padding: EdgeInsets.only(left: 0),
                                         child: Text("Categorías"),
                                       ),
                                       items: _items,
@@ -415,22 +461,27 @@ bodyTienda() {
       height: MediaQuery.of(context).size.height / 3,
       decoration: BoxDecoration(color: Colors.white),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Flexible(
-            flex: 2,
+            flex: 3,
             child: Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage('images/${widget.jsonTienda.jsonTienda['img']}'),
+                      image: NetworkImage(
+                          '${widget.jsonTienda.jsonTienda['logo']}'),
                       fit: BoxFit.contain)),
             ),
           ),
           Flexible(
-            flex: 3,
+            flex: 1,
+            child: Container(),
+          ),
+          Flexible(
+            flex: 5,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -444,10 +495,10 @@ bodyTienda() {
                               fontWeight: FontWeight.w600,
                               fontSize: 20,
                               color: Colors.black),
-                          text: widget.jsonTienda.jsonTienda['name'],
+                          text: widget.jsonTienda.jsonTienda['nombre'],
                           children: <TextSpan>[
                             TextSpan(
-                              text: String.fromCharCode(58959), //<-- charCode
+                              text: String.fromCharCode(57686), //<-- charCode
                               style: TextStyle(
                                 fontFamily: 'MaterialIcons', //<-- fontFamily
                                 fontSize: 15.0,
@@ -458,63 +509,70 @@ bodyTienda() {
                         ),
                       ),
                     ),
-                    Container(
-                      height: 37,
-                      width: 37,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.1),
-                              blurRadius: 4, // soften the shadow
-                              spreadRadius: 1.0, //extend the shadow
-                              offset: Offset(
-                                0.0, // Move to right 10  horizontally
-                                3.0, // Move to bottom 10 Vertically
-                              ),
-                            )
-                          ],
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100)),
-                      child: Icon(
-                        Icons.share_outlined,
-                        color: Theme.of(context).primaryColor,
-                        size: 25,
+                    InkWell(
+                      onTap: () => Clipboard.setData(
+                          ClipboardData(text: "¡Compatrir url de Tienda!")),
+                      child: Container(
+                        height: 37,
+                        width: 37,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(0, 0, 0, 0.1),
+                                blurRadius: 4, // soften the shadow
+                                spreadRadius: 1.0, //extend the shadow
+                                offset: Offset(
+                                  0.0, // Move to right 10  horizontally
+                                  3.0, // Move to bottom 10 Vertically
+                                ),
+                              )
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Icon(
+                          Icons.share_outlined,
+                          color: Theme.of(context).primaryColor,
+                          size: 25,
+                        ),
                       ),
                     ),
                   ],
                 ),
+                SizedBox(
+                  height: smallPadding,
+                ),
                 Text(
-                  '${widget.jsonTienda.jsonTienda['descripcion']}',
+                  '${widget.jsonTienda.jsonTienda['giro']}',
                   maxLines: 6,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '35 productos',
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        '26 ventas',
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-                )
+                // Align(
+                //   alignment: Alignment.bottomCenter,
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text(
+                //         '35 productos',
+                //         maxLines: 3,
+                //         overflow: TextOverflow.ellipsis,
+                //         textAlign: TextAlign.center,
+                //         style: TextStyle(
+                //             fontSize: 13, fontWeight: FontWeight.w600),
+                //       ),
+                //       Text(
+                //         '26 ventas',
+                //         maxLines: 3,
+                //         overflow: TextOverflow.ellipsis,
+                //         textAlign: TextAlign.center,
+                //         style: TextStyle(
+                //             fontSize: 13, fontWeight: FontWeight.w700),
+                //       ),
+                //     ],
+                //   ),
+                // )
               ],
             ),
           )
@@ -527,6 +585,7 @@ bodyTienda() {
     return Container(
       height: 35,
       child: TextField(
+        onChanged: (value) => searchOperation(value),
         textInputAction: TextInputAction.search,
         textAlignVertical: TextAlignVertical.bottom,
         decoration: InputDecoration(
@@ -543,6 +602,27 @@ bodyTienda() {
             filled: true),
       ),
     );
+  }
+
+  void searchOperation(String searchText) {
+    searchList.clear();
+    _handleSearchStart();
+    if (_isSearching != null) {
+      for (int i = 0; i < prod.length; i++) {
+        String dataNombre = prod[i]['nombre'];
+        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+          setState(() {
+            searchList.add(prod[i]);
+          });
+        }
+      }
+    }
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
   }
 
   listProducts() {
@@ -564,8 +644,10 @@ bodyTienda() {
                   : 4
               : 5,
           // Generate 100 widgets that display their index in the List.
-          children: List.generate(prod.length, (index) {
-            return productFav(true, prod[index]);
+          children: List.generate(
+              _isSearching ? searchList.length : prod.length, (index) {
+            return productFav(
+                true, _isSearching ? searchList[index] : prod[index]);
           }),
         ))
       ],
@@ -576,8 +658,8 @@ bodyTienda() {
     var size = MediaQuery.of(context).size;
     // final double itemHeight = 280;
     // final double itemWidth = 200;
-    ProductModel productModel = ProductModel();
-    productModel = ProductModel.fromJson(prod);
+    ProductoModel productoModel = ProductoModel();
+    productoModel = ProductoModel.fromJson(prod);
     return Container(
       margin: EdgeInsets.all(smallPadding * 0.7),
       padding: EdgeInsets.all(smallPadding * 0.4),
@@ -604,10 +686,10 @@ bodyTienda() {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Image(
-                    fit: BoxFit.contain,
-                    image: AssetImage("images/${prod['img']}"),
-                  ),
+                  // Image(
+                  //   fit: BoxFit.contain,
+                  //   image: AssetImage("images/${productoModel['img']}"),
+                  // ),
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
@@ -636,37 +718,6 @@ bodyTienda() {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                        width: 45,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            // Icon(Icons.star, color: Colors.amber, size: 15),
-                            RatingBarIndicator(
-                              unratedColor: Colors.white.withOpacity(0.5),
-                              rating:
-                                  double.parse(prod['stars']) * 100 / 5 / 100,
-                              itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              itemCount: 1,
-                              itemSize: 15.0,
-                              direction: Axis.horizontal,
-                            ),
-                            Text(prod['stars'],
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500))
-                          ],
-                        )),
-                  ),
                 ],
               )),
           Flexible(
@@ -676,7 +727,7 @@ bodyTienda() {
                 context,
                 ProductoDetalles.routeName,
                 arguments: ProductoDetallesArguments(
-                  prod,
+                  productoModel,
                 ),
               ).then((value) => setState(() {})),
               child: Container(
@@ -684,7 +735,7 @@ bodyTienda() {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
-                      prod['name'],
+                      productoModel.nombre,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
                       textAlign: TextAlign.center,
@@ -692,7 +743,7 @@ bodyTienda() {
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                     ),
                     Text(
-                      prod['farmacia'],
+                      productoModel.nombre_farmacia,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       maxLines: 1,
@@ -705,26 +756,33 @@ bodyTienda() {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '\$${prod['price']}',
+                          '\$${productoModel.precio}',
                           style: TextStyle(
                               color: Colors.black45,
-                              decoration: TextDecoration.lineThrough),
+                              decoration:
+                                  productoModel.precioConDescuento == null
+                                      ? null
+                                      : TextDecoration.lineThrough),
                         ),
-                        Text(
-                          '\$${prod['price']}',
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.w700),
-                        ),
+                        productoModel.precioConDescuento == null
+                            ? Container()
+                            : Text(
+                                '\$${productoModel.precioConDescuento}',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w700),
+                              ),
                       ],
                     ),
-                    StreamBuilder<List<ProductModel>>(
+                    StreamBuilder<List<ProductoModel>>(
                         initialData: [],
                         stream: _catalogBloc.catalogStream,
                         builder: (context, snapshot) {
                           var index;
                           bool inCart = false;
                           for (int i = 0; i <= snapshot.data.length - 1; i++) {
-                            if (snapshot.data[i].name == prod['name']) {
+                            if (snapshot.data[i].idDeProducto ==
+                                productoModel.idDeProducto) {
                               index = i;
                               inCart = true;
                             }
@@ -744,18 +802,18 @@ bodyTienda() {
                                         if (inCart) {
                                           if (snapshot.data[index].cantidad >
                                               1) {
-                                            productModel.cantidad =
+                                            productoModel.cantidad =
                                                 snapshot.data[index].cantidad -
                                                     1;
                                             _catalogBloc.sendEvent.add(
                                                 EditCatalogItemEvent(
-                                                    productModel));
+                                                    productoModel));
                                           } else {
-                                            productModel.cantidad =
+                                            productoModel.cantidad =
                                                 snapshot.data[index].cantidad;
                                             _catalogBloc.sendEvent.add(
                                                 RemoveCatalogItemEvent(
-                                                    productModel));
+                                                    productoModel));
                                           }
                                         }
                                       });
@@ -807,12 +865,13 @@ bodyTienda() {
                                     onTap: () {
                                       setState(() {
                                         inCart
-                                            ? productModel.cantidad =
+                                            ? productoModel.cantidad =
                                                 snapshot.data[index].cantidad +
                                                     1
-                                            : productModel.cantidad = 1;
+                                            : productoModel.cantidad = 1;
                                         _catalogBloc.sendEvent.add(
-                                            EditCatalogItemEvent(productModel));
+                                            EditCatalogItemEvent(
+                                                productoModel));
                                       });
                                     },
                                     borderRadius: BorderRadius.circular(40),

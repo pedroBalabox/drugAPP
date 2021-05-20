@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
@@ -15,18 +17,53 @@ class TiendasPage extends StatefulWidget {
 }
 
 class _TiendasPageState extends State<TiendasPage> {
-  var tiendas = [];
+  RestFun restFunction = RestFun();
+  var tiendas;
+  String errorStr;
+  bool load = true;
+  bool error = false;
+
+  List searchList = [];
+  bool _isSearching = false;
+
   @override
   void initState() {
-    tiendas = jsonDecode(dummyTienda);
+    sharedPrefs.init().then((value) => getTiendas());
     super.initState();
+  }
+
+  getTiendas() async {
+    await restFunction
+        .restService(null, '$apiUrl/obtener/farmacias-cliente',
+            sharedPrefs.clientToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var ordenResp = value['response'];
+        ordenResp = jsonDecode(ordenResp)[1];
+        setState(() {
+          tiendas = ordenResp;
+          // orden = ordenResp.values.toList();
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveAppBar(
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyTiendas(),
+        body: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : bodyTiendas(),
         title: "Tiendas");
   }
 
@@ -80,8 +117,10 @@ class _TiendasPageState extends State<TiendasPage> {
                   : 4
               : 5,
           // Generate 100 widgets that display their index in the List.
-          children: List.generate(tiendas.length, (index) {
-            return tiendaCard(tiendas[index]);
+          children: List.generate(
+              _isSearching ? searchList.length : tiendas.length, (index) {
+            return tiendaCard(
+                _isSearching ? searchList[index] : tiendas[index]);
           }),
         ))
       ],
@@ -120,7 +159,7 @@ class _TiendasPageState extends State<TiendasPage> {
               child: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage('images/${tiendas['img']}'),
+                        image: NetworkImage('${tiendas['logo']}'),
                         fit: BoxFit.contain)),
                 // child: Align(
                 //   alignment: Alignment.topRight,
@@ -157,12 +196,12 @@ class _TiendasPageState extends State<TiendasPage> {
                         text: TextSpan(
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              fontSize: 17,
+                              fontSize: 18,
                               color: Colors.black),
-                          text: '${tiendas['name']} ',
+                          text: '${tiendas['nombre']} ',
                           children: <TextSpan>[
                             TextSpan(
-                              text: String.fromCharCode(58959), //<-- charCode
+                              text: String.fromCharCode(57686), //<-- charCode
                               style: TextStyle(
                                 fontFamily: 'MaterialIcons', //<-- fontFamily
                                 fontSize: 13.0,
@@ -181,39 +220,60 @@ class _TiendasPageState extends State<TiendasPage> {
                     //   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
                     // ),
                     Text(
-                      tiendas['descripcion'].toString(),
+                      tiendas['giro'].toString(),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 12),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '35 productos',
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          '26 ventas',
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    )
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text(
+                    //       '35 productos',
+                    //       maxLines: 3,
+                    //       overflow: TextOverflow.ellipsis,
+                    //       textAlign: TextAlign.center,
+                    //       style: TextStyle(
+                    //           fontSize: 12, fontWeight: FontWeight.w600),
+                    //     ),
+                    //     Text(
+                    //       '26 ventas',
+                    //       maxLines: 3,
+                    //       overflow: TextOverflow.ellipsis,
+                    //       textAlign: TextAlign.center,
+                    //       style: TextStyle(
+                    //           fontSize: 12, fontWeight: FontWeight.w600),
+                    //     ),
+                    //   ],
+                    // )
                   ],
                 ))
           ],
         ),
       ),
     );
+  }
+
+  void searchOperation(String searchText) {
+    searchList.clear();
+    _handleSearchStart();
+    if (_isSearching != null) {
+      for (int i = 0; i < tiendas.length; i++) {
+        String dataNombre = tiendas[i]['nombre'];
+        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+          setState(() {
+            searchList.add(tiendas[i]);
+          });
+        }
+      }
+    }
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
   }
 
   search() {

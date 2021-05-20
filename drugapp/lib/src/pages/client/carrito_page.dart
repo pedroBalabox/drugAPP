@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:codigojaguar/codigojaguar.dart';
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
@@ -51,7 +52,7 @@ class _CarritoPageState extends State<CarritoPage> {
             vertical: medPadding * 1.5),
         color: bgGrey,
         width: size.width,
-        child: StreamBuilder<List<ProductModel>>(
+        child: StreamBuilder<List<ProductoModel>>(
             initialData: [],
             stream: _catalogBloc.catalogStream,
             builder: (context, snapshot) {
@@ -233,7 +234,7 @@ class _CarritoPageState extends State<CarritoPage> {
         return productList(data[index]);
       },
     );
-    // return StreamBuilder<List<ProductModel>>(
+    // return StreamBuilder<List<ProductoModel>>(
     // initialData: [],
     // stream: _catalogBloc.catalogStream,
     // builder: (context, snapshot) {
@@ -248,8 +249,8 @@ class _CarritoPageState extends State<CarritoPage> {
     // });
   }
 
-  productList(ProductModel prodjson) {
-    // ProductModel productModel = ProductModel.fromJson(jsonDecode(prodjson));
+  productList(ProductoModel prodjson) {
+    // ProductoModel productModel = ProductoModel.fromJson(jsonDecode(prodjson));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -277,19 +278,19 @@ class _CarritoPageState extends State<CarritoPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Flexible(
-              flex: 2,
-              child: getAsset(prodjson.img, 60),
-            ),
+            // Flexible(
+            //   flex: 2,
+            //   child: getAsset(prodjson., 60),
+            // ),
             Flexible(
               flex: 5,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: smallPadding),
                 child: Column(
                   // mainAxisAlignment: MainAxisAlignment.center,
-                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  // crossAxisAlignment: CgrossAxisAlignment.start,
                   children: [
-                    Text(prodjson.name.toString(),
+                    Text(prodjson.nombre.toString(),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
@@ -299,7 +300,7 @@ class _CarritoPageState extends State<CarritoPage> {
                         )),
                     // SizedBox(height: smallPadding / 2),
                     // SizedBox(height: smallPadding / 2),
-                    Text('${prodjson.farmacia.toString()}',
+                    Text('${prodjson.farmaciaId.toString()}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
@@ -309,7 +310,7 @@ class _CarritoPageState extends State<CarritoPage> {
                             fontSize: 12)),
                     SizedBox(height: smallPadding / 2),
                     Text(
-                      '\$${prodjson.price} MXN ',
+                      '\$${prodjson.precio} MXN ',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 14,

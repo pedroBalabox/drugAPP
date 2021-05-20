@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
@@ -93,15 +94,17 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.medical_services_outlined,
-          size: 35,
-              color: Colors.grey.withOpacity(0.7)),
+              size: 35, color: Colors.grey.withOpacity(0.7)),
           Text(
             'Categoría no encontrada',
             style: TextStyle(fontSize: 20, color: Colors.grey.withOpacity(0.7)),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: medPadding, horizontal: MediaQuery.of(context).size.width / 3),
-            child: SimpleButtom(mainText: 'Ver categorias', gcolor: gradientBlueDark),
+            padding: EdgeInsets.symmetric(
+                vertical: medPadding,
+                horizontal: MediaQuery.of(context).size.width / 3),
+            child: SimpleButtom(
+                mainText: 'Ver categorias', gcolor: gradientBlueDark),
           )
         ],
       ),
@@ -450,7 +453,8 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
 
   listProducts() {
     return ListView(
-      // physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       padding: EdgeInsets.all(smallPadding),
       children: [
         Container(
@@ -467,7 +471,7 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
               : 5,
           // Generate 100 widgets that display their index in the List.
           children: List.generate(prod.length, (index) {
-            return productFav(true, prod[index]);
+            return productFav(true,prod[index]);
           }),
         ))
       ],
@@ -478,8 +482,8 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
     var size = MediaQuery.of(context).size;
     // final double itemHeight = 280;
     // final double itemWidth = 200;
-    ProductModel productModel = ProductModel();
-    productModel = ProductModel.fromJson(prod);
+    ProductoModel productoModel = ProductoModel();
+    productoModel = ProductoModel.fromJson(prod);
     return Container(
       margin: EdgeInsets.all(smallPadding * 0.7),
       padding: EdgeInsets.all(smallPadding * 0.4),
@@ -538,37 +542,6 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                        width: 45,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          children: [
-                            // Icon(Icons.star, color: Colors.amber, size: 15),
-                            RatingBarIndicator(
-                              unratedColor: Colors.white.withOpacity(0.5),
-                              rating:
-                                  double.parse(prod['stars']) * 100 / 5 / 100,
-                              itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              itemCount: 1,
-                              itemSize: 15.0,
-                              direction: Axis.horizontal,
-                            ),
-                            Text(prod['stars'],
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500))
-                          ],
-                        )),
-                  ),
                 ],
               )),
           Flexible(
@@ -586,7 +559,7 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
-                      prod['name'],
+                      prod['nombre'],
                       overflow: TextOverflow.ellipsis,
                       maxLines: 3,
                       textAlign: TextAlign.center,
@@ -594,7 +567,7 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                     ),
                     Text(
-                      prod['farmacia'],
+                      prod['nombre_farmacia'],
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       maxLines: 1,
@@ -607,26 +580,31 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '\$${prod['price']}',
+                          '\$${prod['precio']}',
                           style: TextStyle(
                               color: Colors.black45,
-                              decoration: TextDecoration.lineThrough),
+                              decoration: prod['precio_con_descuento'] == null
+                                  ? null
+                                  : TextDecoration.lineThrough),
                         ),
-                        Text(
-                          '\$${prod['price']}',
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.w700),
-                        ),
+                        prod['precio_con_descuento'] == null
+                            ? Container()
+                            : Text(
+                                '\$${prod['precio_con_descuento']}',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w700),
+                              ),
                       ],
                     ),
-                    StreamBuilder<List<ProductModel>>(
+                    StreamBuilder<List<ProductoModel>>(
                         initialData: [],
                         stream: _catalogBloc.catalogStream,
                         builder: (context, snapshot) {
                           var index;
                           bool inCart = false;
                           for (int i = 0; i <= snapshot.data.length - 1; i++) {
-                            if (snapshot.data[i].name == prod['name']) {
+                            if (snapshot.data[i].nombre == prod['nombre']) {
                               index = i;
                               inCart = true;
                             }
@@ -646,18 +624,18 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                                         if (inCart) {
                                           if (snapshot.data[index].cantidad >
                                               1) {
-                                            productModel.cantidad =
+                                            productoModel.cantidad =
                                                 snapshot.data[index].cantidad -
                                                     1;
                                             _catalogBloc.sendEvent.add(
                                                 EditCatalogItemEvent(
-                                                    productModel));
+                                                    productoModel));
                                           } else {
-                                            productModel.cantidad =
+                                            productoModel.cantidad =
                                                 snapshot.data[index].cantidad;
                                             _catalogBloc.sendEvent.add(
                                                 RemoveCatalogItemEvent(
-                                                    productModel));
+                                                    productoModel));
                                           }
                                         }
                                       });
@@ -709,12 +687,13 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                                     onTap: () {
                                       setState(() {
                                         inCart
-                                            ? productModel.cantidad =
+                                            ? productoModel.cantidad =
                                                 snapshot.data[index].cantidad +
                                                     1
-                                            : productModel.cantidad = 1;
+                                            : productoModel.cantidad = 1;
                                         _catalogBloc.sendEvent.add(
-                                            EditCatalogItemEvent(productModel));
+                                            EditCatalogItemEvent(
+                                                productoModel));
                                       });
                                     },
                                     borderRadius: BorderRadius.circular(40),

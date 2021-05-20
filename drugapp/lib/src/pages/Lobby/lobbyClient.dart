@@ -16,6 +16,7 @@ import 'package:drugapp/src/pages/vendedor/homeVendedor_page.dart';
 import 'package:drugapp/src/pages/vendedor/miTiendaVendedor_page.dart';
 import 'package:drugapp/src/pages/vendedor/registerVendedor_page.dart';
 
+
 class LobbyClient extends StatefulWidget {
   final String ruta;
   LobbyClient({Key key, @required this.ruta}) : super(key: key);

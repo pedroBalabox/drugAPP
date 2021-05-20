@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/state_product.dart';
@@ -8,11 +9,11 @@ class CatalogBloc {
   CatalogState _catalogState = CatalogState();
 
   StreamController<CatalogEvent> _input = StreamController();
-  StreamController<List<ProductModel>> _output =
-      StreamController<List<ProductModel>>.broadcast();
+  StreamController<List<ProductoModel>> _output =
+      StreamController<List<ProductoModel>>.broadcast();
 
   StreamSink<CatalogEvent> get sendEvent => _input.sink;
-  Stream<List<ProductModel>> get catalogStream => _output.stream;
+  Stream<List<ProductoModel>> get catalogStream => _output.stream;
 
   CatalogBloc() {
     _input.stream.listen(_onEvent);
@@ -25,6 +26,8 @@ class CatalogBloc {
       _catalogState.removeFromCatalog(event.item);
     } else if (event is EditCatalogItemEvent) {
       _catalogState.editToCatalog(event.item);
+    }else if (event is GetCatalogEvent) {
+       _output.add(_catalogState.catalog);
     }
 
     _output.add(_catalogState.catalog);

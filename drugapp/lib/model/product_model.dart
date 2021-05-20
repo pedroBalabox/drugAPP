@@ -4,94 +4,101 @@
 
 import 'dart:convert';
 
-ProductoModel productoModelFromJson(String str) => ProductoModel.fromJson(json.decode(str));
+import 'package:flutter/material.dart';
+
+ProductoModel productoModelFromJson(String str) =>
+    ProductoModel.fromJson(json.decode(str));
 
 String productoModelToJson(ProductoModel data) => json.encode(data.toJson());
 
 class ProductoModel {
-    ProductoModel({
-        this.id,
-        this.idDeProducto,
-        this.farmaciaId,
-        this.sku,
-        this.requiereReceta,
-        this.nombre,
-        this.descripcion,
-        this.marca,
-        this.precio,
-        this.precioConDescuento,
-        this.precioMayoreo,
-        this.cantidadMayoreo,
-        this.stock,
-        this.categoria,
-        this.subcategoria1,
-        this.subcategoria2,
-        this.subcategoria3,
-        this.etiqueta1,
-        this.etiqueta2,
-        this.etiqueta3,
-        this.etiqueta4,
-        this.etiqueta5,
-        this.status,
-        this.fechaDeCreacion,
-        this.galeria,
-    });
+  ProductoModel(
+      {this.id,
+      this.idDeProducto,
+      this.farmaciaId,
+      this.sku,
+      this.requiereReceta,
+      this.nombre,
+      this.descripcion,
+      this.marca,
+      this.precio,
+      this.precioConDescuento,
+      this.precioMayoreo,
+      this.cantidadMayoreo,
+      this.stock,
+      this.categoria,
+      this.subcategoria1,
+      this.subcategoria2,
+      this.subcategoria3,
+      this.etiqueta1,
+      this.etiqueta2,
+      this.etiqueta3,
+      this.etiqueta4,
+      this.etiqueta5,
+      this.status,
+      this.fechaDeCreacion,
+      this.galeria,
+      this.cantidad,
+      this.nombre_farmacia});
 
-    dynamic id;
-    String idDeProducto;
-    String farmaciaId;
-    String sku;
-    String requiereReceta;
-    String nombre;
-    String descripcion;
-    String marca;
-    String precio;
-    String precioConDescuento;
-    String precioMayoreo;
-    String cantidadMayoreo;
-    String stock;
-    String categoria;
-    String subcategoria1;
-    String subcategoria2;
-    String subcategoria3;
-    String etiqueta1;
-    String etiqueta2;
-    String etiqueta3;
-    String etiqueta4;
-    String etiqueta5;
-    String status;
-    dynamic fechaDeCreacion;
-    dynamic galeria;
+  dynamic id;
+  String idDeProducto;
+  String farmaciaId;
+  String sku;
+  String requiereReceta;
+  String nombre;
+  String descripcion;
+  String marca;
+  String precio;
+  String precioConDescuento;
+  String precioMayoreo;
+  String cantidadMayoreo;
+  String stock;
+  String categoria;
+  String subcategoria1;
+  String subcategoria2;
+  String subcategoria3;
+  String etiqueta1;
+  String etiqueta2;
+  String etiqueta3;
+  String etiqueta4;
+  String etiqueta5;
+  String status;
+  dynamic fechaDeCreacion;
+  dynamic galeria;
+  int cantidad;
+  String nombre_farmacia;
 
-    factory ProductoModel.fromJson(Map<String, dynamic> json) => ProductoModel(
-        id: json["id"],
-        idDeProducto: json["id_de_producto"],
-        farmaciaId: json["farmacia_id"],
-        sku: json["sku"],
-        requiereReceta: json["requiere_receta"],
-        nombre: json["nombre"],
-        descripcion: json["descripcion"],
-        marca: json["marca"],
-        precio: json["precio"],
-        precioConDescuento: json["precio_con_descuento"],
-        precioMayoreo: json["precio_mayoreo"],
-        cantidadMayoreo: json["cantidad_mayoreo"],
-        stock: json["stock"],
-        categoria: json["categoria"],
-        subcategoria1: json["subcategoria_1"],
-        subcategoria2: json["subcategoria_2"],
-        subcategoria3: json["subcategoria_3"],
-        etiqueta1: json["etiqueta_1"],
-        etiqueta2: json["etiqueta_2"],
-        etiqueta3: json["etiqueta_3"],
-        etiqueta4: json["etiqueta_4"],
-        etiqueta5: json["etiqueta_5"],
-        status: json["status"],
-        fechaDeCreacion: json["fechaDeCreacion"],
-        galeria: json["galeria"],
-    );
+  factory ProductoModel.fromJson(Map<String, dynamic> json) => ProductoModel(
+      id: json["id"],
+      idDeProducto: json["id_de_producto"],
+      farmaciaId: json["farmacia_id"],
+      sku: json["sku"],
+      requiereReceta: json["requiere_receta"],
+      nombre: json["nombre"],
+      descripcion: json["descripcion"],
+      marca: json["marca"],
+      precio: json["precio"],
+      precioConDescuento: json["precio_con_descuento"],
+      precioMayoreo: json["precio_mayoreo"],
+      cantidadMayoreo: json["cantidad_mayoreo"],
+      stock: json["stock"],
+      categoria: json["categoria"],
+      subcategoria1: json["subcategoria_1"],
+      subcategoria2: json["subcategoria_2"],
+      subcategoria3: json["subcategoria_3"],
+      etiqueta1: json["etiqueta_1"],
+      etiqueta2: json["etiqueta_2"],
+      etiqueta3: json["etiqueta_3"],
+      etiqueta4: json["etiqueta_4"],
+      etiqueta5: json["etiqueta_5"],
+      status: json["status"],
+      fechaDeCreacion: json["fechaDeCreacion"],
+      galeria: json["galeria"],
+      cantidad: json["cantidad"],
+      nombre_farmacia: json["nombre_farmacia"]);
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "id": id,
         "id_de_producto": idDeProducto,
         "farmacia_id": farmaciaId,
@@ -117,5 +124,7 @@ class ProductoModel {
         "status": status,
         "fecha_de_creacion": fechaDeCreacion.toIso8601String(),
         "galeria": List<dynamic>.from(galeria.map((x) => x)),
-    };
+        "cantidad": cantidad,
+        "nombre_farmacia": nombre_farmacia
+      };
 }

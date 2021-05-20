@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/model/user_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
@@ -185,7 +186,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                             ),
                             CircleAvatar(
                                 radius: 11,
-                                child: StreamBuilder<List<ProductModel>>(
+                                child: StreamBuilder<List<ProductoModel>>(
                                     initialData: [],
                                     stream: _catalogBloc.catalogStream,
                                     builder: (context, snapshot) {
@@ -427,7 +428,7 @@ class _DrawerUserState extends State<DrawerUser> {
                         Icon(Icons.shopping_cart_outlined, color: Colors.grey),
                         CircleAvatar(
                             radius: 7,
-                            child: StreamBuilder<List<ProductModel>>(
+                            child: StreamBuilder<List<ProductoModel>>(
                                 initialData: [],
                                 stream: _catalogBloc.catalogStream,
                                 builder: (context, snapshot) {
