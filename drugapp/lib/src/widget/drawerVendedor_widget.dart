@@ -6,7 +6,7 @@ import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 59653, "title": "Mi cuenta", "action": "/farmacia/miCuenta"}, {"icon": 59955, "title": "Mi tienda", "action": "/farmacia/miTienda"},  {"icon": 57740, "title": "Cerrar sesión", "action": "/farmacia/login"}]';
+    '[{"icon": 59653, "title": "Mi cuenta", "action": "/farmacia/miCuenta"}, {"icon": 59955, "title": "Mi tienda", "action": "/farmacia/miTienda"},  {"icon": 57740, "title": "Cerrar sesión", "action": "/farmacia/logout"}]';
 
 class ResponsiveAppBarVendedor extends StatefulWidget {
   final screenWidht;
@@ -19,7 +19,8 @@ class ResponsiveAppBarVendedor extends StatefulWidget {
       this.screenWidht,
       this.body,
       this.title,
-      this.drawerMenu = false, this.userModel})
+      this.drawerMenu = false,
+      this.userModel})
       : super(key: key);
 
   @override
@@ -28,6 +29,7 @@ class ResponsiveAppBarVendedor extends StatefulWidget {
 }
 
 class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
+  var jsonMenu = jsonDecode(itemsMenu.toString());
 
   @override
   void initState() {
@@ -66,54 +68,80 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                     SizedBox(
                       width: 7,
                     ),
-                    widget.title != null
-                        ? Text(widget.title)
-                        :Container(),
-                        // : Flexible(
-                        //     flex: 3,
-                        //     child: Container(
-                        //       height: 35,
-                        //       child: TextField(
-                        //         textInputAction: TextInputAction.search,
-                        //         textAlignVertical: TextAlignVertical.bottom,
-                        //         decoration: InputDecoration(
-                        //             prefixIcon: Icon(Icons.search),
-                        //             focusedBorder: OutlineInputBorder(
-                        //                 borderSide: BorderSide.none,
-                        //                 borderRadius: BorderRadius.circular(0)),
-                        //             enabledBorder: OutlineInputBorder(
-                        //                 borderSide: BorderSide.none,
-                        //                 borderRadius: BorderRadius.circular(0)),
-                        //             hintStyle: TextStyle(),
-                        //             hintText:
-                        //                 'Búsca una medicina, sítnoma o farmacia...',
-                        //             fillColor: Colors.white,
-                        //             filled: true),
-                        //       ),
-                        //     ),
-                        //   ),
+                    widget.title != null ? Text(widget.title) : Container(),
+                    // : Flexible(
+                    //     flex: 3,
+                    //     child: Container(
+                    //       height: 35,
+                    //       child: TextField(
+                    //         textInputAction: TextInputAction.search,
+                    //         textAlignVertical: TextAlignVertical.bottom,
+                    //         decoration: InputDecoration(
+                    //             prefixIcon: Icon(Icons.search),
+                    //             focusedBorder: OutlineInputBorder(
+                    //                 borderSide: BorderSide.none,
+                    //                 borderRadius: BorderRadius.circular(0)),
+                    //             enabledBorder: OutlineInputBorder(
+                    //                 borderSide: BorderSide.none,
+                    //                 borderRadius: BorderRadius.circular(0)),
+                    //             hintStyle: TextStyle(),
+                    //             hintText:
+                    //                 'Búsca una medicina, sítnoma o farmacia...',
+                    //             fillColor: Colors.white,
+                    //             filled: true),
+                    //       ),
+                    //     ),
+                    //   ),
                     Flexible(flex: 2, child: Container())
                   ],
                 ),
                 actions: [
-                  Row(
+                  /* Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      /* ListView.builder(
+                        itemCount: jsonMenu.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 7.0),
+                            child: InkWell(
+                                onTap: () {
+                                  if (Uri.base.path !=
+                                      jsonMenu[index]['action']) {
+                                    Navigator.pushNamed(
+                                            context, jsonMenu[index]['action'])
+                                        .then((value) => setState(() {}));
+                                  }
+                                },
+                                child: Text('Mi cuenta')),
+                          );
+                        },
+                      ), */
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
                             onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                    context, '/farmacia/miCuenta', (route) => false)
+                                    context,
+                                    '/farmacia/miCuenta',
+                                    (route) => false)
                                 .then((value) => setState(() {})),
                             child: Text('Mi cuenta')),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/farmacia/miTienda')
-                                    .then((value) => setState(() {})),
+                            onTap: () {
+                              if (Uri.base.path != '/farmacia/miTienda') {
+                                Navigator.pushNamed(
+                                        context, '/farmacia/miTienda')
+                                    .then((value) => setState(() {}));
+                              }
+                            },
                             child: Text('Mi tienda')),
                       ),
                       // Padding(
@@ -134,35 +162,69 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                       //       ],
                       //     )),
                     ],
+                  ) */
+                  Container(
+                    width: 300,
+                    alignment: Alignment.bottomCenter,
+                    child: ListView.builder(
+                      itemCount: jsonMenu.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      /*  shrinkWrap: true, */
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 7.0),
+                          child: InkWell(
+                              onTap: () {
+                                if (jsonMenu[index]['action'] ==
+                                    "/farmacia/logout") {
+                                  logoutVendor().then((value) =>
+                                      Navigator.pushReplacementNamed(
+                                          context, '/farmacia/login'));
+                                } else {
+                                  if (Uri.base.path !=
+                                      jsonMenu[index]['action']) {
+                                    Navigator.pushNamed(
+                                            context, jsonMenu[index]['action'])
+                                        .then((value) => setState(() {}));
+                                  }
+                                }
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(jsonMenu[index]['title']),
+                              )),
+                        );
+                      },
+                    ),
                   )
                 ],
               )
             : AppBar(
                 elevation: 0,
                 backgroundColor: Theme.of(context).accentColor,
-                title: widget.title != null
-                    ? Text(widget.title)
-                    : Container(),
-                    // : Container(
-                    //     height: 35,
-                    //     child: TextField(
-                    //       textInputAction: TextInputAction.search,
-                    //       textAlignVertical: TextAlignVertical.bottom,
-                    //       decoration: InputDecoration(
-                    //           prefixIcon: Icon(Icons.search),
-                    //           focusedBorder: OutlineInputBorder(
-                    //               borderSide: BorderSide.none,
-                    //               borderRadius: BorderRadius.circular(0)),
-                    //           enabledBorder: OutlineInputBorder(
-                    //               borderSide: BorderSide.none,
-                    //               borderRadius: BorderRadius.circular(0)),
-                    //           hintStyle: TextStyle(),
-                    //           hintText:
-                    //               'Búsca una medicina, sítnoma o farmacia...',
-                    //           fillColor: Colors.white,
-                    //           filled: true),
-                    //     ),
-                    //   ),
+                title: widget.title != null ? Text(widget.title) : Container(),
+                // : Container(
+                //     height: 35,
+                //     child: TextField(
+                //       textInputAction: TextInputAction.search,
+                //       textAlignVertical: TextAlignVertical.bottom,
+                //       decoration: InputDecoration(
+                //           prefixIcon: Icon(Icons.search),
+                //           focusedBorder: OutlineInputBorder(
+                //               borderSide: BorderSide.none,
+                //               borderRadius: BorderRadius.circular(0)),
+                //           enabledBorder: OutlineInputBorder(
+                //               borderSide: BorderSide.none,
+                //               borderRadius: BorderRadius.circular(0)),
+                //           hintStyle: TextStyle(),
+                //           hintText:
+                //               'Búsca una medicina, sítnoma o farmacia...',
+                //           fillColor: Colors.white,
+                //           filled: true),
+                //     ),
+                //   ),
                 actions: [
                   Container(
                     padding: EdgeInsets.all(5),
@@ -277,14 +339,11 @@ class _DrawerUserState extends State<DrawerUser> {
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
             return listMenu(
-                    context,
-                    IconData(jsonMenu[index]['icon'],
-                        fontFamily: 'MaterialIcons'),
-                    Colors.grey,
-                    jsonMenu[index]['title'],
-                    () =>
-                        Navigator.pushNamed(context, jsonMenu[index]['action'])
-                            .then((value) => print('ok')));
+                context,
+                IconData(jsonMenu[index]['icon'], fontFamily: 'MaterialIcons'),
+                Colors.grey,
+                jsonMenu[index]['title'],
+                jsonMenu[index]['action']);
           },
         ),
       ]),
@@ -293,14 +352,23 @@ class _DrawerUserState extends State<DrawerUser> {
 }
 
 Widget listMenu(BuildContext context, IconData iconMenu, Color colorIcon,
-    String titleMenu, action) {
+    String titleMenu, String action) {
   return ListTile(
       leading: Icon(iconMenu, color: colorIcon),
       title: Text(
         titleMenu,
         style: TextStyle(color: Colors.grey[700]),
       ),
-      onTap: action);
+      onTap: () {
+        if (action == "/farmacia/logout") {
+          logoutVendor().then((value) =>
+              Navigator.pushReplacementNamed(context, '/farmacia/login'));
+        } else {
+          if (Uri.base.path != action) {
+            Navigator.pushNamed(context, action);
+          }
+        }
+      });
 }
 
 //Menu User

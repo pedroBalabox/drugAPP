@@ -231,7 +231,7 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
                 context, Icons.lock_outline, 'Segundo apellido', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'apellido',
+            tipo: 'opcional',
             onChanged: (value) {
               setState(() {
                 second_lastname = value;
@@ -257,6 +257,7 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
             child: BotonRestTest(
                 token: sharedPrefs.partnerUserToken,
                 url: '$apiUrl/actualizar/usuario',
+                showSuccess: true,
                 method: 'post',
                 formkey: formKey,
                 arrayData: {

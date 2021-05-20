@@ -227,7 +227,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                 context, Icons.lock_outline, 'Segundo apellido', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'apellido',
+            tipo: 'opcional',
             onChanged: (value) {
               setState(() {
                 second_lastname = value;
@@ -252,7 +252,6 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
             tipoEntrada: TextInputType.visiblePassword,
             textCapitalization: TextCapitalization.none,
             action: TextInputAction.done,
-            
             tipo: 'password',
             onChanged: (value) {
               setState(() {
@@ -306,7 +305,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                action: (value) => Navigator.pushNamed(context, '/farmacia/login'),
+                action: (value) =>
+                    Navigator.pushNamed(context, '/farmacia/login'),
                 errorStyle: TextStyle(
                   color: Colors.red[700],
                   fontWeight: FontWeight.w600,

@@ -19,11 +19,15 @@ class _LobbyVendorState extends State<LobbyVendor> {
   void initState() {
     super.initState();
     print('----' + widget.ruta);
+    /* print("La ruta es: "+widget.ruta); */
     validateVendorToken(context).then((value) {
       if (value == 'null') {
+        /* print("Entró como null"); */
         redirigirRuta(false);
       } else {
         validateVendor(context, value).then((value) {
+          /* print("Entró bien: " + value.toString());
+          print(widget.ruta); */
           redirigirRuta(value);
         });
       }
@@ -32,7 +36,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
 
   redirigirRuta(bool clientAuth) {
     switch (widget.ruta) {
-       case '/farmacia/login/miTienda':
+      case '/farmacia/login/miTienda':
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) => LoginVendedor(
@@ -41,6 +45,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
             (Route<dynamic> route) => false);
         break;
       case '/farmacia/login':
+        print("Farmacia Login");
         clientAuth
             ? Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/miCuenta', (route) => false)
@@ -62,16 +67,26 @@ class _LobbyVendorState extends State<LobbyVendor> {
             ? Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => MiCuentaVendedor()),
                 (Route<dynamic> route) => false)
+            /* Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MiCuentaVendedor()),
+              ) */
             : Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/login', (route) => false);
         break;
       case '/farmacia/miTienda':
-        clientAuth
-            ? Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => MiTiendaVendedor()),
-                (Route<dynamic> route) => false)
-            : Navigator.pushNamedAndRemoveUntil(
-                context, '/farmacia/login', (route) => false);
+        if (clientAuth) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => MiTiendaVendedor()),
+              (Route<dynamic> route) => false);
+          /* Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MiTiendaVendedor()),
+          ); */
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/farmacia/login', (route) => false);
+        }
         break;
       case '/farmacia/cargar-productos':
         clientAuth
@@ -83,6 +98,14 @@ class _LobbyVendorState extends State<LobbyVendor> {
                 context, '/farmacia/login', (route) => false);
         break;
       default:
+        print("Shit happens");
+
+        if (clientAuth) {
+          Navigator.of(context).pushNamed('/farmacia/miTienda');
+        } else {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/farmacia/login', (route) => false);
+        }
         break;
     }
   }

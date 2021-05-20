@@ -37,6 +37,8 @@ class _TabDraftState extends State<TabDraft> {
   String fileine;
   String filecedula;
 
+  String tipoPersona;
+
   var aviso;
   var acta;
   var comprobante;
@@ -48,6 +50,9 @@ class _TabDraftState extends State<TabDraft> {
     super.initState();
     sharedPrefs.init();
     farmaciaModel = FarmaciaModel.fromJson(widget.miTienda[1]);
+    setState(() {
+      tipoPersona = farmaciaModel.tipoPersona == "fisica" ? "Física" : "Moral";
+    });
   }
 
   @override
@@ -256,7 +261,7 @@ class _TabDraftState extends State<TabDraft> {
               });
             },
           ),
-          EntradaTexto(
+          /* EntradaTexto(
             valorInicial: farmaciaModel.tipoPersona,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Moral/física', null),
@@ -266,6 +271,36 @@ class _TabDraftState extends State<TabDraft> {
             onChanged: (value) {
               setState(() {
                 farmaciaModel.tipoPersona = value;
+              });
+            },
+          ), */
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Tipo de persona"),
+            value: tipoPersona,
+            items: ["Moral", "Física"].map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(Icons.store_outlined),
+                        SizedBox(width: 7,),
+                        Text("Tipo de persona: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
+              setState(() {
+                tipoPersona = val;
+                farmaciaModel.tipoPersona =
+                    val == "Física" ? "fisica" : "moral";
               });
             },
           ),
@@ -326,11 +361,12 @@ class _TabDraftState extends State<TabDraft> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                action: (value) => Navigator.pushNamedAndRemoveUntil(
+                /* action: (value) => Navigator.pushNamedAndRemoveUntil(
                       context,
                       '/farmacia/miTienda',
                       ModalRoute.withName('/farmacia/miCuenta'),
-                    ).then((value) => setState(() {})),
+                    ).then((value) => setState(() {})), */
+                action: (value) => () {},
                 errorStyle: TextStyle(
                   color: Colors.red[700],
                   fontWeight: FontWeight.w600,

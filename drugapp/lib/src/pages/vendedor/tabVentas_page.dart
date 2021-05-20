@@ -74,7 +74,7 @@ class _TabVentasState extends State<TabVentas> {
         .then((value) {
       if (value['status'] == 'server_true') {
         var ordenResp = value['response'];
-        ordenResp = jsonDecode(ordenResp)[1];
+        ordenResp = jsonDecode(ordenResp)[1]["ordenes"];
         setState(() {
           orden = ordenResp;
           // orden = ordenResp.values.toList();
@@ -145,7 +145,8 @@ class _TabVentasState extends State<TabVentas> {
             : search(),
         showCheckboxColumn: false,
         columns: kTableColumns,
-        source: DataSource(mycontext: context, dataData: _isSearching ? searchList : orden)
+        source: DataSource(
+            mycontext: context, dataData: _isSearching ? searchList : orden)
         // dataCat: searchList.length == 0 ? userData : searchList),
         );
   }
@@ -157,8 +158,10 @@ class _TabVentasState extends State<TabVentas> {
       for (int i = 0; i < orden.length; i++) {
         String dataId = orden[i]['id_de_orden'];
         String dataProducto = orden[i]['id_de_producto'];
+        String nombreProducto = orden[i]['nombre'];
         if (dataId.toLowerCase().contains(searchText.toLowerCase()) ||
-            dataProducto.toLowerCase().contains(searchText.toLowerCase())) {
+            dataProducto.toLowerCase().contains(searchText.toLowerCase()) ||
+            nombreProducto.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
             searchList.add(orden[i]);
           });
@@ -201,7 +204,7 @@ class _TabVentasState extends State<TabVentas> {
 const kTableColumns = <DataColumn>[
   DataColumn(
     label: Text(
-      'Folio',
+      'ID de Orden',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -231,7 +234,7 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Mayoreo',
+      '¿Aplicó mayoreo?',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -249,7 +252,7 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Fecha',
+      'Fecha de creación',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -286,12 +289,15 @@ class DataSource extends DataTableSource {
         onSelectChanged: (bool value) {},
         cells: <DataCell>[
           DataCell(Text('${_user['id_de_orden']}')),
-          DataCell(Text('${_user['id_de_producto']}')),
+          DataCell(Container(
+            width: 200,
+            child: Text('${_user['nombre']}'),
+          )),
           DataCell(Text('${_user['cantidad']}')),
           DataCell(Text('${_user['costo_unitario']}')),
           DataCell(Text('${_user['costo_total']}')),
           DataCell(Text('${_user['aplica_mayoreo']}')),
-          DataCell(Text('${_user['costo_final']}')),
+          DataCell(Text("\$"+_user['costo_final'])),
           DataCell(Text('${_user['status']}')),
           DataCell(Text('${_user['fecha_de_creacion']}')),
         ]);

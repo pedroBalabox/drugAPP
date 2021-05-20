@@ -52,8 +52,12 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => _displayDialog());
-    sharedPrefs.init();
-    getTienda();
+    sharedPrefs.init().then((value) {
+      var jsonUser = jsonDecode(sharedPrefs.partnerUserData);
+      userModel = UserModel.fromJson(jsonUser);
+      getTienda();
+    });
+
     // var jsonUser = jsonDecode(sharedPrefs.clientData);
     // userModel = UserModel.fromJson(jsonUser);
   }
@@ -152,7 +156,7 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
                       padding: EdgeInsets.only(
                           left: 30.0, right: 30.0, top: smallPadding * 3),
                       child: Text(
-                          'Te recordamos que está escrtictamente prohibido vender productos popiedad del sector salud, caducados, reetiquetados, en mal estado, asi como servicios no autorizados por las autoridades. Evita multas y sanciones.',
+                          'Te recordamos que está estrictamente prohibido vender productos popiedad del sector salud, caducados, reetiquetados, en mal estado, así como servicios no autorizados por las autoridades. Evita multas y sanciones.',
                           textAlign: TextAlign.center),
                     ),
                     SizedBox(

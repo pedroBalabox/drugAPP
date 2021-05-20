@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:drugapp/src/pages/Lobby/lobbyClient.dart';
+import 'package:drugapp/src/pages/Lobby/lobbyVendor.dart';
 import 'package:drugapp/src/pages/client/categoriaProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/editarProducto_page.dart';
 import 'package:drugapp/src/pages/vendedor/miVenta_page.dart';
@@ -29,10 +30,13 @@ class MyApp extends StatelessWidget {
         title: 'Drug App',
         theme: appTheme(),
         debugShowCheckedModeBanner: false,
-        // initialRoute: '/farmacia/login',
-        home: LobbyClient(
+        initialRoute: '/farmacia/miTienda',
+        onUnknownRoute: (settings) {
+          return MaterialPageRoute(builder: (_) => LobbyClient(ruta: '/home'));
+        },
+        /* home: LobbyVendor(
           ruta: '/',
-        ),
+        ), */
         // initialRoute: initR,
         routes: rutasDrug,
         onGenerateRoute: (RouteSettings settings) {

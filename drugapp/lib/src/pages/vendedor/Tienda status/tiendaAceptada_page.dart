@@ -223,9 +223,10 @@ class _TabAceptadaState extends State<TabAceptada> {
           ),
           EntradaTexto(
             habilitado: false,
-            valorInicial: farmaciaModel.tipoPersona,
+            valorInicial:
+                farmaciaModel.tipoPersona == "fisica" ? "Física" : "Moral",
             estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Moral/física', null),
+                context, Icons.store_outlined, 'Tipo de persona', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',

@@ -36,8 +36,13 @@ class TabProductos extends StatefulWidget {
 
 class _TabProductosState extends State<TabProductos> {
   var prod;
-  var _fieldList = ['precio', 'popularidad', 'calificación'];
-  bool disponible = true;
+  var _fieldList = ['Selecciona una opción', 'Menor a mayor', 'Mayor a menor'];
+  String chosenFilter;
+  bool disponible = false;
+  String priceFilter;
+  String userSearch;
+  final TextEditingController _searchController = TextEditingController();
+
   final _items = _cat
       .map((categorie) => MultiSelectItem<Categorie>(categorie, categorie.name))
       .toList();
@@ -97,7 +102,11 @@ class _TabProductosState extends State<TabProductos> {
   }
 
   getProductos() async {
-    var arrayData = {"farmacia_id": jsonTienda[1]['farmacia_id']};
+    var arrayData = {
+      "farmacia_id": jsonTienda[1]['farmacia_id'],
+      "priceFilter": priceFilter,
+      "inStock": disponible
+    };
     await rest
         .restService(arrayData, '${urlApi}farmacia/mis-productos',
             sharedPrefs.partnerUserToken, 'post')
@@ -109,6 +118,13 @@ class _TabProductosState extends State<TabProductos> {
           prod = productosResp['productos'];
           prod = productosResp.values.toList();
           load = false;
+          if (userSearch != null && userSearch != "") {
+            searchOperation(userSearch);
+            _searchController.value = _searchController.value.copyWith(
+              text: userSearch,
+              selection: TextSelection.collapsed(offset: userSearch.length),
+            );
+          }
         });
       } else {
         setState(() {
@@ -194,36 +210,44 @@ class _TabProductosState extends State<TabProductos> {
                                 mainAxisSize: MainAxisSize.max,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // Text('Filtar lista',
-                                  //     style:
-                                  //         TextStyle(color: Colors.black45, fontSize: 17)),
-                                  DropdownButton<String>(
-                                    elevation: 10,
-                                    underline: Container(
-                                      padding: EdgeInsets.only(top: 10),
-                                      height: 2,
-                                      color: Colors.black12,
-                                    ),
-
-                                    hint: Text(
-                                      "Ordenar por",
+                                  Text('Precio: ',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black54,
-                                          fontSize: 15),
-                                    ),
-                                    // value: null,
+                                          color: Colors.black45, fontSize: 17)),
+                                  DropdownButton<String>(
+                                    hint: Text("Selecciona una opción"),
+                                    value: chosenFilter,
                                     items: _fieldList.map((value) {
                                       return DropdownMenuItem<String>(
                                         value: value,
                                         child: Container(
-                                          width: 100,
-                                          child: new Text(value),
+                                          width: 180,
+                                          child: new Text(value.toString()),
                                           // height: 5.0,
                                         ),
                                       );
                                     }).toList(),
-                                    onChanged: (String val) {},
+                                    onChanged: (String val) {
+                                      setState(() {
+                                        if (val == 'Menor a mayor') {
+                                          load = true;
+                                          chosenFilter = val;
+                                          priceFilter = "low_to_high";
+                                          getProductos();
+                                        } else if (val == 'Mayor a menor') {
+                                          load = true;
+                                          chosenFilter = val;
+                                          priceFilter = "high_to_low";
+                                          getProductos();
+                                        } else {
+                                          if (priceFilter != null) {
+                                            load = true;
+                                            priceFilter = null;
+                                            chosenFilter = val;
+                                            getProductos();
+                                          }
+                                        }
+                                      });
+                                    },
                                   ),
                                   SizedBox(
                                     width: smallPadding,
@@ -231,7 +255,7 @@ class _TabProductosState extends State<TabProductos> {
                                   Row(
                                     children: [
                                       Text(
-                                        'Disponibilidad',
+                                        'Solo disponibles en Stock',
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
@@ -246,12 +270,14 @@ class _TabProductosState extends State<TabProductos> {
                                         onChanged: (value) {
                                           setState(() {
                                             disponible = value;
+                                            load = true;
+                                            getProductos();
                                           });
                                         },
                                       )
                                     ],
                                   ),
-                                  MultiSelectBottomSheetField(
+                                  /* MultiSelectBottomSheetField(
                                       searchHint: 'Búscar...',
                                       cancelText: Text('Cancelar'),
                                       confirmText: Text('Seleccionar'),
@@ -282,7 +308,7 @@ class _TabProductosState extends State<TabProductos> {
                                       onConfirm: (values) {
                                         // _selectedCat = values;
                                       },
-                                      chipDisplay: null),
+                                      chipDisplay: null), */
                                 ],
                               ),
                             ],
@@ -370,7 +396,7 @@ class _TabProductosState extends State<TabProductos> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  'Ordenar por ',
+                                  'Precio ',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -380,18 +406,40 @@ class _TabProductosState extends State<TabProductos> {
                               ),
                               SizedBox(height: smallPadding),
                               DropdownButton<String>(
-                                // value: null,
+                                hint: Text("Selecciona una opción"),
+                                value: chosenFilter,
                                 items: _fieldList.map((value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Container(
-                                      width: 100,
-                                      child: new Text(value),
+                                      width: 180,
+                                      child: new Text(value.toString()),
                                       // height: 5.0,
                                     ),
                                   );
                                 }).toList(),
-                                onChanged: (String val) {},
+                                onChanged: (String val) {
+                                  setState(() {
+                                    if (val == 'Menor a mayor') {
+                                      load = true;
+                                      chosenFilter = val;
+                                      priceFilter = "low_to_high";
+                                      getProductos();
+                                    } else if (val == 'Mayor a menor') {
+                                      load = true;
+                                      chosenFilter = val;
+                                      priceFilter = "high_to_low";
+                                      getProductos();
+                                    } else {
+                                      if (priceFilter != null) {
+                                        load = true;
+                                        priceFilter = null;
+                                        chosenFilter = val;
+                                        getProductos();
+                                      }
+                                    }
+                                  });
+                                },
                               ),
                             ],
                           ),
@@ -401,7 +449,7 @@ class _TabProductosState extends State<TabProductos> {
                             children: [
                               Flexible(
                                 child: Text(
-                                  'Disponibilidad',
+                                  'Solo disponibles en Stock',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w500,
@@ -417,12 +465,14 @@ class _TabProductosState extends State<TabProductos> {
                                 onChanged: (value) {
                                   setState(() {
                                     disponible = value;
+                                    load = true;
+                                    getProductos();
                                   });
                                 },
                               )
                             ],
                           ),
-                          SizedBox(height: smallPadding),
+                          /* SizedBox(height: smallPadding),
                           MultiSelectBottomSheetField(
                             searchHint: 'Búscar...',
                             cancelText: Text('Cancelar'),
@@ -457,7 +507,7 @@ class _TabProductosState extends State<TabProductos> {
                                 });
                               },
                             ),
-                          ),
+                          ), */
                           // Expanded(
                           //   child: MultiSelectDialogField(
                           //     buttonText: Text('Categoría'),
@@ -487,6 +537,10 @@ class _TabProductosState extends State<TabProductos> {
   }
 
   void searchOperation(String searchText) {
+    setState(() {
+      userSearch = searchText;
+    });
+
     searchList.clear();
 
     _handleSearchStart();
@@ -512,6 +566,7 @@ class _TabProductosState extends State<TabProductos> {
     return Container(
       height: 35,
       child: TextField(
+        controller: _searchController,
         onChanged: (value) => searchOperation(value),
         textInputAction: TextInputAction.search,
         textAlignVertical: TextAlignVertical.bottom,
@@ -579,6 +634,21 @@ class _TabProductosState extends State<TabProductos> {
     var size = MediaQuery.of(context).size;
     // final double itemHeight = 280;
     // final double itemWidth = 200;
+    var gallery = prod['galeria'];
+    String fdtImageURL = "";
+    if (gallery is List) {
+      if (!gallery.isEmpty) {
+        fdtImageURL = gallery[0]["url"];
+      } else {
+        fdtImageURL =
+            "https://sandbox.app.drugsiteonline.com/app/uploads/archivogtsOW2tQB7yv.png";
+      }
+    }
+    /* if (ftdImage != null) {
+      ftdImage = prod['galeria'][0]['url'];
+    } else {
+      ftdImage = "https://sandbox.app.drugsiteonline.com/app/uploads/dummy.jpg";
+    } */
     ProductModel productModel = ProductModel();
     productModel = ProductModel.fromJson(prod);
     return Container(
@@ -603,14 +673,18 @@ class _TabProductosState extends State<TabProductos> {
       child: Column(
         children: [
           Flexible(
-              flex: 2,
+              flex: 3,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Image(
-                  //   fit: BoxFit.contain,
-                  //   image: AssetImage("images/${prod['img']}"),
-                  // ),
+                  Container(
+                    height: 220,
+                    margin: EdgeInsets.only(bottom: 5),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(fdtImageURL),
+                            fit: BoxFit.cover)),
+                  ),
                   // Align(
                   //   alignment: Alignment.topLeft,
                   //   child: Container(
@@ -622,7 +696,7 @@ class _TabProductosState extends State<TabProductos> {
                   //       child: Row(
                   //         children: [
                   //           // Icon(Icons.star, color: Colors.amber, size: 15),
-                  //           RatingBarIndicator(
+                  //           /* RatingBarIndicator(
                   //             unratedColor: Colors.white.withOpacity(0.5),
                   //             rating:
                   //                 double.parse(prod['stars']) * 100 / 5 / 100,
@@ -633,27 +707,37 @@ class _TabProductosState extends State<TabProductos> {
                   //             itemCount: 1,
                   //             itemSize: 15.0,
                   //             direction: Axis.horizontal,
-                  //           ),
-                  //           Text(prod['stars'],
+                  //           ), */
+                  //           /* Text(prod['stars'],
                   //               style: TextStyle(
                   //                   color: Colors.white,
                   //                   fontSize: 12,
-                  //                   fontWeight: FontWeight.w500))
+                  //                   fontWeight: FontWeight.w500)) */
                   //         ],
                   //       )),
-                  // ),
+                  //),
                 ],
               )),
           Flexible(
-            flex: 3,
+            flex: 2,
             child: InkWell(
               onTap: () => Navigator.pushNamed(
                 context,
-                ProductoDetalles.routeName,
-                arguments: ProductoDetallesArguments(
+                EditarProducto.routeName,
+                arguments: EdiaterProductoDetallesArguments(
                   prod,
                 ),
-              ).then((value) => setState(() {})),
+              ).then((value) => setState(() {
+                    setState(() {
+                      if (userSearch != null && userSearch != "") {
+                        load = true;
+                        searchOperation(userSearch);
+                      }
+                      //load = true;
+                      _isSearching = false;
+                      getProductos();
+                    });
+                  })),
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -704,7 +788,17 @@ class _TabProductosState extends State<TabProductos> {
                         arguments: EdiaterProductoDetallesArguments(
                           prod,
                         ),
-                      ).then((value) => setState(() {})),
+                      ).then((value) => setState(() {
+                            setState(() {
+                              if (userSearch != null && userSearch != "") {
+                                load = true;
+                                searchOperation(userSearch);
+                              }
+                              //load = true;
+                              _isSearching = false;
+                              getProductos();
+                            });
+                          })),
                       contenido: Text('Editar producto',
                           style: TextStyle(
                               color: Colors.white,
