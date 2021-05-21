@@ -22,6 +22,13 @@ class CarritoPage extends StatefulWidget {
 class _CarritoPageState extends State<CarritoPage> {
   CatalogBloc _catalogBloc = CatalogBloc();
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String name;
+  String first_lastname;
+  String second_lastname;
+  String mail;
+  String phone;
+
   @override
   void initState() {
     super.initState();
@@ -144,7 +151,7 @@ class _CarritoPageState extends State<CarritoPage> {
         SizedBox(
           height: smallPadding,
         ),
-        Container(child: misDetalles(entrega())),
+        Container(child: misDetalles(formDirection())),
         SizedBox(
           height: smallPadding * 4,
         ),
@@ -194,6 +201,160 @@ class _CarritoPageState extends State<CarritoPage> {
           ],
         ),
         child: contenido);
+  }
+
+  formDirection() {
+    return Form(
+      key: null,
+      child: Column(
+        children: [
+          EntradaTexto(
+            estilo: inputPrimarystyle(
+                context, Icons.location_on_outlined, 'Calle', null),
+            tipoEntrada: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
+            tipo: 'generic',
+            onChanged: (value) {
+              setState(() {
+                name = value;
+              });
+            },
+          ),
+          EntradaTexto(
+            estilo: inputPrimarystyle(
+                context, Icons.location_on_outlined, 'Colonia', null),
+            tipoEntrada: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
+            tipo: 'generic',
+            onChanged: (value) {
+              setState(() {
+                first_lastname = value;
+              });
+            },
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: EntradaTexto(
+                  estilo: inputPrimarystyle(
+                      context, Icons.location_on_outlined, 'Núm Ext.', null),
+                  tipoEntrada: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  tipo: 'generic',
+                  onChanged: (value) {
+                    setState(() {
+                      first_lastname = value;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: EntradaTexto(
+                  estilo: inputPrimarystyle(
+                      context, Icons.location_on_outlined, 'Núm Int.', null),
+                  tipoEntrada: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  tipo: 'generic',
+                  onChanged: (value) {
+                    setState(() {
+                      first_lastname = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          EntradaTexto(
+            estilo: inputPrimarystyle(
+                context, Icons.location_on_outlined, 'Código postal', null),
+            tipoEntrada: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
+            tipo: 'generic',
+            onChanged: (value) {
+              setState(() {
+                first_lastname = value;
+              });
+            },
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: EntradaTexto(
+                  estilo: inputPrimarystyle(
+                      context, Icons.location_on_outlined, 'Estado', null),
+                  tipoEntrada: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  tipo: 'generic',
+                  onChanged: (value) {
+                    setState(() {
+                      first_lastname = value;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: EntradaTexto(
+                  estilo: inputPrimarystyle(
+                      context, Icons.location_on_outlined, 'Municipio', null),
+                  tipoEntrada: TextInputType.name,
+                  textCapitalization: TextCapitalization.words,
+                  tipo: 'generic',
+                  onChanged: (value) {
+                    setState(() {
+                      first_lastname = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          EntradaTexto(
+            lineasMax: 2,
+            estilo: inputPrimarystyle(
+                context, Icons.location_on_outlined, 'Referencia', null),
+            tipoEntrada: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
+            tipo: 'generic',
+            onChanged: (value) {
+              setState(() {
+                first_lastname = value;
+              });
+            },
+          ),
+          // SizedBox(height: medPadding),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
+          //   child: BotonRest(
+          //       url: '$apiUrl/actualizar/usuario',
+          //       method: 'post',
+          //       formkey: formKey,
+          //       arrayData: {
+          //         'name': name,
+          //         'first_lastname': first_lastname,
+          //         'second_lastname': second_lastname,
+          //         'mail': '$mail',
+          //       },
+          //       contenido: Text(
+          //         'Actualizar',
+          //         textAlign: TextAlign.center,
+          //         overflow: TextOverflow.fade,
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontSize: 15,
+          //           fontWeight: FontWeight.w400,
+          //         ),
+          //       ),
+          //       // action: () => Navigator.push(context,
+          //       //     MaterialPageRoute(builder: (context) => LoginPage())),
+          //       errorStyle: TextStyle(
+          //         color: Colors.red[700],
+          //         fontWeight: FontWeight.w600,
+          //       ),
+          //       estilo: estiloBotonPrimary),
+          // ),
+        ],
+      ),
+    );
   }
 
   total() {

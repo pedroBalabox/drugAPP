@@ -26,8 +26,6 @@ class CatalogBloc {
       _catalogState.removeFromCatalog(event.item);
     } else if (event is EditCatalogItemEvent) {
       _catalogState.editToCatalog(event.item);
-    }else if (event is GetCatalogEvent) {
-       _output.add(_catalogState.catalog);
     }
 
     _output.add(_catalogState.catalog);

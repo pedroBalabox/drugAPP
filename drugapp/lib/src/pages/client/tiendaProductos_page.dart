@@ -10,7 +10,6 @@ import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
-import 'package:drugapp/src/widget/productView_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
@@ -71,8 +70,16 @@ class _TiendaProductosState extends State<TiendaProductos> {
   @override
   void initState() {
     super.initState();
+    _catalogBloc = CatalogBloc();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
     sharedPrefs.init().then((value) => getProducts());
+  }
+
+  @override
+  void didChangeDependencies() {
+    _catalogBloc.sendEvent.add(GetCatalogEvent());
+    //do whatever you want with the bloc here.
+    super.didChangeDependencies();
   }
 
   getProducts() async {
