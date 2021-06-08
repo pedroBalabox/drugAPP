@@ -18,34 +18,41 @@ class DetallesCompra extends StatefulWidget {
 }
 
 class _DetallesCompraState extends State<DetallesCompra> {
-  var prod = [];
+  var prod;
   Widget statusWidget;
 
   @override
   void initState() {
-    prod = jsonDecode(dummyProd);
+    getPrducts();
     super.initState();
+  }
+
+  getPrducts() {
+    prod = widget.jsonCompra.jsonCompra['relaciones'];
+    print(prod);
   }
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.jsonCompra.jsonCompra['status']) {
-      case 'preparacion':
+    switch (widget.jsonCompra.jsonCompra['estatus_de_envio']) {
+      case 'preparing':
         statusWidget = tabProceso();
         break;
-      case 'camino':
+      case 'on_the_way':
         statusWidget = tabCamino();
         break;
-      case 'entregado':
+      case 'delivered':
         statusWidget = tabEntregado();
         break;
       default:
+        statusWidget = tabProceso();
+        break;
     }
     return ResponsiveAppBar(
         screenWidht: MediaQuery.of(context).size.width,
         body: bodyCompra(),
         title:
-            "Detalles de compra ${widget.jsonCompra.jsonCompra['idCompra']}");
+            "Detalles de compra ${widget.jsonCompra.jsonCompra['id_de_orden']}");
   }
 
   bodyCompra() {
@@ -69,7 +76,8 @@ class _DetallesCompraState extends State<DetallesCompra> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Compra ${widget.jsonCompra.jsonCompra['idCompra']} - ${widget.jsonCompra.jsonCompra['fecha']}',
+          'Compra ${widget.jsonCompra.jsonCompra['id_de_orden']} - ${widget.jsonCompra.jsonCompra['fecha_de_creacion']}',
+          textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
@@ -123,7 +131,8 @@ class _DetallesCompraState extends State<DetallesCompra> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Compra ${widget.jsonCompra.jsonCompra['idCompra']} - ${widget.jsonCompra.jsonCompra['fecha']}',
+          'Compra ${widget.jsonCompra.jsonCompra['id_de_orden']} - ${widget.jsonCompra.jsonCompra['fecha_de_creacion']}',
+          textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
@@ -177,7 +186,8 @@ class _DetallesCompraState extends State<DetallesCompra> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Compra ${widget.jsonCompra.jsonCompra['idCompra']} - ${widget.jsonCompra.jsonCompra['fecha']}',
+          'Compra ${widget.jsonCompra.jsonCompra['id_de_orden']} - ${widget.jsonCompra.jsonCompra['fecha_de_creacion']}',
+          textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
@@ -270,7 +280,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             Flexible(
               flex: 7,
               child: Text(
-                'En preparación, llega el ${widget.jsonCompra.jsonCompra['fechaTent']}',
+                'En preparación',
                 maxLines: 1,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
@@ -396,7 +406,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             Flexible(
               flex: 7,
               child: Text(
-                'En camino, llega el ${widget.jsonCompra.jsonCompra['fechaTent']}',
+                'En camino',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
             )
@@ -518,7 +528,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             Flexible(
               flex: 7,
               child: Text(
-                'Entregado el ${widget.jsonCompra.jsonCompra['fechaEntrga']}',
+                'Entregado',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
             )
@@ -559,7 +569,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
                   fontSize: 17),
             ),
             Text(
-              '\$106.02 MXN',
+              '\$${widget.jsonCompra.jsonCompra['monto_total']} MXN',
               style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
@@ -584,23 +594,27 @@ class _DetallesCompraState extends State<DetallesCompra> {
           children: [
             Flexible(
               flex: 2,
-              child: getAsset(prodjson['img'], 60),
+              child: prodjson['galeria'].length == 0
+                  ? getAsset('logoDrug.png', 60)
+                  : Image.network(prodjson['galeria'][0]['url']),
             ),
             Flexible(
-              flex: 5,
+              flex: 4,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: smallPadding),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(prodjson['name'],
+                    Text(prodjson['nombre'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         )),
-                    Text('${prodjson['farmacia']}',
+                    Text('${prodjson['marca']}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
@@ -620,14 +634,14 @@ class _DetallesCompraState extends State<DetallesCompra> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      '\$${prodjson['price']} MXN ',
+                      '\$${prodjson['costo_unitario']} MXN ',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: Colors.blue),
                     ),
                     Text(
-                      'x 2 unidades',
+                      'x ${prodjson['cantidad']} unidades',
                       style:
                           TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
                     )
@@ -644,8 +658,10 @@ class _DetallesCompraState extends State<DetallesCompra> {
   }
 
   pago() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    var jsonLogs = jsonDecode(widget.jsonCompra.jsonCompra['logs_de_cargo']);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         RichText(
           text: new TextSpan(
@@ -658,7 +674,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
                 text: 'Folio: ',
               ),
               new TextSpan(
-                  text: '123456',
+                  text: '${jsonLogs['id']}',
                   style: new TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -667,12 +683,14 @@ class _DetallesCompraState extends State<DetallesCompra> {
           ),
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.payment_outlined, color: Theme.of(context).primaryColor),
             SizedBox(
               width: smallPadding,
             ),
-            Text('**** **** 456'),
+            Text('${jsonLogs['card']['card_number']}'),
           ],
         )
       ],
@@ -691,7 +709,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             ),
             Flexible(
               child: Text(
-                'Pedro de Alvarado, Nº exterior: 701, Nº interior: Referencia: Estética Entre: Julia y Nueva Alemania Lomas de Cortes, Cuernavaca (62240), Morelos',
+                '${widget.jsonCompra.jsonCompra['colonia']}, ${widget.jsonCompra.jsonCompra['colonia']}, ${widget.jsonCompra.jsonCompra['numero_exterior']}, ${widget.jsonCompra.jsonCompra['numero_interior']}, ${widget.jsonCompra.jsonCompra['codigo_postal']}',
                 style: TextStyle(color: Colors.black),
               ),
             ),
@@ -708,7 +726,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             ),
             Flexible(
               child: Text(
-                'Andrea Sandoval Gomez Farias',
+                '${widget.jsonCompra.jsonCompra['cliente']}',
                 style: TextStyle(color: Colors.black),
               ),
             ),

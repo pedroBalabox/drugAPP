@@ -8,14 +8,15 @@ import 'package:drugapp/src/pages/client/miCuenta_page.dart';
 import 'package:drugapp/src/pages/client/miTienda_page.dart';
 import 'package:drugapp/src/pages/client/productGeneric_page.dart';
 import 'package:drugapp/src/pages/client/register_page.dart';
+import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/pages/client/tiendas_page.dart';
 import 'package:drugapp/src/pages/vendedor/loginVendedor_page.dart';
+import 'package:drugapp/src/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:drugapp/src/pages/vendedor/cargarProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/homeVendedor_page.dart';
 import 'package:drugapp/src/pages/vendedor/miTiendaVendedor_page.dart';
 import 'package:drugapp/src/pages/vendedor/registerVendedor_page.dart';
-
 
 class LobbyClient extends StatefulWidget {
   final String ruta;
@@ -87,27 +88,43 @@ class _LobbyClientState extends State<LobbyClient> {
         break;
       case '/miCuenta':
         clientAuth
-            ? Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => MiCuentaClient()),
-                (Route<dynamic> route) => false)
-            : Navigator.pushNamedAndRemoveUntil(
-                context, '/login', (route) => false);
-        break;
-      case '/fav':
-        clientAuth
             ? Navigator.of(context)
-                .pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => FavClient()),
-                    (Route<dynamic> route) => false)
-                .then((value) => setState(() {}))
+                .push(MaterialPageRoute(builder: (context) => MiCuentaClient()))
             : Navigator.pushNamedAndRemoveUntil(
                 context, '/login', (route) => false);
         break;
+      // case '/fav':
+      //   clientAuth
+      //       ? Navigator.pushNamed(
+      //           context,
+      //           ProductView.routeName,
+      //           arguments: ProductosDetallesArguments({
+      //             "farmacia_id": null,
+      //             "priceFilter": null,
+      //             "inStock": true,
+      //             "favorite": true
+      //           }),
+      //         ).then((value) => setState(() {}))
+      //       : Navigator.pushNamedAndRemoveUntil(
+      //           context, '/login', (route) => false);
+      //   break;
       case '/carrito':
         clientAuth
             ? Navigator.of(context)
                 .push(
                   MaterialPageRoute(builder: (context) => CarritoPage()),
+                )
+                .then((value) => setState(() {
+                      Navigator.pop(context);
+                    }))
+            : Navigator.pushNamedAndRemoveUntil(
+                context, '/login', (route) => false);
+        break;
+      case '/productos':
+        clientAuth
+            ? Navigator.of(context)
+                .push(
+                  MaterialPageRoute(builder: (context) => ProductView()),
                 )
                 .then((value) => setState(() {
                       Navigator.pop(context);
@@ -169,7 +186,7 @@ class _LobbyClientState extends State<LobbyClient> {
                 .push(
                   MaterialPageRoute(
                       builder: (context) => ProductoViewPage(
-                            title: 'Más Vendidos',
+                          // title: 'Más Vendidos',
                           )),
                 )
                 .then((value) => setState(() {
@@ -184,7 +201,7 @@ class _LobbyClientState extends State<LobbyClient> {
                 .push(
                   MaterialPageRoute(
                       builder: (context) => ProductoViewPage(
-                            title: 'Ofertas',
+                          // title: 'Ofertas',
                           )),
                 )
                 .then((value) => setState(() {

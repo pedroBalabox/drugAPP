@@ -14,6 +14,19 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+
+class Category {
+  final String id;
+  final String name;
+
+  Category({
+    this.id,
+    this.name,
+  });
+}
 
 class ImageGallery {
   final String id;
@@ -35,6 +48,10 @@ class EditarProducto extends StatefulWidget {
 }
 
 class _EditarProductoState extends State<EditarProducto> {
+  List<Category> _categories = [];
+
+  var _items;
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   ProductoModel productoModel = ProductoModel();
 
@@ -45,19 +62,68 @@ class _EditarProductoState extends State<EditarProducto> {
 
   List base64Gallery = [];
 
-  var dummyGallery =
-      '[{"archivo_id": "001", "url": "med1.png", "type": "network"}, {"archivo_id": "002", "url": "med2.jpg", "type": "network"}]';
   var jsonGallery;
+
+  var _itemCat;
+
+  var _newCats = [];
+
+  bool load = true;
+
+  List<Category> _myCat = [];
 
   @override
   void initState() {
     super.initState();
-    sharedPrefs.init();
+    sharedPrefs.init().then((value) {
+      rest
+          .restService(null, '${urlApi}obtener/categorias',
+              sharedPrefs.partnerUserToken, 'get')
+          .then((value) {
+        if (value['status'] == 'server_true') {
+          _itemCat = value['response'];
+          _itemCat = jsonDecode(_itemCat)[1]['categories'];
+
+          for (int i = 0; i <= _itemCat.length - 1; i++) {
+            var myCat = _itemCat[i];
+            var myId = myCat['categoria_id'];
+            var myName = myCat['nombre'];
+
+            // _cat.add(Category(id: myId, name: myName));
+            // _myItemCat = [Category(id: myId, name: myName)];
+
+            setState(() {
+              _categories.add(Category(id: myId, name: myName));
+              _items = _categories
+                  .map((cat) => MultiSelectItem<Category>(cat, cat.name))
+                  .toList();
+            });
+          }
+
+          for (int j = 0; j <= _categories.length - 1; j++) {
+            for (int i = 0; i <= productoModel.categorias.length - 1; i++) {
+              if (productoModel.categorias[i]['categoria_id'] ==
+                  _categories[j].id) {
+                _myCat.add(_categories[j]);
+              }
+            }
+          }
+
+          setState(() {
+            load = false;
+          });
+        }
+      });
+    });
+
     productoModel = ProductoModel.fromJson(widget.jsonProducto.jsonProducto);
+
     labeltoList();
     setState(() {
       jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
     });
+
+    print('----' + productoModel.categorias.toString());
   }
 
   @override
@@ -154,7 +220,7 @@ class _EditarProductoState extends State<EditarProducto> {
           height: medPadding,
         ),
         Text(
-          'Etiquetas',
+          'Categorias',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
@@ -177,15 +243,7 @@ class _EditarProductoState extends State<EditarProducto> {
               "precio_con_descuento": productoModel.precioConDescuento,
               "precio_mayoreo": productoModel.precioMayoreo,
               "cantidad_mayoreo": int.parse(productoModel.cantidadMayoreo),
-              "categoria": productoModel.categoria,
-              "subcategoria_1": productoModel.subcategoria1,
-              "subcategoria_2": productoModel.subcategoria2,
-              "subcategoria_3": productoModel.subcategoria3,
-              "etiqueta_1": productoModel.etiqueta1,
-              "etiqueta_2": productoModel.etiqueta2,
-              "etiqueta_3": productoModel.etiqueta3,
-              "etiqueta_4": productoModel.etiqueta4,
-              "etiqueta_5": productoModel.etiqueta5,
+              "categorias": _newCats,
               "galeria": base64Gallery
             },
             token: sharedPrefs.partnerUserToken,
@@ -204,34 +262,6 @@ class _EditarProductoState extends State<EditarProducto> {
         )
       ],
     );
-  }
-
-  actualizarProducto() async {
-    var arrayData = {
-      "id_de_producto": productoModel.idDeProducto,
-      "sku": productoModel.sku,
-      "descripcion": productoModel.descripcion,
-      "precio": productoModel.precio,
-      "precio_con_descuento": productoModel.precioConDescuento,
-      "precio_mayoreo": productoModel.precioMayoreo,
-      "cantidad_mayoreo": int.parse(productoModel.cantidadMayoreo),
-      "categoria": productoModel.categoria,
-      "subcategoria_1": productoModel.subcategoria1,
-      "subcategoria_2": productoModel.subcategoria2,
-      "subcategoria_3": productoModel.subcategoria3,
-      "etiqueta_1": productoModel.etiqueta1,
-      "etiqueta_2": productoModel.etiqueta2,
-      "etiqueta_3": productoModel.etiqueta3,
-      "etiqueta_4": productoModel.etiqueta4,
-      "etiqueta_5": productoModel.etiqueta5,
-      "galeria": base64Gallery
-    };
-    await rest
-        .restService(arrayData, '${urlApi}actualizar/mi-producto',
-            sharedPrefs.partnerUserToken, 'post')
-        .then((value) {
-      print(value);
-    });
   }
 
   miGaleria() {
@@ -681,6 +711,27 @@ class _EditarProductoState extends State<EditarProducto> {
         ),
         child: Column(
           children: [
+            load
+                ? Container()
+                : MultiSelectDialogField<Category>(
+                    buttonText: Text('Categoría'),
+                    buttonIcon: Icon(Icons.arrow_drop_down),
+                    title: Text('Categorias'),
+                    cancelText: Text('CANCELAR'),
+                    searchable: true,
+                    listType: MultiSelectListType.CHIP,
+                    items: _items,
+                    initialValue: _myCat,
+                    onConfirm: (values) {
+                      setState(() {
+                        _newCats = [];
+                        for (int j = 0; j <= values.length - 1; j++) {
+                          _newCats.add(values[j].id);
+                        }
+                      });
+                    },
+                    // maxChildSize: 0.8,
+                  ),
             labelsWidget(),
           ],
         ));

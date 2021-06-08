@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:codigojaguar/codigojaguar.dart';
+import 'package:drugapp/model/orden_model.dart';
 import 'package:drugapp/model/user_model.dart';
 import 'package:drugapp/src/bloc/user_bloc.dart/bloc_user.dart';
 import 'package:drugapp/src/bloc/user_bloc.dart/event_user.dart';
 import 'package:drugapp/src/pages/client/detallesCompra_page.dart';
+import 'package:drugapp/src/pages/client/payments/paymentFunctions.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
@@ -19,7 +21,6 @@ import 'package:flutter_multi_formatter/formatters/credit_card_number_input_form
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MiCuentaClient extends StatefulWidget {
   MiCuentaClient({Key key}) : super(key: key);
@@ -30,6 +31,7 @@ class MiCuentaClient extends StatefulWidget {
 
 class _MiCuentaClientState extends State<MiCuentaClient> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKeyPedido = GlobalKey<FormState>();
   String name;
   String first_lastname;
   String second_lastname;
@@ -42,6 +44,24 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   var imagePath;
   String base64Image;
   UserBloc _userBloc = UserBloc();
+
+  //New card
+  String cardHolder;
+  String cp;
+  String cardNumber;
+  int toSendCardNumber;
+  int month;
+  int year;
+  int cvc;
+  var myCards;
+
+//Pedido especial
+  String productName;
+  String productDescription;
+  String productBrand;
+  int productQuantity;
+  int contactPhone;
+  String contactMail;
 
   @override
   void initState() {
@@ -59,7 +79,6 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // var jsonUser = jsonDecode(prefs.getString('partner_data'));
-
 
     setState(() {
       userModel = UserModel.fromJson(jsonDecode(sharedPrefs.clientData));
@@ -273,6 +292,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           ],
         ),
         child: Column(
+         
           children: [
             Align(
               alignment: Alignment.topCenter,
@@ -626,7 +646,9 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
           child: SimpleButtom(
             mainText: 'Agregar tarjeta',
-            pressed: () => _displayDialog(),
+            pressed: () => _displayDialog().then((value) => setState(() {
+                  myCards = Object();
+                })),
             // action: () => Navigator.push(context,
             //     MaterialPageRoute(builder: (context) => LoginPage())),
             gcolor: gradientBlueDark,
@@ -636,16 +658,15 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
     );
   }
 
-  _displayDialog() {
+  Future _displayDialog() {
     bool errorMessage = false;
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
     return showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           String errorString = '';
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
+          return StatefulBuilder(builder: (context, StateSetter setState) {
             void setError(dynamic error) {
               /* scaffoldKey.currentState
         .showSnackBar(SnackBar(content: Text(error.toString()))); */
@@ -702,14 +723,29 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                   labelText: 'Nombre',
                                   counterText: '',
                                 ),
+                                onSaved: (value) {
+                                  setState(() {
+                                    cardHolder = value;
+                                  });
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    cardHolder = value;
+                                  });
+                                },
                               ),
-                              EntradaTexto(
+                              /* EntradaTexto(
                                 tipoEntrada: TextInputType.number,
                                 estilo: InputDecoration(
                                   counterText: '',
                                   labelText: 'Codigo posttal',
                                 ),
-                              ),
+                                onSaved: (value) {
+                                  setState(() {
+                                    cp = value;
+                                  });
+                                },
+                              ), */
                               TextFormField(
                                 textInputAction: TextInputAction.next,
                                 inputFormatters: [
@@ -725,32 +761,40 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                   }
                                   return null;
                                 },
-                                onSaved: (value) {},
+                                onSaved: (value) {
+                                  setState(() {
+                                    cardNumber = value;
+                                  });
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    toSendCardNumber = int.parse(value
+                                        .replaceAll(new RegExp(r"\s+"), ""));
+                                  });
+                                },
                               ),
                               Row(
                                 children: <Widget>[
                                   Expanded(
                                     child: EntradaTexto(
                                       tipoEntrada: TextInputType.number,
-                                      longText: 2,
+                                      longMaxima: 2,
+                                      tipo: 'number',
                                       estilo: InputDecoration(
                                           hintText: 'MM',
                                           labelText: 'Mes',
                                           counterText: ''),
+                                      onSaved: (value) {
+                                        setState(() {
+                                          month = int.parse(value);
+                                        });
+                                      },
+                                      onChanged: (value) {
+                                        setState(() {
+                                          month = int.parse(value);
+                                        });
+                                      },
                                     ),
-                                    // child: EntradaTexto(
-                                    //     hintText: 'MM',
-                                    //     maxLength: 2,
-                                    //     labelText: 'Mes',
-                                    //     textKeyboardType: TextInputType.number,
-                                    //     inpAction: TextInputAction.next,
-                                    //     inputType: 'month',
-                                    //     enabled: true,
-                                    //     onSaved: (value) =>
-                                    //         cardModel.monthExp = value,
-                                    //     textCapitalization:
-                                    //         TextCapitalization.sentences,
-                                    //     mainColor: colorGrey),
                                   ),
                                   SizedBox(
                                     width: 7,
@@ -758,23 +802,45 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                   Expanded(
                                     child: EntradaTexto(
                                       tipoEntrada: TextInputType.number,
-                                      longText: 4,
+                                      longMaxima: 2,
+                                      tipo: 'number',
                                       estilo: InputDecoration(
-                                          hintText: 'AAAA',
+                                          hintText: 'AA',
                                           labelText: 'Año',
                                           counterText: ''),
+                                      onSaved: (value) {
+                                        setState(() {
+                                          year = int.parse(value);
+                                        });
+                                      },
+                                      onChanged: (value) {
+                                        setState(() {
+                                          year = int.parse(value);
+                                        });
+                                      },
                                     ),
                                   ),
                                 ],
                               ),
                               EntradaTexto(
                                 tipoEntrada: TextInputType.number,
-                                longText: 5,
+                                tipo: 'number',
+                                longMaxima: 5,
                                 estilo: InputDecoration(
                                   hintText: '123',
                                   counterText: '',
                                   labelText: 'CVC',
                                 ),
+                                onSaved: (value) {
+                                  setState(() {
+                                    cvc = int.parse(value);
+                                  });
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    cvc = int.parse(value);
+                                  });
+                                },
                               ),
                             ],
                           ),
@@ -794,7 +860,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        BotonSimple(
+                        /* BotonSimple(
                             action: () => Navigator.pop(context),
                             contenido: Padding(
                               padding: EdgeInsets.symmetric(
@@ -806,22 +872,45 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                       fontWeight: FontWeight.normal)),
                             ),
                             estilo: estiloBotonPrimary),
-                        BotonSimple(
-                            contenido: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: smallPadding),
-                              child: Text('Agregar',
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.normal)),
-                            ),
-                            estilo: estiloBotonPrimary)
+                        SizedBox(
+                          width: 25,
+                        ), */
+                        Flexible(
+                          child: BotonRestTest(
+                              primerAction: () {
+                                if (_formKey.currentState.validate()) {
+                                  _formKey.currentState.save();
+                                }
+                              },
+                              formkey: _formKey,
+                              token: sharedPrefs.clientToken,
+                              url: '$apiUrl/crear/tarjeta',
+                              method: 'post',
+                              arrayData: {
+                                "card_number": toSendCardNumber,
+                                "holder_name": cardHolder,
+                                "expiration_year": year,
+                                "expiration_month": month,
+                                "cvv2": cvc,
+                                "device_session_id": "device_session_id"
+                              },
+                              showSuccess: true,
+                              action: (value) {
+                                Navigator.pop(context);
+                              },
+                              contenido: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: smallPadding),
+                                child: Text('Agregar',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal)),
+                              ),
+                              estilo: estiloBotonPrimary),
+                        ),
                       ],
                     ),
-                    SizedBox(
-                      height: 25,
-                    )
                   ],
                 ),
               ),
@@ -852,47 +941,9 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
         ),
         child: Column(
           children: [
-            ListView.builder(
-              itemCount: 5,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return card();
-              },
-            ),
+            PaymentFunctions(key: ValueKey<Object>(myCards), module: "cards"),
           ],
         ));
-  }
-
-  card() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: smallPadding / 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(Icons.payment_outlined),
-          Text('*** **** 456'),
-          BotonRest(
-              contenido: Text(
-                'Eliminar',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              // action: () => Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => LoginPage())),
-              errorStyle: TextStyle(
-                color: Colors.red[700],
-                fontWeight: FontWeight.w600,
-              ),
-              estilo: estiloBotonSecundary),
-        ],
-      ),
-    );
   }
 
   tabPedidoEspecial() {
@@ -955,55 +1006,59 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
 
   formPedido() {
     return Form(
-      key: null,
+      key: formKeyPedido,
       child: Column(
         children: [
           EntradaTexto(
+            longMinima: 3,
             estilo: inputPrimarystyle(context, Icons.medical_services_outlined,
                 'Nombre del prodcuto', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
+            tipo: 'texto',
             onChanged: (value) {
               setState(() {
-                name = value;
+                productName = value;
               });
             },
           ),
           EntradaTexto(
+            longMinima: 3,
             estilo: inputPrimarystyle(context, Icons.info_outline,
                 'Descripción / Sustancia activa', null),
             tipoEntrada: TextInputType.name,
             lineasMax: 2,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
+            tipo: 'texto',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                productDescription = value;
               });
             },
           ),
           EntradaTexto(
+            longMinima: 3,
             estilo: inputPrimarystyle(
                 context, Icons.info_outline, 'Marca / Laboratorio', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
+            tipo: 'texto',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                productBrand = value;
               });
             },
           ),
           EntradaTexto(
+            longMinima: 1,
             estilo: inputPrimarystyle(context, Icons.info_outline,
                 'Número de piezas requeridas', null),
             tipoEntrada: TextInputType.number,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
+            tipo: 'numeroINT',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                productQuantity = int.parse(value);
               });
             },
           ),
@@ -1012,10 +1067,10 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                 context, Icons.phone_outlined, 'Teléfono', null),
             tipoEntrada: TextInputType.phone,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
+            tipo: 'telefono',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                contactPhone = int.parse(value);
               });
             },
           ),
@@ -1024,27 +1079,39 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                 inputPrimarystyle(context, Icons.mail_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.none,
-            tipo: 'generic',
+            tipo: 'correo',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                contactMail = value;
               });
+              print(contactMail);
             },
           ),
           SizedBox(height: medPadding),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-            child: BotonRest(
-                url: '$apiUrl/registro/cliente',
-                method: 'post',
-                formkey: formKey,
-                arrayData: {
-                  'name': name,
-                  'first_lastname': first_lastname,
-                  'second_lastname': second_lastname,
-                  'mail': '$mail',
-                  'password': '$password',
+            child: BotonRestTest(
+                primerAction: () {
+                  if (formKeyPedido.currentState.validate()) {
+                    formKeyPedido.currentState.save();
+                  }
                 },
+                formkey: formKeyPedido,
+                token: sharedPrefs.clientToken,
+                url: '$apiUrl/pedido/especial',
+                method: 'post',
+                arrayData: {
+                  "nombre_producto": productName,
+                  "descripcion_producto": productDescription,
+                  "marca": productBrand,
+                  "piezas_requeridas": productQuantity,
+                  "telefono": contactPhone,
+                  "correo": contactMail
+                },
+                action: (value) {
+                  print(value);
+                },
+                showSuccess: true,
                 contenido: Text(
                   'Enviar cotización especial',
                   textAlign: TextAlign.center,
@@ -1078,29 +1145,70 @@ class TabCompras extends StatefulWidget {
 
 class _TabComprasState extends State<TabCompras> {
   var jsonCompras = [];
+  RestFun restFun = RestFun();
+  OrdenModel ordenModel = OrdenModel();
+
+  String errorStr;
+  bool load = true;
+  bool error = false;
+  bool fav = false;
+
+  var orden;
+
   @override
   void initState() {
     super.initState();
     jsonCompras = jsonDecode(dummyCompras);
+    sharedPrefs.init().then((value) => gerCompras());
+  }
+
+  gerCompras() async {
+    await restFun
+        .restService(null, '$apiUrl/ver/ordenes-usuario',
+            sharedPrefs.clientToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp)[1];
+        setState(() {
+          orden = dataResp['orders'];
+          // print(orden[0]['cliente']);
+          // ordenModel = OrdenModel.fromJson(dataResp[1]);
+          // print(ordenModel.toString());
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return ListView(children: [
-      SizedBox(
-        height: medPadding,
-      ),
-      Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: size.width > 700 ? size.width / 3 : medPadding * .5,
-            vertical: medPadding * 1.5),
-        color: bgGrey,
-        width: size.width,
-        child: tabCompras(),
-      ),
-      footer(context),
-    ]);
+    return load
+        ? bodyLoad(context)
+        : error
+            ? errorWidget(errorStr, context)
+            : ListView(children: [
+                SizedBox(
+                  height: medPadding,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal:
+                          size.width > 700 ? size.width / 3 : medPadding * .5,
+                      vertical: medPadding * 1.5),
+                  color: bgGrey,
+                  width: size.width,
+                  child: tabCompras(),
+                ),
+                footer(context),
+              ]);
   }
 
   tabCompras() {
@@ -1144,11 +1252,11 @@ class _TabComprasState extends State<TabCompras> {
         child: Column(
           children: [
             ListView.builder(
-              itemCount: jsonCompras.length,
+              itemCount: orden.length,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
-                return compra(jsonCompras[index]);
+                return compra(orden[index]);
               },
             ),
           ],
@@ -1157,8 +1265,8 @@ class _TabComprasState extends State<TabCompras> {
 
   compra(comprajson) {
     Widget status;
-    switch (comprajson['status']) {
-      case 'entregado':
+    switch (comprajson['estatus_de_envio']) {
+      case 'delivered':
         status = Row(
           children: [
             Container(
@@ -1171,13 +1279,13 @@ class _TabComprasState extends State<TabCompras> {
             SizedBox(
               width: 3,
             ),
-            Text('Entregado el ${comprajson['fechaEntrga']}',
+            Text('Entregado',
                 style: TextStyle(
                     fontWeight: FontWeight.w600, color: Colors.black54))
           ],
         );
         break;
-      case 'camino':
+      case 'on_the_way':
         status = Row(
           children: [
             Container(
@@ -1190,13 +1298,13 @@ class _TabComprasState extends State<TabCompras> {
             SizedBox(
               width: 3,
             ),
-            Text('En camino, llega el ${comprajson['fechaTent']}',
+            Text('En camino',
                 style: TextStyle(
                     fontWeight: FontWeight.w600, color: Colors.black54))
           ],
         );
         break;
-      case 'preparacion':
+      case 'preparing':
         status = Row(
           children: [
             Container(
@@ -1210,7 +1318,7 @@ class _TabComprasState extends State<TabCompras> {
               width: 3,
             ),
             Flexible(
-              child: Text('En preparación, llega el ${comprajson['fechaTent']}',
+              child: Text('En preparación',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.w600, color: Colors.black54)),
@@ -1220,10 +1328,27 @@ class _TabComprasState extends State<TabCompras> {
 
         break;
       default:
-        status = Text(
-          'Entregado el 6 de abril del 2021',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        status = Row(
+          children: [
+            Container(
+              height: 12,
+              width: 12,
+              decoration: BoxDecoration(
+                  color: Colors.blue[200],
+                  borderRadius: BorderRadius.circular(100)),
+            ),
+            SizedBox(
+              width: 3,
+            ),
+            Flexible(
+              child: Text('En preparación',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600, color: Colors.black54)),
+            )
+          ],
         );
+        break;
     }
     return Container(
         padding: EdgeInsets.symmetric(vertical: smallPadding / 2),
@@ -1260,7 +1385,7 @@ class _TabComprasState extends State<TabCompras> {
                               text: 'Número de compra: ',
                             ),
                             new TextSpan(
-                                text: '${comprajson['idCompra']}',
+                                text: '${comprajson['id_de_orden']}',
                                 style: new TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
@@ -1281,13 +1406,60 @@ class _TabComprasState extends State<TabCompras> {
                               text: 'Fecha de compra: ',
                             ),
                             new TextSpan(
-                                text: '${comprajson['fecha']}',
+                                text: '${comprajson['fecha_de_creacion']}',
                                 style: new TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 )),
                           ],
                         ),
+                      ),
+                      SizedBox(height: smallPadding * 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RichText(
+                            text: new TextSpan(
+                              // Note: Styles for TextSpans must be explicitly defined.
+                              // Child text spans will inherit styles from parent
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87),
+                              children: <TextSpan>[
+                                new TextSpan(
+                                  text: 'Productos: ',
+                                ),
+                                new TextSpan(
+                                    text:
+                                        '${comprajson['cantidad_de_productos']}',
+                                    style: new TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    )),
+                              ],
+                            ),
+                          ),
+                          RichText(
+                            text: new TextSpan(
+                              // Note: Styles for TextSpans must be explicitly defined.
+                              // Child text spans will inherit styles from parent
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87),
+                              children: <TextSpan>[
+                                new TextSpan(
+                                  text: 'Total: ',
+                                ),
+                                new TextSpan(
+                                    text: '\$${comprajson['monto_total']}',
+                                    style: new TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    )),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: smallPadding * 2),
                       Row(

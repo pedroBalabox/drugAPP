@@ -33,8 +33,8 @@ class _HomeClientState extends State<HomeClient> {
 }
 
 final List<String> imgList = [
-  'cover1.jpg',
-  'cover2.jpg',
+  'cover1.png',
+  'cover2.png',
 ];
 
 
@@ -128,12 +128,12 @@ class _BodyHomeState extends State<BodyHome> {
                         child: HomeInfoCard(
                             title: 'Productos más vendidos',
                             image: 'drug2.jpg',
-                            nav: '/masVendidos')),
+                            nav: '/productos')),
                     Flexible(
                         child: HomeInfoCard(
                             title: 'Ofertas del día',
                             image: 'drug3.jpg',
-                            nav: '/ofertas')),
+                            nav: '/productos')),
                   ],
                 )
               : Column(
@@ -145,11 +145,11 @@ class _BodyHomeState extends State<BodyHome> {
                     HomeInfoCard(
                         title: 'Productos más vendidos',
                         image: 'drug2.jpg',
-                        nav: '/masVendidos'),
+                        nav: '/productos'),
                     HomeInfoCard(
                         title: 'Ofertas del día',
                         image: 'drug3.jpg',
-                        nav: '/ofertas'),
+                        nav: '/productos'),
                   ],
                 ),
         ),

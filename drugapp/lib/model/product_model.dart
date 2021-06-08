@@ -12,34 +12,39 @@ ProductoModel productoModelFromJson(String str) =>
 String productoModelToJson(ProductoModel data) => json.encode(data.toJson());
 
 class ProductoModel {
-  ProductoModel(
-      {this.id,
-      this.idDeProducto,
-      this.farmaciaId,
-      this.sku,
-      this.requiereReceta,
-      this.nombre,
-      this.descripcion,
-      this.marca,
-      this.precio,
-      this.precioConDescuento,
-      this.precioMayoreo,
-      this.cantidadMayoreo,
-      this.stock,
-      this.categoria,
-      this.subcategoria1,
-      this.subcategoria2,
-      this.subcategoria3,
-      this.etiqueta1,
-      this.etiqueta2,
-      this.etiqueta3,
-      this.etiqueta4,
-      this.etiqueta5,
-      this.status,
-      this.fechaDeCreacion,
-      this.galeria,
-      this.cantidad,
-      this.nombre_farmacia});
+  ProductoModel({
+    this.id,
+    this.idDeProducto,
+    this.farmaciaId,
+    this.sku,
+    this.requiereReceta,
+    this.nombre,
+    this.descripcion,
+    this.marca,
+    this.precio,
+    this.precioConDescuento,
+    this.precioMayoreo,
+    this.cantidadMayoreo,
+    this.stock,
+    this.categoria,
+    this.subcategoria1,
+    this.subcategoria2,
+    this.subcategoria3,
+    this.etiqueta1,
+    this.etiqueta2,
+    this.etiqueta3,
+    this.etiqueta4,
+    this.etiqueta5,
+    this.status,
+    this.fechaDeCreacion,
+    this.galeria,
+    this.cantidad,
+    this.nombre_farmacia,
+    this.favorito,
+    this.categorias,
+    this.etiquetas,
+    this.rating,
+  });
 
   dynamic id;
   String idDeProducto;
@@ -68,8 +73,12 @@ class ProductoModel {
   dynamic galeria;
   int cantidad;
   String nombre_farmacia;
+  bool favorito;
+  dynamic categorias;
+  dynamic etiquetas;
+  dynamic rating;
 
-  factory ProductoModel.fromJson(Map<String, dynamic> json) => ProductoModel(
+  factory ProductoModel.fromJson(dynamic json) => ProductoModel(
       id: json["id"],
       idDeProducto: json["id_de_producto"],
       farmaciaId: json["farmacia_id"],
@@ -96,7 +105,11 @@ class ProductoModel {
       fechaDeCreacion: json["fechaDeCreacion"],
       galeria: json["galeria"],
       cantidad: json["cantidad"],
-      nombre_farmacia: json["nombre_farmacia"]);
+      nombre_farmacia: json["nombre_farmacia"],
+      favorito: json["favorito"],
+      categorias: json["categorias"],
+      etiquetas: json["etiquetas"],
+      rating: json["rating"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -123,8 +136,12 @@ class ProductoModel {
         "etiqueta_5": etiqueta5,
         "status": status,
         "fecha_de_creacion": fechaDeCreacion.toIso8601String(),
-        "galeria": List<dynamic>.from(galeria.map((x) => x)),
+        "galeria": galeria,
         "cantidad": cantidad,
-        "nombre_farmacia": nombre_farmacia
+        "nombre_farmacia": nombre_farmacia,
+        "favorito": favorito,
+        "categorias": categorias,
+        "etiquetas": etiquetas,
+        "rating": rating
       };
 }

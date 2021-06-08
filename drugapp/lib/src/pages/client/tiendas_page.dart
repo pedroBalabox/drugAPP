@@ -131,8 +131,17 @@ class _TiendasPageState extends State<TiendasPage> {
     return InkWell(
       onTap: () => Navigator.pushNamed(
         context,
-        TiendaProductos.routeName,
-        arguments: TiendaDetallesArguments(tiendas),
+        ProductView.routeName,
+        arguments: ProductosDetallesArguments({
+          "farmacia_id": tiendas['farmacia_id'],
+          "userQuery": null,
+          "favorite": false,
+          "availability": null,
+          "stock":  "available",
+          "priceFilter": null,
+          "myLabels": [],
+          "myCats": [],
+        }),
       ).then((value) => setState(() {})),
       child: Container(
         margin: EdgeInsets.symmetric(
@@ -201,7 +210,7 @@ class _TiendasPageState extends State<TiendasPage> {
                           text: '${tiendas['nombre']} ',
                           children: <TextSpan>[
                             TextSpan(
-                              text: String.fromCharCode(57686), //<-- charCode
+                              text: String.fromCharCode(57689), //<-- charCode
                               style: TextStyle(
                                 fontFamily: 'MaterialIcons', //<-- fontFamily
                                 fontSize: 13.0,

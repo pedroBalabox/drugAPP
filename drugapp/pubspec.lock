@@ -42,7 +42,7 @@ packages:
       name: codigojaguar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.8"
+    version: "0.0.11"
   collection:
     dependency: transitive
     description:
@@ -155,7 +155,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.1"
+    version: "0.13.3"
   http_parser:
     dependency: transitive
     description:

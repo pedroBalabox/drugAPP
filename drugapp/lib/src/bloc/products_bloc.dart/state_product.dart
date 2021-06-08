@@ -14,6 +14,10 @@ class CatalogState {
     _catalog.add(itemModel);
   }
 
+void getCatalog() {
+    _catalog;
+  }
+
   void removeFromCatalog(ProductoModel itemModel) {
     for (int i = 0; i <= _catalog.length - 1; i++) {
       if (_catalog[i].idDeProducto == itemModel.idDeProducto) {
@@ -26,19 +30,23 @@ class CatalogState {
   }
 
   void editToCatalog(ProductoModel itemModel) {
-    if (_catalog.length > 0) {
-      for (int i = 0; i <= _catalog.length - 1; i++) {
-        if (_catalog[i].idDeProducto == itemModel.idDeProducto) {
-          // _catalog.remove(_catalog[i]);
-          // _catalog.add(itemModel);
-          _catalog[i].cantidad = itemModel.cantidad;
-        } else if ((i == _catalog.length - 1) &
-            !_catalog.any((item) => item.idDeProducto.contains(itemModel.idDeProducto))) {
-          _catalog.add(itemModel);
-        }
-      }
+    if (itemModel == null) {
     } else {
-      _catalog.add(itemModel);
+      if (_catalog.length > 0) {
+        for (int i = 0; i <= _catalog.length - 1; i++) {
+          if (_catalog[i].idDeProducto == itemModel.idDeProducto) {
+            // _catalog.remove(_catalog[i]);
+            // _catalog.add(itemModel);
+            _catalog[i].cantidad = itemModel.cantidad;
+          } else if ((i == _catalog.length - 1) &
+              !_catalog.any((item) =>
+                  item.idDeProducto.contains(itemModel.idDeProducto))) {
+            _catalog.add(itemModel);
+          }
+        }
+      } else {
+        _catalog.add(itemModel);
+      }
     }
   }
 }

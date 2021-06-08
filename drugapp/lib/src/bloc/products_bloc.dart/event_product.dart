@@ -22,4 +22,6 @@ class EditCatalogItemEvent extends CatalogEvent {
   EditCatalogItemEvent(this.item);
 }
 
-class GetCatalogEvent extends CatalogEvent {}
+class GetCatalogEvent extends CatalogEvent {
+  
+}

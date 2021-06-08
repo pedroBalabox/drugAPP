@@ -164,10 +164,16 @@ class BotonRestTest extends StatefulWidget {
       this.action,
       this.token,
       this.showSuccess = false,
-      this.succesStyle})
+      this.succesStyle,
+      this.habilitado = true,
+      this.restriccion = false,
+      this.restriccionStr,
+      this.restriccionStyle,
+      this.primerAction})
       : super(key: key);
 
   final Function(dynamic) action;
+  final Function primerAction;
   final Widget contenido;
   final BoxDecoration estilo;
   final String url;
@@ -181,6 +187,10 @@ class BotonRestTest extends StatefulWidget {
   final String stringCargando;
   final String token;
   final bool showSuccess;
+  final bool habilitado;
+  final bool restriccion;
+  final String restriccionStr;
+  final TextStyle restriccionStyle;
 
   @override
   _BotonRestTestState createState() => _BotonRestTestState();
@@ -189,6 +199,7 @@ class BotonRestTest extends StatefulWidget {
 class _BotonRestTestState extends State<BotonRestTest> {
   bool load = false;
   bool error = false;
+  bool restiction = false;
   String errorString = 'Algo salio mal';
 
   bool success = false;
@@ -224,6 +235,18 @@ class _BotonRestTestState extends State<BotonRestTest> {
                 ),
               )
             : Container(),
+        widget.restriccion
+            ? restiction
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Text(
+                      widget.restriccionStr,
+                      textAlign: TextAlign.center,
+                      style: widget.restriccionStyle,
+                    ),
+                  )
+                : Container()
+            : Container(),
         Container(
           decoration: widget.estilo,
           child: Material(
@@ -233,9 +256,49 @@ class _BotonRestTestState extends State<BotonRestTest> {
               highlightColor: Colors.grey.withOpacity(0.2),
               onTap: () {
                 if (!load) {
-                  if (widget.formkey != null) {
-                    if (widget.formkey.currentState.validate()) {
-                      widget.formkey.currentState.save();
+                  if (widget.habilitado) {
+                    if (widget.primerAction != null) {
+                      widget.primerAction();
+                    }
+                    if (widget.formkey != null) {
+                      if (widget.formkey.currentState.validate()) {
+                        widget.formkey.currentState.save();
+                        setState(() {
+                          load = true;
+                        });
+                        if (widget.showModalLoader) {
+                          loadingDialog(context, widget.stringCargando);
+                        }
+                        restFunction
+                            .restService(widget.arrayData, widget.url,
+                                widget.token, widget.method)
+                            .then((serverResp) {
+                          setState(() {
+                            response = serverResp.toString();
+                          });
+                          if (serverResp['status'] == 'server_true') {
+                            Navigator.pop(context);
+                            widget.action(serverResp);
+                            setState(() {
+                              load = false;
+                              error = false;
+                              restiction = false;
+                              success = true;
+                              succesString = serverResp['message'].toString();
+                            });
+                          } else {
+                            Navigator.pop(context);
+                            setState(() {
+                              load = false;
+                              error = true;
+                              restiction = false;
+                              success = false;
+                              errorString = serverResp['message'].toString();
+                            });
+                          }
+                        });
+                      }
+                    } else {
                       setState(() {
                         load = true;
                       });
@@ -255,6 +318,7 @@ class _BotonRestTestState extends State<BotonRestTest> {
                           setState(() {
                             load = false;
                             error = false;
+                            restiction = false;
                             success = true;
                             succesString = serverResp['message'].toString();
                           });
@@ -263,6 +327,7 @@ class _BotonRestTestState extends State<BotonRestTest> {
                           setState(() {
                             load = false;
                             error = true;
+                            restiction = false;
                             success = false;
                             errorString = serverResp['message'].toString();
                           });
@@ -271,36 +336,7 @@ class _BotonRestTestState extends State<BotonRestTest> {
                     }
                   } else {
                     setState(() {
-                      load = true;
-                    });
-                    if (widget.showModalLoader) {
-                      loadingDialog(context, widget.stringCargando);
-                    }
-                    restFunction
-                        .restService(widget.arrayData, widget.url, widget.token,
-                            widget.method)
-                        .then((serverResp) {
-                      setState(() {
-                        response = serverResp.toString();
-                      });
-                      if (serverResp['status'] == 'server_true') {
-                        Navigator.pop(context);
-                        widget.action(serverResp);
-                        setState(() {
-                          load = false;
-                          error = false;
-                          success = true;
-                          succesString = serverResp['message'].toString();
-                        });
-                      } else {
-                        Navigator.pop(context);
-                        setState(() {
-                          load = false;
-                          error = true;
-                          success = false;
-                          errorString = serverResp['message'].toString();
-                        });
-                      }
+                      restiction = true;
                     });
                   }
                 }

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:drugapp/src/pages/Lobby/lobbyClient.dart';
-import 'package:drugapp/src/pages/Lobby/lobbyVendor.dart';
 import 'package:drugapp/src/pages/client/categoriaProductos_page.dart';
+import 'package:drugapp/src/pages/client/productGeneric_page.dart';
 import 'package:drugapp/src/pages/vendedor/editarProducto_page.dart';
 import 'package:drugapp/src/pages/vendedor/miVenta_page.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         title: 'Drug App',
         theme: appTheme(),
         debugShowCheckedModeBanner: false,
-        initialRoute: '/farmacia/miTienda',
+        initialRoute: '/home',
         onUnknownRoute: (settings) {
           return MaterialPageRoute(builder: (_) => LobbyClient(ruta: '/home'));
         },
@@ -82,19 +82,19 @@ class MyApp extends StatelessWidget {
               },
             );
           }
-          if (settings.name == TiendaProductos.routeName) {
+          if (settings.name == ProductView.routeName) {
             // Cast the arguments to the correct
             // type: ScreenArguments.
-            final TiendaDetallesArguments args =
-                settings.arguments as TiendaDetallesArguments;
+            final ProductosDetallesArguments args =
+                settings.arguments as ProductosDetallesArguments;
 
             // Then, extract the required data from
             // the arguments and pass the data to the
             // correct screen.
             return MaterialPageRoute(
               builder: (context) {
-                return TiendaProductos(
-                  jsonTienda: args,
+                return ProductView(
+                  jsonData: args,
                 );
               },
             );

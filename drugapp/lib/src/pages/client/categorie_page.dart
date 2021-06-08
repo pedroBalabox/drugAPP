@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +17,50 @@ class CategoriaPage extends StatefulWidget {
 }
 
 class _CategoriaPageState extends State<CategoriaPage> {
-  var cat = [];
+  var cat;
+  RestFun rest = RestFun();
+
+  String errorStr;
+  bool load = true;
+  bool error = false;
+
   @override
   void initState() {
-    cat = jsonDecode(dummyCat);
+    sharedPrefs.init().then((value) => getCat());
     super.initState();
+  }
+
+  getCat() async {
+    await rest
+        .restService(
+            null, '${urlApi}obtener/categorias', sharedPrefs.clientToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp);
+        setState(() {
+          cat = dataResp[1]['categories'];
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveAppBar(
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyCategoria(),
+        body: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : bodyCategoria(),
         title: "Categorías");
   }
 
@@ -87,42 +123,58 @@ class _CategoriaPageState extends State<CategoriaPage> {
   }
 
   categorieCard(cat) {
-    return Container(
-      width: 200,
-      height: 200,
-      decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              blurRadius: 4, // soften the shadow
-              spreadRadius: 1.0, //extend the shadow
-              offset: Offset(
-                0.0, // Move to right 10  horizontally
-                3.0, // Move to bottom 10 Vertically
+    return InkWell(
+      onTap: () => Navigator.pushNamed(
+        context,
+        ProductView.routeName,
+        arguments: ProductosDetallesArguments({
+          "farmacia_id": null,
+          "userQuery": null,
+          "favorite": false,
+          "availability": null,
+          "stock": "available",
+          "priceFilter": null,
+          "myLabels": [],
+          "myCats": [cat['categoria_id']],
+        }),
+      ),
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.1),
+                blurRadius: 4, // soften the shadow
+                spreadRadius: 1.0, //extend the shadow
+                offset: Offset(
+                  0.0, // Move to right 10  horizontally
+                  3.0, // Move to bottom 10 Vertically
+                ),
+              )
+            ],
+            image: DecorationImage(
+                image: NetworkImage(cat['imagen']), fit: BoxFit.cover)),
+        margin: EdgeInsets.symmetric(
+            horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+              padding: EdgeInsets.all(smallPadding / 2),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.7),
               ),
-            )
-          ],
-          image: DecorationImage(
-              image: AssetImage('images/${cat['img']}'), fit: BoxFit.cover)),
-      margin: EdgeInsets.symmetric(
-          horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-            padding: EdgeInsets.all(smallPadding / 2),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.7),
-            ),
-            child: Text(
-              cat['name'],
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 17),
-            )),
+              child: Text(
+                cat['nombre'],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 17),
+              )),
+        ),
       ),
     );
   }

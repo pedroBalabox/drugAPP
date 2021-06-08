@@ -19,8 +19,7 @@ class _HomeCategoryState extends State<HomeCategory> {
           ? Navigator.pushNamed(context, '/categorias').then((value) => setState(() {}))
           : Navigator.pushNamed(
               context,
-              CategoriaProductos.routeName,
-              arguments: CategoriaDetallesArguments(widget.cat),
+              '/productos',
             ).then((value) => setState(() {})),
       child: Container(
         width: MediaQuery.of(context).size.width > 1000

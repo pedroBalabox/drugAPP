@@ -102,6 +102,9 @@ class _TabProductosState extends State<TabProductos> {
   }
 
   getProductos() async {
+    setState(() {
+      load = true;
+    });
     var arrayData = {
       "farmacia_id": jsonTienda[1]['farmacia_id'],
       "priceFilter": priceFilter,
@@ -745,7 +748,7 @@ class _TabProductosState extends State<TabProductos> {
                     Text(
                       prod['nombre'],
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
+                      maxLines: 2,
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 13),

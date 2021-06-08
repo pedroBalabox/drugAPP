@@ -33,7 +33,7 @@ dependencies:
   get: ^3.26.0
   http: ^0.13.1
   url_strategy: ^0.2.0-nullsafety.0
-  codigojaguar: ^0.0.8
+  codigojaguar: ^0.0.11
   flutter_rating_bar: ^4.0.0
   multi_select_flutter: ^4.0.0
   shared_preferences: ^2.0.5

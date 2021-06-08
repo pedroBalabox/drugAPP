@@ -10,7 +10,6 @@ import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
-import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -212,7 +211,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: smallPadding * 1.25),
                     InkWell(
-                      onTap: () => Navigator.pushNamed(context, '/farmacia/login'),
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/farmacia/login'),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -282,6 +282,11 @@ class _LoginPageState extends State<LoginPage> {
                 correo = value;
               });
             },
+            onSaved: (value) {
+              setState(() {
+                correo = value;
+              });
+            },
           ),
           EntradaTexto(
             estilo: inputPrimarystyle(
@@ -295,11 +300,21 @@ class _LoginPageState extends State<LoginPage> {
                 password = value;
               });
             },
+            onSaved: (value) {
+              setState(() {
+                password = value;
+              });
+            },
           ),
           SizedBox(height: medPadding),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-            child: BotonRestTest(
+            child: BotonRest(
+                primerAction: () {
+                  formKey.currentState.save();
+                  print(correo);
+                  print(password);
+                },
                 url: '$apiUrl/login',
                 method: 'post',
                 formkey: formKey,
@@ -308,8 +323,6 @@ class _LoginPageState extends State<LoginPage> {
                   'password': '$password',
                   'type': 'client'
                 },
-                // action: () => Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => HomeClient())),
                 action: (value) {
                   var jsonResp = jsonDecode(value['response']);
                   saveUserToken(jsonResp[1]['token']).then((value) {
@@ -419,7 +432,7 @@ class _LoginPageState extends State<LoginPage> {
         .restService(
             '', '${urlApi}perfil/usuario', sharedPrefs.clientToken, 'get')
         .then((value) {
-          print(value);
+      print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);

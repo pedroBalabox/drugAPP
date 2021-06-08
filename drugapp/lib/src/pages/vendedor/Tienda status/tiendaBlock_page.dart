@@ -200,7 +200,7 @@ class _TabBlockState extends State<TabBlock> {
             height: smallPadding,
           ),
           Text(
-            'Revisa tu correo electrónico para ver mas detalles del status de tu tienda.',
+            'Revisa tu correo electrónico para ver mas detalles del status de tu farmacia.',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(

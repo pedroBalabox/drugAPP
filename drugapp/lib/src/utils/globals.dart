@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -127,4 +129,16 @@ bodyLoad(context) {
       ],
     ),
   );
+}
+
+isJson(string) {
+  String jsonString = string;
+  bool decodeSucceeded = false;
+  try {
+    jsonDecode(jsonString);
+    decodeSucceeded = true;
+  } catch (err) {
+    print("Error en la respuesta: " + err.toString());
+  }
+  return decodeSucceeded;
 }

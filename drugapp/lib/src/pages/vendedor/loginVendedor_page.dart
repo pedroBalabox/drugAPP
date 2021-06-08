@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/user_model.dart';
+import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
@@ -441,14 +443,38 @@ class _LoginVendedorState extends State<LoginVendedor> {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);
         savePartnerModel(userModel).then((value) {
-          widget.miTienda
-              ? Navigator.pushNamedAndRemoveUntil(
+          if (widget.miTienda) {
+            var jsonTienda;
+            rest
+                .restService('', '${urlApi}obtener/mi-farmacia',
+                    sharedPrefs.partnerUserToken, 'get')
+                .then((value) {
+              if (value['status'] == 'server_true') {
+                setState(() {
+                  jsonTienda = jsonDecode(value['response']);
+                });
+
+                Navigator.pushNamed(
                   context,
-                  '/miTienda',
-                  ModalRoute.withName('/home'),
-                ).then((value) => setState(() {}))
-              : Navigator.pushNamedAndRemoveUntil(
-                  context, '/farmacia/miCuenta', (route) => false);
+                  ProductView.routeName,
+                  arguments: ProductosDetallesArguments({
+                    "farmacia_id": jsonTienda[1]['farmacia_id'],
+                    "userQuery": null,
+                    "favoritos": false,
+                    "availability": null,
+                    "stock": "available",
+                    "priceFilter": null,
+                    "myLabels": [],
+                    "myCats": [],
+                    "tienda": jsonTienda[1]
+                  }),
+                ).then((value) => setState(() {}));
+              }
+            });
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/farmacia/miCuenta', (route) => false);
+          }
         });
       }
     });

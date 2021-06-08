@@ -144,7 +144,7 @@ class _TabProcesoState extends State<TabProceso> {
             height: smallPadding,
           ),
           Text(
-            'Estamos revisando tu tienda.',
+            'Estamos revisando tu farmacia.',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(

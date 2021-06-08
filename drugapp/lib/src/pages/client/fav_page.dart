@@ -77,7 +77,7 @@ class _FavClientState extends State<FavClient> {
   }
 
   getProducts() async {
-    var arrayData = {"farmacia_id": null, "userQuery": null, "favoritos": null};
+    var arrayData = {"favoritos": true};
     await rest
         .restService(arrayData, '$apiUrl/listar/producto',
             sharedPrefs.clientToken, 'post')

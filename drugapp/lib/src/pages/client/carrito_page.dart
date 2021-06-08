@@ -2,13 +2,17 @@ import 'dart:convert';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/product_model.dart';
-import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
+import 'package:drugapp/src/pages/client/payments/paymentDropDown.dart';
+import 'package:drugapp/src/pages/client/payments/paymentFunctions.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/testRest.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 
@@ -23,11 +27,22 @@ class _CarritoPageState extends State<CarritoPage> {
   CatalogBloc _catalogBloc = CatalogBloc();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  String name;
-  String first_lastname;
-  String second_lastname;
-  String mail;
-  String phone;
+  String receta_medica;
+  String calle;
+  String colonia;
+  String numero_exterior;
+  String numero_interior;
+  String codigo_postal;
+  String referencias;
+  String telefono_contacto;
+  String comentarios;
+  String card_id = 'kfipluyqmroronvvllsj';
+  String device_session_id = 'kfipluyqmroronvvllsj';
+
+  List productos = [];
+
+  var docBase64;
+  var docName;
 
   @override
   void initState() {
@@ -111,6 +126,27 @@ class _CarritoPageState extends State<CarritoPage> {
   }
 
   detallesCarrito(data) {
+    productos = [];
+    for (int i = 0; i < data.length; i++) {
+      // productos.add(ProductosOrden(
+      //     id_de_producto: data[i].idDeProducto,
+      //     cantidad: data[i].cantidad));
+      productos.add({
+        "id_de_producto": data[i].idDeProducto,
+        "cantidad": data[i].cantidad
+      });
+    }
+    bool receta = false;
+
+    for (int i = 0; i < data.length; i++) {
+      // productos.add(ProductosOrden(
+      //     id_de_producto: data[i].idDeProducto,
+      //     cantidad: data[i].cantidad));
+      if (data[i].requiereReceta == 'SI') {
+        receta = true;
+      }
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -127,19 +163,27 @@ class _CarritoPageState extends State<CarritoPage> {
         SizedBox(
           height: smallPadding,
         ),
-        Container(child: misDetalles(total())),
-        // SizedBox(
-        //   height: smallPadding * 4,
-        // ),
-        // Text(
-        //   'Detalles de pago',
-        //   style: TextStyle(
-        //       color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        // ),
-        // SizedBox(
-        //   height: smallPadding,
-        // ),
-        // Container(child: misDetalles(misProductos(data))),
+        Container(child: misDetalles(total(data))),
+        !receta
+            ? Container()
+            : SizedBox(
+                height: smallPadding * 4,
+              ),
+        !receta
+            ? Container()
+            : Text(
+                'Receta médica',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18),
+              ),
+        !receta
+            ? Container()
+            : SizedBox(
+                height: smallPadding,
+              ),
+        !receta ? Container() : Container(child: misDetalles(miReceta())),
         SizedBox(
           height: smallPadding * 4,
         ),
@@ -157,7 +201,44 @@ class _CarritoPageState extends State<CarritoPage> {
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-          child: BotonRest(
+          child: BotonRestTest(
+              primerAction: () {
+                setState(() {
+                  productos = [];
+                });
+                for (int i = 0; i < data.length; i++) {
+                  // productos.add(ProductosOrden(
+                  //     id_de_producto: data[i].idDeProducto,
+                  //     cantidad: data[i].cantidad));
+                  productos.add({
+                    "id_de_producto": data[i].idDeProducto,
+                    "cantidad": data[i].cantidad
+                  });
+                }
+                if (formKey.currentState.validate()) {
+                  formKey.currentState.save();
+                }
+                ;
+              },
+              arrayData: {
+                "receta_medica": docBase64,
+                "calle": calle,
+                "colonia": colonia,
+                "numero_exterior": numero_exterior,
+                "numero_interior": numero_interior,
+                "codigo_postal": codigo_postal,
+                "referencias": referencias,
+                "telefono_contacto": telefono_contacto,
+                "comentarios": comentarios,
+                "card_id": 'klun7krv2gpqxzz1t6qz',
+                "device_session_id": "device_session_id",
+                "productos": productos,
+              },
+              showSuccess: true,
+              url: '$apiUrl/crear/orden',
+              method: 'post',
+              formkey: formKey,
+              token: sharedPrefs.clientToken,
               contenido: Text(
                 'Comprar ahora',
                 textAlign: TextAlign.center,
@@ -168,16 +249,98 @@ class _CarritoPageState extends State<CarritoPage> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              // action: () => Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => LoginPage())),
+              action: (value) {},
               errorStyle: TextStyle(
                 color: Colors.red[700],
                 fontWeight: FontWeight.w600,
               ),
               estilo: estiloBotonPrimary),
         ),
+        misTarjetas(context)
       ],
     );
+  }
+
+  miReceta() {
+    return Column(
+      children: [
+        BotonSimple(
+            action: () => subirDoc(),
+            estilo: estiloBotonSecundary,
+            contenido: Text(
+              'Subir receta',
+              style: TextStyle(color: Colors.white),
+            )),
+        docName == null ? Container() : docCargado(docName)
+      ],
+    );
+  }
+
+  Widget docCargado(nombreDoc) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.check_circle,
+            size: 15,
+            color: Colors.green.withOpacity(0.8),
+          ),
+          SizedBox(
+            width: 3,
+          ),
+          Flexible(
+            child: Text(
+              nombreDoc,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          // SizedBox(
+          //   width: 5,
+          // ),
+          // InkWell(
+          //   onTap: () {
+          //     setState(() {
+          //       docName = null;
+          //       docBase64 = null;
+          //     });
+          //   },
+          //   child: Container(
+          //       padding: EdgeInsets.all(3),
+          //       decoration: BoxDecoration(
+          //           color: Colors.grey.withOpacity(0.7),
+          //           borderRadius: BorderRadius.circular(100)),
+          //       child: Icon(
+          //         Icons.close,
+          //         color: Colors.white,
+          //         size: 10,
+          //       )),
+          // )
+        ],
+      ),
+    );
+  }
+
+  subirDoc() async {
+    FilePickerResult result =
+        await FilePicker.platform.pickFiles(withData: true);
+
+    if (result != null) {
+      // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
+      // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
+
+      var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+      setState(() {
+        docName = result.files.single.name;
+        docBase64 = uri;
+      });
+    }
   }
 
   misDetalles(Widget contenido) {
@@ -205,7 +368,7 @@ class _CarritoPageState extends State<CarritoPage> {
 
   formDirection() {
     return Form(
-      key: null,
+      key: formKey,
       child: Column(
         children: [
           EntradaTexto(
@@ -216,7 +379,7 @@ class _CarritoPageState extends State<CarritoPage> {
             tipo: 'generic',
             onChanged: (value) {
               setState(() {
-                name = value;
+                calle = value;
               });
             },
           ),
@@ -228,7 +391,7 @@ class _CarritoPageState extends State<CarritoPage> {
             tipo: 'generic',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                colonia = value;
               });
             },
           ),
@@ -243,7 +406,7 @@ class _CarritoPageState extends State<CarritoPage> {
                   tipo: 'generic',
                   onChanged: (value) {
                     setState(() {
-                      first_lastname = value;
+                      numero_exterior = value;
                     });
                   },
                 ),
@@ -254,10 +417,10 @@ class _CarritoPageState extends State<CarritoPage> {
                       context, Icons.location_on_outlined, 'Núm Int.', null),
                   tipoEntrada: TextInputType.name,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'generic',
+                  tipo: 'opcional',
                   onChanged: (value) {
                     setState(() {
-                      first_lastname = value;
+                      numero_interior = value;
                     });
                   },
                 ),
@@ -272,97 +435,105 @@ class _CarritoPageState extends State<CarritoPage> {
             tipo: 'generic',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                codigo_postal = value;
               });
             },
           ),
-          Row(
-            children: [
-              Expanded(
-                child: EntradaTexto(
-                  estilo: inputPrimarystyle(
-                      context, Icons.location_on_outlined, 'Estado', null),
-                  tipoEntrada: TextInputType.name,
-                  textCapitalization: TextCapitalization.words,
-                  tipo: 'generic',
-                  onChanged: (value) {
-                    setState(() {
-                      first_lastname = value;
-                    });
-                  },
-                ),
-              ),
-              Expanded(
-                child: EntradaTexto(
-                  estilo: inputPrimarystyle(
-                      context, Icons.location_on_outlined, 'Municipio', null),
-                  tipoEntrada: TextInputType.name,
-                  textCapitalization: TextCapitalization.words,
-                  tipo: 'generic',
-                  onChanged: (value) {
-                    setState(() {
-                      first_lastname = value;
-                    });
-                  },
-                ),
-              ),
-            ],
+          EntradaTexto(
+            estilo: inputPrimarystyle(
+                context, Icons.location_on_outlined, 'Referencias', null),
+            tipoEntrada: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
+            tipo: 'opcional',
+            onChanged: (value) {
+              setState(() {
+                referencias = value;
+              });
+            },
           ),
           EntradaTexto(
-            lineasMax: 2,
             estilo: inputPrimarystyle(
-                context, Icons.location_on_outlined, 'Referencia', null),
+                context, Icons.phone_outlined, 'Teléfono de Contacto', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'generic',
             onChanged: (value) {
               setState(() {
-                first_lastname = value;
+                telefono_contacto = value;
               });
             },
           ),
-          // SizedBox(height: medPadding),
-          // Padding(
-          //   padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-          //   child: BotonRest(
-          //       url: '$apiUrl/actualizar/usuario',
-          //       method: 'post',
-          //       formkey: formKey,
-          //       arrayData: {
-          //         'name': name,
-          //         'first_lastname': first_lastname,
-          //         'second_lastname': second_lastname,
-          //         'mail': '$mail',
-          //       },
-          //       contenido: Text(
-          //         'Actualizar',
-          //         textAlign: TextAlign.center,
-          //         overflow: TextOverflow.fade,
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //           fontSize: 15,
-          //           fontWeight: FontWeight.w400,
-          //         ),
-          //       ),
-          //       // action: () => Navigator.push(context,
-          //       //     MaterialPageRoute(builder: (context) => LoginPage())),
-          //       errorStyle: TextStyle(
-          //         color: Colors.red[700],
-          //         fontWeight: FontWeight.w600,
-          //       ),
-          //       estilo: estiloBotonPrimary),
-          // ),
+          EntradaTexto(
+            lineasMax: 2,
+            estilo: inputPrimarystyle(
+                context, Icons.location_on_outlined, 'Cometarios', null),
+            tipoEntrada: TextInputType.name,
+            textCapitalization: TextCapitalization.words,
+            tipo: 'opcional',
+            onChanged: (value) {
+              setState(() {
+                comentarios = value;
+              });
+            },
+          ),
         ],
       ),
     );
   }
 
-  total() {
+  total(data) {
+    double totalPrice = 0.0;
+    double sum = 0;
+    List price = [];
+
+    for (int i = 0; i < data.length; i++) {
+      if (data[i].precioMayoreo != null &&
+          double.parse(data[i].cantidad.toString()) >=
+              double.parse(data[i].cantidadMayoreo)) {
+        double total;
+        total = double.parse(data[i].precioMayoreo) * data[i].cantidad;
+        price.add(total);
+      } else if (data[i].precioConDescuento != null) {
+        double total;
+        total = double.parse(data[i].precioConDescuento) * data[i].cantidad;
+        price.add(total);
+      } else {
+        double total;
+        total = double.parse(data[i].precio) * data[i].cantidad;
+        price.add(total);
+      }
+    }
+
+    for (num e in price) {
+      sum += e;
+    }
+    totalPrice = sum;
+
     return Column(
       children: [
         SizedBox(
           height: smallPadding,
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Costo de envío',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17),
+            ),
+            Text(
+              '\$250 MXN',
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 17),
+            )
+          ],
+        ),
+        SizedBox(height: smallPadding / 2),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -374,14 +545,21 @@ class _CarritoPageState extends State<CarritoPage> {
                   fontSize: 17),
             ),
             Text(
-              '\$106.02 MXN',
+              totalPrice >= 2500
+                  ? '\$$totalPrice MXN'
+                  : '\$${totalPrice + 250} MXN',
               style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
                   fontSize: 17),
             )
           ],
-        )
+        ),
+        SizedBox(height: smallPadding / 2),
+        Text(
+          'Envio gratis a partir de compras de \$2,500.00',
+          style: TextStyle(color: Theme.of(context).primaryColor),
+        ),
       ],
     );
   }
@@ -395,19 +573,6 @@ class _CarritoPageState extends State<CarritoPage> {
         return productList(data[index]);
       },
     );
-    // return StreamBuilder<List<ProductoModel>>(
-    // initialData: [],
-    // stream: _catalogBloc.catalogStream,
-    // builder: (context, snapshot) {
-    //   return ListView.builder(
-    //     itemCount: snapshot.data.length,
-    //     shrinkWrap: true,
-    //     physics: NeverScrollableScrollPhysics(),
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return productList(snapshot.data[index]);
-    //     },
-    //   );
-    // });
   }
 
   productList(ProductoModel prodjson) {
@@ -439,10 +604,12 @@ class _CarritoPageState extends State<CarritoPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Flexible(
-            //   flex: 2,
-            //   child: getAsset(prodjson., 60),
-            // ),
+            Flexible(
+              flex: 2,
+              child: prodjson.galeria.length == 0
+                  ? getAsset('logoDrug.png', 60)
+                  : Image.network(prodjson.galeria[0]['url']),
+            ),
             Flexible(
               flex: 5,
               child: Padding(
@@ -461,7 +628,7 @@ class _CarritoPageState extends State<CarritoPage> {
                         )),
                     // SizedBox(height: smallPadding / 2),
                     // SizedBox(height: smallPadding / 2),
-                    Text('${prodjson.farmaciaId.toString()}',
+                    Text('${prodjson.nombre_farmacia.toString()}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
@@ -471,7 +638,16 @@ class _CarritoPageState extends State<CarritoPage> {
                             fontSize: 12)),
                     SizedBox(height: smallPadding / 2),
                     Text(
-                      '\$${prodjson.precio} MXN ',
+                      prodjson.precioMayoreo == null
+                          ? prodjson.precioConDescuento == null
+                              ? '\$${prodjson.precio} '
+                              : '\$${prodjson.precioConDescuento}'
+                          : prodjson.cantidad >=
+                                  int.parse(prodjson.cantidadMayoreo)
+                              ? '\$${prodjson.precioMayoreo}'
+                              : prodjson.precioConDescuento == null
+                                  ? '\$${prodjson.precio} '
+                                  : '\$${prodjson.precioConDescuento}',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontSize: 14,
@@ -585,60 +761,31 @@ class _CarritoPageState extends State<CarritoPage> {
     );
   }
 
-  entrega() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Icon(Icons.location_on_outlined,
-                color: Theme.of(context).primaryColor),
-            SizedBox(
-              width: smallPadding,
-            ),
-            Flexible(
-              child: Text(
-                'Pedro de Alvarado, Nº exterior: 701, Nº interior: Referencia: Estética Entre: Julia y Nueva Alemania Lomas de Cortes, Cuernavaca (62240), Morelos',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Row(
-          children: [
-            Icon(Icons.person_outline, color: Theme.of(context).primaryColor),
-            SizedBox(
-              width: smallPadding,
-            ),
-            Flexible(
-              child: Text(
-                'Andrea Sandoval Gomez Farias',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: smallPadding * 2,
-        ),
-        Row(
-          children: [
-            Flexible(
-              flex: 2,
-              child: Container(),
-            ),
-            Flexible(
-              flex: 2,
-              child: SimpleButtom(
-                mainText: 'Editar',
-                gcolor: gradientBlueLight,
+  misTarjetas(context) {
+    var myCards;
+    var size = MediaQuery.of(context).size;
+    return Container(
+        padding: EdgeInsets.all(smallPadding * 2),
+        width: size.width,
+        // height: size.height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              blurRadius: 5.0, // soften the shadow
+              spreadRadius: 1.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                3.0, // Move to bottom 10 Vertically
               ),
             )
           ],
-        )
-      ],
-    );
+        ),
+        child: Column(
+          children: [
+            PaymentDropDown(key: ValueKey<Object>(myCards), module: "cards"),
+          ],
+        ));
   }
 }

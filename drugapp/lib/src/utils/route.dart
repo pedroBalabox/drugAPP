@@ -15,10 +15,10 @@ class ProductoDetallesArguments {
   ProductoDetallesArguments(this.jsonProducto);
 }
 
-class TiendaDetallesArguments {
-  final dynamic jsonTienda;
+class ProductosDetallesArguments {
+  final dynamic jsonData;
 
-  TiendaDetallesArguments(this.jsonTienda);
+  ProductosDetallesArguments(this.jsonData);
 }
 
 class CategoriaDetallesArguments {
@@ -45,11 +45,12 @@ var rutasDrug = {
   '/registro': (context) => LobbyClient(ruta: '/registro'),
   '/home': (context) => LobbyClient(ruta: '/home'),
   '/miCuenta': (context) => LobbyClient(ruta: '/miCuenta'),
-  '/fav': (context) => LobbyClient(ruta: '/fav'),
+  '/fav': (context) => LobbyClient(ruta: '/productos'),
   '/carrito': (context) => LobbyClient(ruta: '/carrito'),
   '/categorias': (context) => LobbyClient(ruta: '/categorias'),
   '/tiendas': (context) => LobbyClient(ruta: '/tiendas'),
   '/miTienda': (context) => LobbyClient(ruta: '/miTienda'),
+  '/productos': (context) => LobbyClient(ruta: '/productos'),
   '/masVendidos': (context) => LobbyClient(ruta: '/masVendidos'),
   '/ofertas': (context) => LobbyClient(ruta: '/ofertas'),
   // V e n d e d o r  W E B
