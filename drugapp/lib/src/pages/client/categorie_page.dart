@@ -24,6 +24,9 @@ class _CategoriaPageState extends State<CategoriaPage> {
   bool load = true;
   bool error = false;
 
+  List searchList = [];
+  bool _isSearching = false;
+
   @override
   void initState() {
     sharedPrefs.init().then((value) => getCat());
@@ -114,8 +117,9 @@ class _CategoriaPageState extends State<CategoriaPage> {
                   : 4
               : 5,
           // Generate 100 widgets that display their index in the List.
-          children: List.generate(cat.length, (index) {
-            return categorieCard(cat[index]);
+          children: List.generate(_isSearching ? searchList.length : cat.length,
+              (index) {
+            return categorieCard(_isSearching ? searchList[index] : cat[index]);
           }),
         ))
       ],
@@ -136,6 +140,7 @@ class _CategoriaPageState extends State<CategoriaPage> {
           "priceFilter": null,
           "myLabels": [],
           "myCats": [cat['categoria_id']],
+          "title": "${cat['nombre']}"
         }),
       ),
       child: Container(
@@ -183,6 +188,7 @@ class _CategoriaPageState extends State<CategoriaPage> {
     return Container(
       height: 35,
       child: TextField(
+        onChanged: (value) => searchOperation(value),
         textInputAction: TextInputAction.search,
         textAlignVertical: TextAlignVertical.bottom,
         decoration: InputDecoration(
@@ -199,5 +205,26 @@ class _CategoriaPageState extends State<CategoriaPage> {
             filled: true),
       ),
     );
+  }
+
+  void searchOperation(String searchText) {
+    searchList.clear();
+    _handleSearchStart();
+    if (_isSearching != null) {
+      for (int i = 0; i < cat.length; i++) {
+        String dataNombre = cat[i]['nombre'];
+        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+          setState(() {
+            searchList.add(cat[i]);
+          });
+        }
+      }
+    }
+  }
+
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
   }
 }

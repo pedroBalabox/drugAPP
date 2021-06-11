@@ -1,4 +1,3 @@
-
 import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/producto_model.dart';
 
@@ -16,12 +15,14 @@ class RemoveCatalogItemEvent extends CatalogEvent {
   RemoveCatalogItemEvent(this.item);
 }
 
+class RemoveAllCatalogItemEvent extends CatalogEvent {
+  RemoveAllCatalogItemEvent();
+}
+
 class EditCatalogItemEvent extends CatalogEvent {
   final ProductoModel item;
 
   EditCatalogItemEvent(this.item);
 }
 
-class GetCatalogEvent extends CatalogEvent {
-  
-}
+class GetCatalogEvent extends CatalogEvent {}

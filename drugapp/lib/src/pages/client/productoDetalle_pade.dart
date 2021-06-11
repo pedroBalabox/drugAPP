@@ -316,18 +316,18 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                 SizedBox(
                   height: smallPadding,
                 ),
-                InkWell(
-                  onTap: () => _displayDialog().then((value) => getProdcut()),
-                  child: Text(
-                    'Evaluar producto',
-                    style: TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
-                SizedBox(
-                  height: smallPadding,
-                ),
+                // InkWell(
+                //   onTap: () => _displayDialog().then((value) => getProdcut()),
+                //   child: Text(
+                //     'Evaluar producto',
+                //     style: TextStyle(
+                //         color: Colors.blue,
+                //         decoration: TextDecoration.underline),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: smallPadding,
+                // ),
                 productPrice(),
               ],
             ),
@@ -345,15 +345,16 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                           height: MediaQuery.of(context).size.height / 2.5,
                           child: productSwiper(),
                         ),
-                        InkWell(
-                          onTap: () => _displayDialog().then((value) => getProdcut()),
-                          child: Text(
-                            'Evaluar producto',
-                            style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline),
-                          ),
-                        )
+                        // InkWell(
+                        //   onTap: () =>
+                        //       _displayDialog().then((value) => getProdcut()),
+                        //   child: Text(
+                        //     'Evaluar producto',
+                        //     style: TextStyle(
+                        //         color: Colors.blue,
+                        //         decoration: TextDecoration.underline),
+                        //   ),
+                        // )
                         // SizedBox(
                         //   height: smallPadding,
                         // ),
@@ -560,7 +561,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                       ),
                     ),
                     TextSpan(
-                      text: ' ${productModel.cantidadMayoreo} prodcutos',
+                      text: ' ${productModel.cantidadMayoreo} productos',
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,
@@ -646,40 +647,53 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
           children: [
             Align(
               alignment: Alignment.topLeft,
-              child: Container(
-                  width: 60,
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Icon(Icons.star, color: Colors.amber, size: 15),
-                      RatingBarIndicator(
-                        unratedColor: Colors.white.withOpacity(0.5),
-                        // rating: calificacion,
-                        rating: productModel.rating == null
-                            ? 0.0
-                            : double.parse(productModel.rating) * 100 / 5 / 100,
-                        itemBuilder: (context, index) => Icon(
-                          Icons.star,
-                          color: Colors.amber,
+              child: InkWell(
+                onTap: () => _displayDialog().then((value) => getProdcut()),
+                child: Container(
+                    width: 60,
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Icon(Icons.star, color: Colors.amber, size: 15),
+                        Tooltip(
+                          message: 'Califica este producto',
+                          child: InkWell(
+                            onTap: () =>
+                                _displayDialog().then((value) => getProdcut()),
+                            child: RatingBarIndicator(
+                              unratedColor: Colors.white.withOpacity(0.5),
+                              // rating: calificacion,
+                              rating: productModel.rating == null
+                                  ? 0.0
+                                  : double.parse(productModel.rating) *
+                                      100 /
+                                      5 /
+                                      100,
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              itemCount: 1,
+                              itemSize: 20.0,
+                              direction: Axis.horizontal,
+                            ),
+                          ),
                         ),
-                        itemCount: 1,
-                        itemSize: 20.0,
-                        direction: Axis.horizontal,
-                      ),
-                      Text(
-                          productModel.rating == null
-                              ? "0"
-                              : calificacion.toString(),
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500))
-                    ],
-                  )),
+                        Text(
+                            productModel.rating == null
+                                ? "0"
+                                : calificacion.toString(),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500))
+                      ],
+                    )),
+              ),
             ),
             Row(
               children: [

@@ -6,6 +6,7 @@ import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PaymentFunctions extends StatefulWidget {
   final String module;
@@ -77,13 +78,34 @@ class _PaymentFunctionsState extends State<PaymentFunctions> {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
+                        Icon iconCard = Icon(Icons.payment_outlined,
+                            color: Colors.black.withOpacity(0.7));
+
+                        switch (cards[index]['brand']) {
+                          case 'visa':
+                            iconCard = Icon(FontAwesomeIcons.ccVisa,
+                                color: Colors.black.withOpacity(0.7));
+                            break;
+                          case 'mastercard':
+                            iconCard = Icon(FontAwesomeIcons.ccMastercard,
+                                color: Colors.black.withOpacity(0.7));
+                            break;
+                          case 'americanexpress':
+                            iconCard = Icon(FontAwesomeIcons.ccAmex,
+                                color: Colors.black.withOpacity(0.7));
+                            break;
+                          default:
+                            iconCard = Icon(Icons.payment_outlined,
+                                color: Colors.black.withOpacity(0.7));
+                        }
+
                         return Container(
                           padding:
                               EdgeInsets.symmetric(vertical: smallPadding / 2),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(Icons.payment_outlined),
+                              iconCard,
                               Text(cards[index]["card_number"].toString()),
                               BotonRestTest(
                                   token: sharedPrefs.clientToken,

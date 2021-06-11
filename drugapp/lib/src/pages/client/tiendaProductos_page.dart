@@ -38,6 +38,8 @@ class _ProductViewState extends State<ProductView> {
   var _fieldList = ['Elige una opción', 'Menor a mayor', 'Mayor a menor'];
   String chosenFilter;
 
+  String buscarStr;
+
   String famaciaID;
   String userQuery;
   bool favorite;
@@ -317,7 +319,9 @@ class _ProductViewState extends State<ProductView> {
                         );
             }),
         // : bodyTienda(),
-        title: 'Productos');
+        title: widget.jsonData.jsonData['title'] == null
+            ? 'Productos'
+            : widget.jsonData.jsonData['title']);
   }
 
   statusTienda() {
@@ -1013,6 +1017,7 @@ class _ProductViewState extends State<ProductView> {
                             ],
                           ),
                           MultiSelectDialogField<Category>(
+                            searchHint: 'Buscar',
                             buttonText: Text(
                               'Categoría',
                               style: TextStyle(
@@ -1042,6 +1047,7 @@ class _ProductViewState extends State<ProductView> {
                             // maxChildSize: 0.8,
                           ),
                           MultiSelectDialogField<Category>(
+                            searchHint: 'Buscar',
                             buttonText: Text(
                               'Etiquetas',
                               style: TextStyle(
@@ -1072,7 +1078,7 @@ class _ProductViewState extends State<ProductView> {
                           ),
                           /* SizedBox(height: smallPadding),
                           MultiSelectBottomSheetField(
-                            searchHint: 'Búscar...',
+                            searchHint: 'Buscar...',
                             cancelText: Text('Cancelar'),
                             confirmText: Text('Seleccionar'),
                             decoration: BoxDecoration(
@@ -1303,42 +1309,100 @@ class _ProductViewState extends State<ProductView> {
   }
 
   search() {
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     return Container(
-      height: 35,
-      child: TextField(
-        onChanged: (value) => searchOperation(value),
-        textInputAction: TextInputAction.search,
-        textAlignVertical: TextAlignVertical.bottom,
-        decoration: InputDecoration(
-            prefixIcon: Icon(Icons.search),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(0)),
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(0)),
-            hintStyle: TextStyle(),
-            hintText: 'Búscar producto...',
-            fillColor: Colors.white,
-            filled: true),
+        // height: 50,
+        child: Form(
+      key: formKey,
+      child: Row(
+        children: [
+          Flexible(
+              flex: 3,
+              child: Container(
+                // color: bgGrey,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: EntradaTexto(
+                  // onChanged: (value) {
+                  //   if (value == '') {
+                  //     setState(() {
+                  //       buscarStr = value;
+                  //       loadProd = true;
+                  //       userQuery = buscarStr;
+                  //     });
+                  //     getProductos();
+                  //   }
+                  // },
+                  valorInicial: userQuery,
+                  lineasMax: 1,
+                  onSaved: (value) {
+                    setState(() {
+                      buscarStr = value;
+                    });
+                  },
+                  estilo: InputDecoration(
+                      isDense: true,
+                      counterText: "",
+                      focusColor: bgGrey,
+                      prefixIcon: Icon(Icons.search),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(0)),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(0)),
+                      hintStyle: TextStyle(),
+                      hintText: 'Buscar...',
+                      fillColor: bgGrey,
+                      filled: true,
+                      hoverColor: bgGrey),
+                ),
+              )),
+          Flexible(
+              flex: 1,
+              child: BotonSimple(
+                  contenido: Text('Buscar',
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                  // contenido: Icon(Icons.search, color: Colors.white),
+                  estilo: estiloBotonPrimary,
+                  action: () {
+                    formKey.currentState.save();
+                    setState(() {
+                      loadProd = true;
+                      userQuery = buscarStr;
+                    });
+                    getProductos();
+                  })
+              // : IconButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         buscarStr = null;
+              //         userQuery = buscarStr;
+              //       });
+              //       getProductos();
+              //     },
+              //     icon: Icon(Icons.close)),
+              )
+        ],
       ),
-    );
+    ));
   }
 
-  void searchOperation(String searchText) {
-    searchList.clear();
-    _handleSearchStart();
-    if (_isSearching != null) {
-      for (int i = 0; i < prod.length; i++) {
-        String dataNombre = prod[i]['nombre'];
-        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
-          setState(() {
-            searchList.add(prod[i]);
-          });
-        }
-      }
-    }
-  }
+  // void searchOperation(String searchText) {
+  //   searchList.clear();
+  //   _handleSearchStart();
+  //   if (_isSearching != null) {
+  //     for (int i = 0; i < prod.length; i++) {
+  //       String dataNombre = prod[i]['nombre'];
+  //       if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+  //         setState(() {
+  //           searchList.add(prod[i]);
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 
   void _handleSearchStart() {
     setState(() {

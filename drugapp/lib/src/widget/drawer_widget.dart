@@ -216,6 +216,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                       "priceFilter": null,
                                       "myLabels": [],
                                       "myCats": [],
+                                      "title": "Prodcutos favoritos"
                                     }),
                                   ).then((value) => setState(() {}));
                                 } else if (jsonMenu[index]['action'] ==
@@ -256,7 +257,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                               "priceFilter": null,
                                               "myLabels": [],
                                               "myCats": [],
-                                              "tienda": jsonTienda[1]
+                                              "tienda": jsonTienda[1],
+                                               "title": "Mi tienda"
                                             }),
                                           ).then((value) => setState(() {}));
                                         } else {
@@ -584,6 +586,7 @@ class _DrawerUserState extends State<DrawerUser> {
                 "priceFilter": null,
                 "myLabels": [],
                 "myCats": [],
+                 "title": "Prodcutos favoritos"
               }),
             ).then((value) => setState(() {}));
           } else if (action == '/miTienda') {
@@ -614,7 +617,8 @@ class _DrawerUserState extends State<DrawerUser> {
                         "priceFilter": null,
                         "myLabels": [],
                         "myCats": [],
-                        "tienda": jsonTienda[1]
+                        "tienda": jsonTienda[1],
+                         "title": "Mi tienda"
                       }),
                     ).then((value) => setState(() {}));
                   } else {

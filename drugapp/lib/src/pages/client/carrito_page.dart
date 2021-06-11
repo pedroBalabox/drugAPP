@@ -4,8 +4,7 @@ import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
-import 'package:drugapp/src/pages/client/payments/paymentDropDown.dart';
-import 'package:drugapp/src/pages/client/payments/paymentFunctions.dart';
+import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
@@ -15,6 +14,7 @@ import 'package:drugapp/src/widget/testRest.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CarritoPage extends StatefulWidget {
   CarritoPage({Key key}) : super(key: key);
@@ -25,6 +25,7 @@ class CarritoPage extends StatefulWidget {
 
 class _CarritoPageState extends State<CarritoPage> {
   CatalogBloc _catalogBloc = CatalogBloc();
+  RestFun restFunction = RestFun();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String receta_medica;
@@ -36,19 +37,35 @@ class _CarritoPageState extends State<CarritoPage> {
   String referencias;
   String telefono_contacto;
   String comentarios;
-  String card_id = 'kfipluyqmroronvvllsj';
+  String card_id;
+  // String card_id = 'kfipluyqmroronvvllsj';
   String device_session_id = 'kfipluyqmroronvvllsj';
 
   List productos = [];
 
+  bool compraRealizada = false;
+
   var docBase64;
   var docName;
+
+  List<dynamic> cards;
+  String errorStr;
+  bool loading = true;
+  bool error = false;
+
+  String errorCardsStr;
+  bool loadingCards;
+  bool errorCards;
+  bool botonHabilitado = false;
+
+  bool recetaMedica = true;
 
   @override
   void initState() {
     super.initState();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
     var jsonMenu = jsonDecode(itemsMenu.toString());
+    sharedPrefs.init().then((value) => getCards());
   }
 
   @override
@@ -125,6 +142,37 @@ class _CarritoPageState extends State<CarritoPage> {
     );
   }
 
+  getCards() async {
+    setState(() {
+      cards = [];
+      errorCardsStr = "";
+      loadingCards = true;
+      errorCards = false;
+    });
+    await restFunction
+        .restService(
+            null, '$apiUrl/obtener/tarjetas', sharedPrefs.clientToken, 'get')
+        .then((value) {
+      //print("La respuesta: " + value.toString());
+      if (value['status'] == 'server_true') {
+        if (isJson(value['response'])) {
+          setState(() {
+            cards = jsonDecode(value['response'])[1]["cards"];
+            loadingCards = false;
+            errorCards = false;
+            errorCardsStr = value['message'];
+          });
+        }
+      } else {
+        setState(() {
+          loadingCards = false;
+          errorCards = true;
+          errorCardsStr = value['message'];
+        });
+      }
+    });
+  }
+
   detallesCarrito(data) {
     productos = [];
     for (int i = 0; i < data.length; i++) {
@@ -137,6 +185,7 @@ class _CarritoPageState extends State<CarritoPage> {
       });
     }
     bool receta = false;
+    recetaMedica = true;
 
     for (int i = 0; i < data.length; i++) {
       // productos.add(ProductosOrden(
@@ -144,7 +193,12 @@ class _CarritoPageState extends State<CarritoPage> {
       //     cantidad: data[i].cantidad));
       if (data[i].requiereReceta == 'SI') {
         receta = true;
+        recetaMedica = false;
       }
+    }
+
+    if (docName != null) {
+      recetaMedica = true;
     }
 
     return Column(
@@ -199,64 +253,117 @@ class _CarritoPageState extends State<CarritoPage> {
         SizedBox(
           height: smallPadding * 4,
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-          child: BotonRestTest(
-              primerAction: () {
-                setState(() {
-                  productos = [];
-                });
-                for (int i = 0; i < data.length; i++) {
-                  // productos.add(ProductosOrden(
-                  //     id_de_producto: data[i].idDeProducto,
-                  //     cantidad: data[i].cantidad));
-                  productos.add({
-                    "id_de_producto": data[i].idDeProducto,
-                    "cantidad": data[i].cantidad
-                  });
-                }
-                if (formKey.currentState.validate()) {
-                  formKey.currentState.save();
-                }
-                ;
-              },
-              arrayData: {
-                "receta_medica": docBase64,
-                "calle": calle,
-                "colonia": colonia,
-                "numero_exterior": numero_exterior,
-                "numero_interior": numero_interior,
-                "codigo_postal": codigo_postal,
-                "referencias": referencias,
-                "telefono_contacto": telefono_contacto,
-                "comentarios": comentarios,
-                "card_id": 'klun7krv2gpqxzz1t6qz',
-                "device_session_id": "device_session_id",
-                "productos": productos,
-              },
-              showSuccess: true,
-              url: '$apiUrl/crear/orden',
-              method: 'post',
-              formkey: formKey,
-              token: sharedPrefs.clientToken,
-              contenido: Text(
-                'Comprar ahora',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              action: (value) {},
-              errorStyle: TextStyle(
-                color: Colors.red[700],
-                fontWeight: FontWeight.w600,
-              ),
-              estilo: estiloBotonPrimary),
+        Text(
+          'Método de pago',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
-        misTarjetas(context)
+        SizedBox(
+          height: smallPadding,
+        ),
+        misTarjetas(context),
+        !botonHabilitado
+            ? Container()
+            : !recetaMedica
+                ? Container()
+                : SizedBox(
+                    height: smallPadding * 4,
+                  ),
+        !botonHabilitado
+            ? Container()
+            : compraRealizada
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: 17,
+                        color: Colors.green.withOpacity(0.8),
+                      ),
+                      SizedBox(
+                        width: 3,
+                      ),
+                      Flexible(
+                        child: Text(
+                          'Compra realizada con éxito',
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : !recetaMedica
+                    ? Container()
+                    : Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: medPadding * 2),
+                        child: BotonRestTest(
+                            primerAction: () {
+                              setState(() {
+                                productos = [];
+                              });
+                              for (int i = 0; i < data.length; i++) {
+                                // productos.add(ProductosOrden(
+                                //     id_de_producto: data[i].idDeProducto,
+                                //     cantidad: data[i].cantidad));
+                                productos.add({
+                                  "id_de_producto": data[i].idDeProducto,
+                                  "cantidad": data[i].cantidad
+                                });
+                              }
+                              if (formKey.currentState.validate()) {
+                                formKey.currentState.save();
+                              }
+                              ;
+                            },
+                            arrayData: {
+                              "receta_medica": docBase64,
+                              "calle": calle,
+                              "colonia": colonia,
+                              "numero_exterior": numero_exterior,
+                              "numero_interior": numero_interior,
+                              "codigo_postal": codigo_postal,
+                              "referencias": referencias,
+                              "telefono_contacto": telefono_contacto,
+                              "comentarios": comentarios,
+                              "card_id": 'klun7krv2gpqxzz1t6qz',
+                              "device_session_id": "device_session_id",
+                              "productos": productos,
+                            },
+                            showSuccess: true,
+                            url: '$apiUrl/crear/orden',
+                            method: 'post',
+                            formkey: formKey,
+                            token: sharedPrefs.clientToken,
+                            contenido: Text(
+                              'Comprar ahora',
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            action: (value) {
+                              setState(() {
+                                _catalogBloc.sendEvent
+                                    .add(RemoveAllCatalogItemEvent());
+                                // compraRealizada = true;
+                                Navigator.pushNamed(context, '/miCuenta');
+                              });
+                            },
+                            errorStyle: TextStyle(
+                              color: Colors.red[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                            estilo: estiloBotonPrimary),
+                      ),
       ],
     );
   }
@@ -301,27 +408,6 @@ class _CarritoPageState extends State<CarritoPage> {
               ),
             ),
           ),
-          // SizedBox(
-          //   width: 5,
-          // ),
-          // InkWell(
-          //   onTap: () {
-          //     setState(() {
-          //       docName = null;
-          //       docBase64 = null;
-          //     });
-          //   },
-          //   child: Container(
-          //       padding: EdgeInsets.all(3),
-          //       decoration: BoxDecoration(
-          //           color: Colors.grey.withOpacity(0.7),
-          //           borderRadius: BorderRadius.circular(100)),
-          //       child: Icon(
-          //         Icons.close,
-          //         color: Colors.white,
-          //         size: 10,
-          //       )),
-          // )
         ],
       ),
     );
@@ -339,6 +425,7 @@ class _CarritoPageState extends State<CarritoPage> {
       setState(() {
         docName = result.files.single.name;
         docBase64 = uri;
+        recetaMedica = true;
       });
     }
   }
@@ -372,11 +459,12 @@ class _CarritoPageState extends State<CarritoPage> {
       child: Column(
         children: [
           EntradaTexto(
+            longMinima: 1,
+            longMaxima: 50,
             estilo: inputPrimarystyle(
                 context, Icons.location_on_outlined, 'Calle', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
             onChanged: (value) {
               setState(() {
                 calle = value;
@@ -384,11 +472,12 @@ class _CarritoPageState extends State<CarritoPage> {
             },
           ),
           EntradaTexto(
+            longMinima: 1,
+            longMaxima: 50,
             estilo: inputPrimarystyle(
                 context, Icons.location_on_outlined, 'Colonia', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
             onChanged: (value) {
               setState(() {
                 colonia = value;
@@ -399,11 +488,13 @@ class _CarritoPageState extends State<CarritoPage> {
             children: [
               Expanded(
                 child: EntradaTexto(
+                  longMinima: 1,
+                  longMaxima: 5,
                   estilo: inputPrimarystyle(
                       context, Icons.location_on_outlined, 'Núm Ext.', null),
-                  tipoEntrada: TextInputType.name,
+                  tipoEntrada: TextInputType.visiblePassword,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'generic',
+                  // tipo: 'texto',
                   onChanged: (value) {
                     setState(() {
                       numero_exterior = value;
@@ -413,11 +504,12 @@ class _CarritoPageState extends State<CarritoPage> {
               ),
               Expanded(
                 child: EntradaTexto(
+                  longMinima: 1,
+                  longMaxima: 5,
                   estilo: inputPrimarystyle(
                       context, Icons.location_on_outlined, 'Núm Int.', null),
-                  tipoEntrada: TextInputType.name,
+                  tipoEntrada: TextInputType.visiblePassword,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'opcional',
                   onChanged: (value) {
                     setState(() {
                       numero_interior = value;
@@ -428,11 +520,12 @@ class _CarritoPageState extends State<CarritoPage> {
             ],
           ),
           EntradaTexto(
+            longMinima: 1,
+            longMaxima: 10,
             estilo: inputPrimarystyle(
                 context, Icons.location_on_outlined, 'Código postal', null),
-            tipoEntrada: TextInputType.name,
+            tipoEntrada: TextInputType.number,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
             onChanged: (value) {
               setState(() {
                 codigo_postal = value;
@@ -440,11 +533,13 @@ class _CarritoPageState extends State<CarritoPage> {
             },
           ),
           EntradaTexto(
+            longMinima: 1,
+            longMaxima: 50,
+            lineasMax: 2,
             estilo: inputPrimarystyle(
                 context, Icons.location_on_outlined, 'Referencias', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'opcional',
             onChanged: (value) {
               setState(() {
                 referencias = value;
@@ -454,9 +549,9 @@ class _CarritoPageState extends State<CarritoPage> {
           EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.phone_outlined, 'Teléfono de Contacto', null),
-            tipoEntrada: TextInputType.name,
+            tipoEntrada: TextInputType.phone,
             textCapitalization: TextCapitalization.words,
-            tipo: 'generic',
+            tipo: 'telefono',
             onChanged: (value) {
               setState(() {
                 telefono_contacto = value;
@@ -464,9 +559,10 @@ class _CarritoPageState extends State<CarritoPage> {
             },
           ),
           EntradaTexto(
+            requerido: false,
             lineasMax: 2,
             estilo: inputPrimarystyle(
-                context, Icons.location_on_outlined, 'Cometarios', null),
+                context, Icons.medical_services_outlined, 'Cometarios', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'opcional',
@@ -784,8 +880,101 @@ class _CarritoPageState extends State<CarritoPage> {
         ),
         child: Column(
           children: [
-            PaymentDropDown(key: ValueKey<Object>(myCards), module: "cards"),
+            paymentDropDown("cards"),
           ],
         ));
+  }
+
+  Widget paymentDropDown(module) {
+    switch (module) {
+      case 'cards':
+        return loadingCards
+            ? Container(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(),
+              )
+            : errorCards
+                ? Text(errorCardsStr)
+                : cards.length == 0
+                    ? Column(
+                        children: [
+                          Text('No tienes tarjetas registradas'),
+                          SizedBox(
+                            height: smallPadding,
+                          ),
+                          BotonSimple(
+                              action: () =>
+                                  Navigator.pushNamed(context, '/miCuenta')
+                                      .then((value) => getCards()),
+                              estilo: estiloBotonSecundary,
+                              contenido: Text(
+                                'Ir a mis tarjetas',
+                                style: TextStyle(color: Colors.white),
+                              )),
+                        ],
+                      )
+                    : Container(
+                        child: DropdownButtonFormField<dynamic>(
+                        hint: Text('Selecciona una tarjeta'),
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Theme.of(context).accentColor,
+                        ),
+                        items: cards.map((dynamic card) {
+                          Icon iconCard = Icon(Icons.payment_outlined,
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.7));
+
+                          switch (card['brand']) {
+                            case 'visa':
+                              iconCard = Icon(FontAwesomeIcons.ccVisa,
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.7));
+                              break;
+                            case 'mastercard':
+                              iconCard = Icon(FontAwesomeIcons.ccMastercard,
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.7));
+                              break;
+                            case 'americanexpress':
+                              iconCard = Icon(FontAwesomeIcons.ccAmex,
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.7));
+                              break;
+                            default:
+                              iconCard = Icon(Icons.payment_outlined,
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.7));
+                          }
+
+                          return new DropdownMenuItem<dynamic>(
+                            value: card,
+                            child: Row(
+                              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                iconCard,
+                                SizedBox(width: 10),
+                                Text(card['card_number'])
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          setState(() {
+                            card_id = val['id'];
+                            botonHabilitado = true;
+                          });
+                        },
+                      ));
+        break;
+      default:
+        return Container();
+    }
   }
 }

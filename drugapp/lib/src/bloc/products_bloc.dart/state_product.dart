@@ -29,6 +29,10 @@ void getCatalog() {
     }
   }
 
+   void removeAllCatalog() {
+    _catalog = [];
+  }
+
   void editToCatalog(ProductoModel itemModel) {
     if (itemModel == null) {
     } else {

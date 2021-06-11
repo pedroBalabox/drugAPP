@@ -137,10 +137,11 @@ class _TiendasPageState extends State<TiendasPage> {
           "userQuery": null,
           "favorite": false,
           "availability": null,
-          "stock":  "available",
+          "stock": "available",
           "priceFilter": null,
           "myLabels": [],
           "myCats": [],
+           "title": "${tiendas['nombre']}"
         }),
       ).then((value) => setState(() {})),
       child: Container(
@@ -289,6 +290,7 @@ class _TiendasPageState extends State<TiendasPage> {
     return Container(
       height: 35,
       child: TextField(
+        onChanged: (value) => searchOperation(value),
         textInputAction: TextInputAction.search,
         textAlignVertical: TextAlignVertical.bottom,
         decoration: InputDecoration(

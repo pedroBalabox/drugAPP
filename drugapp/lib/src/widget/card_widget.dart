@@ -16,7 +16,8 @@ class _HomeCategoryState extends State<HomeCategory> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => widget.cat['name'] == 'Más categorías'
-          ? Navigator.pushNamed(context, '/categorias').then((value) => setState(() {}))
+          ? Navigator.pushNamed(context, '/categorias')
+              .then((value) => setState(() {}))
           : Navigator.pushNamed(
               context,
               '/productos',
@@ -86,7 +87,7 @@ class _HomeCategoryState extends State<HomeCategory> {
 class HomeInfoCard extends StatefulWidget {
   final String title;
   final String image;
-  final String nav;
+  final Function nav;
   HomeInfoCard({Key key, this.title, this.image, this.nav}) : super(key: key);
 
   @override
@@ -100,8 +101,7 @@ class _HomeInfoCardState extends State<HomeInfoCard> {
       padding: EdgeInsets.symmetric(
           horizontal: smallPadding, vertical: smallPadding),
       child: InkWell(
-        onTap: () =>
-            Navigator.pushNamed(context, widget.nav).then((value) => setState(() {})),
+        onTap: widget.nav,
         child: Column(
           children: [
             Container(
