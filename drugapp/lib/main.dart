@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:drugapp/Routes.dart';
 import 'package:drugapp/src/pages/Lobby/lobbyClient.dart';
 import 'package:drugapp/src/pages/client/categoriaProductos_page.dart';
 import 'package:drugapp/src/pages/client/productGeneric_page.dart';
@@ -16,141 +17,53 @@ import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
   setPathUrlStrategy();
-
-  runApp(MyApp());
+  //runApp(MyApp());
   if (!kIsWeb) {
+    runApp(MyApp());
     checkInternet();
+  } else {
+    runApp(MyApp());
   }
 }
 
-class MyApp extends StatelessWidget {
+/* class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        title: 'Drug App',
-        theme: appTheme(),
-        debugShowCheckedModeBanner: false,
-        initialRoute: '/home',
-        onUnknownRoute: (settings) {
-          return MaterialPageRoute(builder: (_) => LobbyClient(ruta: '/home'));
-        },
-        /* home: LobbyVendor(
+      title: 'Drug App',
+      theme: appTheme(),
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/home',
+      onUnknownRoute: (settings) {
+        return MaterialPageRoute(builder: (_) => LobbyClient(ruta: '/home'));
+      },
+      /* home: LobbyVendor(
           ruta: '/',
         ), */
-        // initialRoute: initR,
-        routes: rutasDrug,
-        onGenerateRoute: (RouteSettings settings) {
-          // print('++' + settings.name);
-          // if (settings.name == '/farmacia'){
-          //   print('ok');
-          //   return MaterialPageRoute(
-          //     builder: (context) => LoginPage(),
-          //   );
-          // }
-          // If you push the PassArguments route
-          if (settings.name == DetallesCompra.routeName) {
-            // Cast the arguments to the correct
-            // type: ScreenArguments.
-            final CompraDetailArguments args =
-                settings.arguments as CompraDetailArguments;
+      // initialRoute: initR,
+      routes: rutasDrug,
+    );
+  }
+} */
 
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
-            return MaterialPageRoute(
-              builder: (context) {
-                return DetallesCompra(
-                  jsonCompra: args,
-                );
-              },
-            );
-          }
-          if (settings.name == ProductoDetalles.routeName) {
-            // Cast the arguments to the correct
-            // type: ScreenArguments.
-            final ProductoDetallesArguments args =
-                settings.arguments as ProductoDetallesArguments;
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
-            return MaterialPageRoute(
-              builder: (context) {
-                return ProductoDetalles(
-                  jsonProdcuto: args,
-                );
-              },
-            );
-          }
-          if (settings.name == ProductView.routeName) {
-            // Cast the arguments to the correct
-            // type: ScreenArguments.
-            final ProductosDetallesArguments args =
-                settings.arguments as ProductosDetallesArguments;
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    Flurorouter.setupRouter();
+  }
 
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
-            return MaterialPageRoute(
-              builder: (context) {
-                return ProductView(
-                  jsonData: args,
-                );
-              },
-            );
-          }
-          if (settings.name == CategoriaProductos.routeName) {
-            // Cast the arguments to the correct
-            // type: ScreenArguments.
-            final CategoriaDetallesArguments args =
-                settings.arguments as CategoriaDetallesArguments;
-
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
-            return MaterialPageRoute(
-              builder: (context) {
-                return CategoriaProductos(
-                  jsonCategoria: args,
-                );
-              },
-            );
-          }
-          if (settings.name == MiVenta.routeName) {
-            // Cast the arguments to the correct
-            // type: ScreenArguments.
-            final VentaDetallesArguments args =
-                settings.arguments as VentaDetallesArguments;
-
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
-            return MaterialPageRoute(
-              builder: (context) {
-                return MiVenta(
-                  miVenta: args,
-                );
-              },
-            );
-          }
-          if (settings.name == EditarProducto.routeName) {
-            // Cast the arguments to the correct
-            // type: ScreenArguments.
-            final EdiaterProductoDetallesArguments args =
-                settings.arguments as EdiaterProductoDetallesArguments;
-
-            // Then, extract the required data from
-            // the arguments and pass the data to the
-            // correct screen.
-            return MaterialPageRoute(
-              builder: (context) {
-                return EditarProducto(
-                  jsonProducto: args,
-                );
-              },
-            );
-          }
-        });
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      initialRoute: '/',
+      onGenerateRoute: Flurorouter.router.generator,
+    );
   }
 }
 

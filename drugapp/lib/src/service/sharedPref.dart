@@ -79,11 +79,18 @@ savefcmToken(token, callback) async {
   callback();
 }
 
+//Guardar el id de mi farmacia
+/* saveStoreID(id) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  pref.setString('store_id', id.toString());
+} */
+
 logoutUser() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   pref.remove(userData);
   pref.remove(userToken);
 }
+
 logoutVendor() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   pref.remove(partnerData);

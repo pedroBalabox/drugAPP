@@ -7,6 +7,7 @@ import 'package:drugapp/src/bloc/user_bloc.dart/event_user.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
@@ -438,7 +439,8 @@ class _LoginPageState extends State<LoginPage> {
         userModel = UserModel.fromJson(jsonUser[1]);
         saveUserModel(userModel).then((value) {
           _userBloc.sendEvent.add(AddUserItemEvent(userModel));
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          //Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          CJNavigator.navigator.push(context, '/');
         });
       }
     });

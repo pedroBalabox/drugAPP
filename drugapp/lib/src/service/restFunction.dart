@@ -41,6 +41,7 @@ class RestFun {
     String requestStatus = "local_false";
     String requestResponse = "Hubo un error local para procesar la petición";
     String messageToUser;
+    bool logResults = false;
 
     switch (method) {
       case 'post':
@@ -98,31 +99,31 @@ class RestFun {
           requestStatus = "server_true";
           requestResponse = jsonEncode(jsonResponse);
           messageToUser = jsonResponse['message'].toString();
-          print("Todo bien:" + jsonResponse.toString());
+          !logResults ? null : print("Todo bien:" + jsonResponse.toString());
         } else {
           requestStatus = "server_false";
           requestResponse = jsonEncode(jsonResponse);
           messageToUser = jsonResponse['message'].toString();
-          print("Hay un problema: " + jsonResponse['message'].toString());
+          !logResults ? null : print("Hay un problema: " + jsonResponse['message'].toString());
         }
       } else {
         if (jsonResponse[0]['status'] == "true") {
           requestStatus = "server_true";
           requestResponse = jsonEncode(jsonResponse);
           messageToUser = jsonResponse[0]['message'].toString();
-          print("Todo bien:" + jsonResponse.toString());
+          !logResults ? null : print("Todo bien:" + jsonResponse.toString());
         } else {
           requestStatus = "server_false";
           requestResponse = jsonEncode(jsonResponse);
           messageToUser = jsonResponse[0]['message'].toString();
-          print("Hay un problema: " + jsonResponse[0]['message'].toString());
+          !logResults ? null : print("Hay un problema: " + jsonResponse[0]['message'].toString());
         }
       }
     } else {
       requestStatus = "server_false";
       requestResponse = jsonEncode(jsonResponse);
-      print("Hubo un problema para realizar la petición");
-      print(response.body);
+      !logResults ? null : print("Hubo un problema para realizar la petición");
+      !logResults ? null : print(response.body);
     }
 
     return {

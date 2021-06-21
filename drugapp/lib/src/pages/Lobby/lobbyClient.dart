@@ -5,7 +5,6 @@ import 'package:drugapp/src/pages/client/fav_page.dart';
 import 'package:drugapp/src/pages/client/home_page.dart';
 import 'package:drugapp/src/pages/client/login_page.dart';
 import 'package:drugapp/src/pages/client/miCuenta_page.dart';
-import 'package:drugapp/src/pages/client/miTienda_page.dart';
 import 'package:drugapp/src/pages/client/productGeneric_page.dart';
 import 'package:drugapp/src/pages/client/register_page.dart';
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
@@ -149,18 +148,6 @@ class _LobbyClientState extends State<LobbyClient> {
             ? Navigator.of(context)
                 .push(
                   MaterialPageRoute(builder: (context) => TiendasPage()),
-                )
-                .then((value) => setState(() {
-                      Navigator.pop(context);
-                    }))
-            : Navigator.pushNamedAndRemoveUntil(
-                context, '/login', (route) => false);
-        break;
-      case '/miTienda':
-        clientAuth
-            ? Navigator.of(context)
-                .push(
-                  MaterialPageRoute(builder: (context) => MiTienda()),
                 )
                 .then((value) => setState(() {
                       Navigator.pop(context);

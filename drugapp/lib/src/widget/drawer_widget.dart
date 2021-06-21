@@ -3,17 +3,19 @@ import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/user_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
+import 'package:drugapp/src/pages/Lobby/validate_page.dart';
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/loginVendedor_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 61703, "title": "Inicio", "action": "/home"}, {"icon": 62466, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 57948, "title": "Favoritos", "action": "/fav"}, {"icon": 62445, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+    '[{"icon": 61703, "title": "Inicio", "action": "/"}, {"icon": 62466, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
 
 class ResponsiveAppBar extends StatefulWidget {
   final screenWidht;
@@ -45,6 +47,15 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
     super.initState();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
     var jsonMenu = jsonDecode(itemsMenu.toString());
+    validateClientToken(context).then((value) {
+      if (value == 'null') {
+        CJNavigator.navigator.push(context,'/login');
+      } else {
+        validateClient(context, value).then((value) {
+          print("Resultado: " + value.toString());
+        });
+      }
+    });
     // sharedPrefs.init().then((value) {
     //   getUserData();
     // });
@@ -203,24 +214,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                       Navigator.pushReplacementNamed(
                                           context, '/login'));
                                 } else if (jsonMenu[index]['action'] ==
-                                    '/fav') {
-                                  Navigator.pushNamed(
-                                    context,
-                                    ProductView.routeName,
-                                    arguments: ProductosDetallesArguments({
-                                      "farmacia_id": null,
-                                      "userQuery": null,
-                                      "favoritos": true,
-                                      "availability": null,
-                                      "stock": "available",
-                                      "priceFilter": null,
-                                      "myLabels": [],
-                                      "myCats": [],
-                                      "title": "Prodcutos favoritos"
-                                    }),
-                                  ).then((value) => setState(() {}));
-                                } else if (jsonMenu[index]['action'] ==
-                                    '/miTienda') {
+                                    '/miTienda-EDITADO') {
                                   bool tokenVendor;
                                   sharedPrefs.init().then((value) {
                                     tokenVendor =
@@ -258,7 +252,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                               "myLabels": [],
                                               "myCats": [],
                                               "tienda": jsonTienda[1],
-                                               "title": "Mi tienda"
+                                              "title": "Mi tienda"
                                             }),
                                           ).then((value) => setState(() {}));
                                         } else {
@@ -285,9 +279,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                 } else {
                                   if (Uri.base.path !=
                                       jsonMenu[index]['action']) {
-                                    Navigator.pushNamed(
-                                            context, jsonMenu[index]['action'])
-                                        .then((value) => setState(() {}));
+                                    CJNavigator.navigator.push(
+                                        context, jsonMenu[index]['action']);
                                   }
                                 }
                               },
@@ -586,7 +579,7 @@ class _DrawerUserState extends State<DrawerUser> {
                 "priceFilter": null,
                 "myLabels": [],
                 "myCats": [],
-                 "title": "Prodcutos favoritos"
+                "title": "Prodcutos favoritos"
               }),
             ).then((value) => setState(() {}));
           } else if (action == '/miTienda') {
@@ -618,7 +611,7 @@ class _DrawerUserState extends State<DrawerUser> {
                         "myLabels": [],
                         "myCats": [],
                         "tienda": jsonTienda[1],
-                         "title": "Mi tienda"
+                        "title": "Mi tienda"
                       }),
                     ).then((value) => setState(() {}));
                   } else {

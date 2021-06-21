@@ -29,6 +29,11 @@ class _PaymentFunctionsState extends State<PaymentFunctions> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   getCards() async {
     setState(() {
       cards = [];

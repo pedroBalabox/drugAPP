@@ -9,6 +9,7 @@ import 'package:drugapp/src/pages/vendedor/editarProducto_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
@@ -21,16 +22,16 @@ import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
 class ProductView extends StatefulWidget {
   static const routeName = '/productosDetalles';
-
+  final bool myStore;
   final dynamic jsonData;
 
-  ProductView({Key key, this.jsonData}) : super(key: key);
+  ProductView({Key key, this.jsonData, this.myStore}) : super(key: key);
 
   @override
   _ProductViewState createState() => _ProductViewState();
 }
 
-class _ProductViewState extends State<ProductView> {
+class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   var prod;
 
   // Filtros de búsqueda
@@ -86,34 +87,67 @@ class _ProductViewState extends State<ProductView> {
   List<Category> _myCat = [];
 
   List<Category> _myLabels = [];
+  bool myStore;
+
+  var newJsonData;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
-    _catalogBloc = CatalogBloc();
-    _catalogBloc.sendEvent.add(GetCatalogEvent());
-    sharedPrefs.init().then((value) {
-      if (widget.jsonData.jsonData['farmacia_id'] != null) {
-        getFarmacia();
-      } else {
-        getCate();
-      }
-    });
-
-    famaciaID = widget.jsonData.jsonData['farmacia_id'];
-    userQuery = widget.jsonData.jsonData['userQuery'];
-    favorite = widget.jsonData.jsonData['favoritos'];
-    availability = widget.jsonData.jsonData['availability'];
-    stock = widget.jsonData.jsonData['stock'];
-    priceFilter = widget.jsonData.jsonData['priceFilter'];
-    myCats = widget.jsonData.jsonData['myCats'];
-    myLabels = widget.jsonData.jsonData['myLabels'];
+    myStore = widget.myStore;
+    if (myStore != null && myStore) {
+      print("Call checkIfAllowed();");
+      checkIfAllowed();
+    } else {
+      print("first mistake");
+      setState(() {
+        newJsonData = widget.jsonData.jsonData;
+      });
+      loadData();
+    }
   }
 
   @override
   void dispose() {
     _catalogBloc.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print("Resumed");
+    }
+  }
+
+  loadData() {
+    setState(() {
+      _catalogBloc = CatalogBloc();
+      _catalogBloc.sendEvent.add(GetCatalogEvent());
+      print("Primero" + newJsonData.toString());
+      sharedPrefs.init().then((value) {
+        if (newJsonData['farmacia_id'] != null) {
+          print("Will get farm");
+          getFarmacia();
+        } else {
+          print("Wont");
+          print("Aquí va" + newJsonData['farmacia'].toString());
+          getCate();
+        }
+      });
+
+      if (myStore != null && !myStore) {
+        famaciaID = widget.jsonData.jsonData['farmacia_id'];
+      }
+      userQuery = widget.jsonData.jsonData['userQuery'];
+      favorite = widget.jsonData.jsonData['favoritos'];
+      availability = widget.jsonData.jsonData['availability'];
+      stock = widget.jsonData.jsonData['stock'];
+      priceFilter = widget.jsonData.jsonData['priceFilter'];
+      myCats = widget.jsonData.jsonData['myCats'];
+      myLabels = widget.jsonData.jsonData['myLabels'];
+    });
   }
 
   getCate() async {
@@ -283,6 +317,39 @@ class _ProductViewState extends State<ProductView> {
         });
         getProductos();
       } else {}
+    });
+  }
+
+  checkIfAllowed() {
+    bool tokenVendor;
+    sharedPrefs.init().then((value) {
+      tokenVendor = sharedPrefs.partnerUserToken == '' ? false : true;
+      if (tokenVendor) {
+        RestFun rest = RestFun();
+        var jsonTienda;
+        rest
+            .restService('', '${urlApi}obtener/mi-farmacia',
+                sharedPrefs.partnerUserToken, 'get')
+            .then((value) {
+          if (value['status'] == 'server_true') {
+            setState(() {
+              jsonTienda = jsonDecode(value['response']);
+              famaciaID = jsonTienda[1]['farmacia_id'].toString();
+              newJsonData = widget.jsonData.jsonData;
+              newJsonData["farmacia"] = jsonTienda[1];
+              newJsonData["farmacia_id"] = famaciaID;
+              print("ID de farmacia: " + newJsonData["farmacia"].toString());
+              loadData();
+            });
+          } else {
+            //CJNavigator.navigator.push(context, '/farmacia/login');
+            Navigator.pushReplacementNamed(context, '/cliente/farmacia/login');
+          }
+        });
+      } else {
+        //CJNavigator.navigator.push(context, '/farmacia/login');
+        Navigator.pushReplacementNamed(context, '/cliente/farmacia/login');
+      }
     });
   }
 
@@ -1582,13 +1649,8 @@ class _ProductViewState extends State<ProductView> {
           Flexible(
             flex: 3,
             child: InkWell(
-              onTap: () => Navigator.pushNamed(
-                context,
-                ProductoDetalles.routeName,
-                arguments: ProductoDetallesArguments(
-                  productoModel.idDeProducto,
-                ),
-              ).then((value) => getProductos()),
+              onTap: () => CJNavigator.navigator.push(context,
+                  '/producto/' + productoModel.idDeProducto.toString()),
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

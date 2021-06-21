@@ -20,9 +20,9 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 class ProductoDetalles extends StatefulWidget {
   static const routeName = '/detallesProdcuto';
 
-  final dynamic jsonProdcuto;
+  final dynamic productID;
 
-  ProductoDetalles({Key key, this.jsonProdcuto}) : super(key: key);
+  ProductoDetalles({Key key, this.productID}) : super(key: key);
 
   @override
   _ProductoDetallesState createState() => _ProductoDetallesState();
@@ -57,7 +57,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
 
   getProdcut() async {
     var arrayData = {
-      "id_de_producto": widget.jsonProdcuto.jsonProducto.toString()
+      "id_de_producto": widget.productID.toString()
     };
     await restFun
         .restService(arrayData, '$apiUrl/obtener/producto',
@@ -761,7 +761,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
 
   addFav() async {
     var arrayData = {
-      "id_de_producto": widget.jsonProdcuto.jsonProducto.toString()
+      "id_de_producto": widget.productID.toString()
     };
 
     String url = fav ? '$apiUrl/desmarcar/favorito' : '$apiUrl/marcar/favorito';

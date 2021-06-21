@@ -6,6 +6,7 @@ import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
@@ -178,7 +179,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                     ),
                     SizedBox(height: smallPadding),
                     Text(
-                      'Igresa con el correo y contraseña que usaste para crear tu cuenta',
+                      'Ingresa con el correo y contraseña que usaste para crear tu cuenta',
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.w300),
@@ -444,36 +445,14 @@ class _LoginVendedorState extends State<LoginVendedor> {
         userModel = UserModel.fromJson(jsonUser[1]);
         savePartnerModel(userModel).then((value) {
           if (widget.miTienda) {
-            var jsonTienda;
-            rest
-                .restService('', '${urlApi}obtener/mi-farmacia',
-                    sharedPrefs.partnerUserToken, 'get')
-                .then((value) {
-              if (value['status'] == 'server_true') {
-                setState(() {
-                  jsonTienda = jsonDecode(value['response']);
-                });
-
-                Navigator.pushNamed(
-                  context,
-                  ProductView.routeName,
-                  arguments: ProductosDetallesArguments({
-                    "farmacia_id": jsonTienda[1]['farmacia_id'],
-                    "userQuery": null,
-                    "favoritos": false,
-                    "availability": null,
-                    "stock": "available",
-                    "priceFilter": null,
-                    "myLabels": [],
-                    "myCats": [],
-                    "tienda": jsonTienda[1]
-                  }),
-                ).then((value) => setState(() {}));
-              }
-            });
+            CJNavigator.navigator.push(context, '/miTienda', true);
+            //Navigator.pushNamedAndRemoveUntil(context, '/miTienda', (route) => false);
           } else {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/farmacia/miCuenta', (route) => false);
+            /* Navigator.pushNamedAndRemoveUntil(
+                context, '/farmacia/miCuenta', (route) => false); */
+            CJNavigator.navigator.push(context, '/farmacia/miCuenta', true);
+            /* Navigator.pushNamedAndRemoveUntil(
+                context, '/farmacia/miCuenta', (route) => false); */
           }
         });
       }
