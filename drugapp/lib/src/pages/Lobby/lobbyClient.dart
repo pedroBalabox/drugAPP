@@ -1,7 +1,6 @@
 import 'package:drugapp/src/pages/Lobby/validate_page.dart';
 import 'package:drugapp/src/pages/client/carrito_page.dart';
 import 'package:drugapp/src/pages/client/categorie_page.dart';
-import 'package:drugapp/src/pages/client/fav_page.dart';
 import 'package:drugapp/src/pages/client/home_page.dart';
 import 'package:drugapp/src/pages/client/login_page.dart';
 import 'package:drugapp/src/pages/client/miCuenta_page.dart';
@@ -10,7 +9,6 @@ import 'package:drugapp/src/pages/client/register_page.dart';
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/pages/client/tiendas_page.dart';
 import 'package:drugapp/src/pages/vendedor/loginVendedor_page.dart';
-import 'package:drugapp/src/utils/route.dart';
 import 'package:flutter/material.dart';
 import 'package:drugapp/src/pages/vendedor/cargarProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/homeVendedor_page.dart';
@@ -230,7 +228,7 @@ class _LobbyClientState extends State<LobbyClient> {
             : Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/login', (route) => false);
         break;
-      case '/farmacia/miTienda':
+      case '/farmacia/miTienda/':
         clientAuth
             ? Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => MiTiendaVendedor()),
@@ -238,7 +236,7 @@ class _LobbyClientState extends State<LobbyClient> {
             : Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/login', (route) => false);
         break;
-      case '/farmacia/cargar-productos':
+      case '/farmacia/cargar-productos/':
         clientAuth
             ? Navigator.of(context)
                 .push(

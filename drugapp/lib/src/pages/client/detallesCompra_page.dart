@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:drugapp/src/service/restFunction.dart';
+import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
@@ -11,7 +13,9 @@ class DetallesCompra extends StatefulWidget {
 
   final dynamic jsonCompra;
 
-  DetallesCompra({this.jsonCompra});
+  final String idCompra;
+
+  DetallesCompra({this.jsonCompra, this.idCompra});
 
   @override
   _DetallesCompraState createState() => _DetallesCompraState();
@@ -21,38 +25,77 @@ class _DetallesCompraState extends State<DetallesCompra> {
   var prod;
   Widget statusWidget;
 
+  RestFun restFun = RestFun();
+
+  String errorStr;
+  bool load = true;
+  bool error = false;
+  var orden;
+
   @override
   void initState() {
-    getPrducts();
+    sharedPrefs.init().then((value) => gerCompras());
     super.initState();
   }
 
   getPrducts() {
-    prod = widget.jsonCompra.jsonCompra['relaciones'];
+    setState(() {
+      prod = orden['relaciones'];
+      load = false;
+    });
     print(prod);
+  }
+
+  gerCompras() async {
+    var arrayData = {"id_de_orden": widget.idCompra.toString()};
+
+    await restFun
+        .restService(
+            arrayData, '$apiUrl/ver/orden', sharedPrefs.clientToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp)[1];
+        setState(() {
+          orden = dataResp['details'];
+        });
+        getPrducts();
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.jsonCompra.jsonCompra['estatus_de_envio']) {
-      case 'preparing':
-        statusWidget = tabProceso();
-        break;
-      case 'on_the_way':
-        statusWidget = tabCamino();
-        break;
-      case 'delivered':
-        statusWidget = tabEntregado();
-        break;
-      default:
-        statusWidget = tabProceso();
-        break;
+    if (orden != null) {
+      switch (orden['status']) {
+        case 'preparing':
+          statusWidget = tabProceso();
+          break;
+        case 'on_the_way':
+          statusWidget = tabCamino();
+          break;
+        case 'delivered':
+          statusWidget = tabEntregado();
+          break;
+        default:
+          statusWidget = tabProceso();
+          break;
+      }
     }
     return ResponsiveAppBar(
         screenWidht: MediaQuery.of(context).size.width,
-        body: bodyCompra(),
-        title:
-            "Detalles de compra ${widget.jsonCompra.jsonCompra['id_de_orden']}");
+        body: load
+            ? bodyLoad(context)
+            : error
+                ? errorWidget(errorStr, context)
+                : bodyCompra(),
+        title: "Detalles de compra");
   }
 
   bodyCompra() {
@@ -76,7 +119,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Compra ${widget.jsonCompra.jsonCompra['id_de_orden']} - ${widget.jsonCompra.jsonCompra['fecha_de_creacion']}',
+          'Compra ${orden['id_de_orden']} - ${orden['fecha_de_creacion']}',
           textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
@@ -131,7 +174,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Compra ${widget.jsonCompra.jsonCompra['id_de_orden']} - ${widget.jsonCompra.jsonCompra['fecha_de_creacion']}',
+          'Compra ${orden['id_de_orden']} - ${orden['fecha_de_creacion']}',
           textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
@@ -186,7 +229,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Compra ${widget.jsonCompra.jsonCompra['id_de_orden']} - ${widget.jsonCompra.jsonCompra['fecha_de_creacion']}',
+          'Compra ${orden['id_de_orden']} - ${orden['fecha_de_creacion']}',
           textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
@@ -569,7 +612,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
                   fontSize: 17),
             ),
             Text(
-              '\$${widget.jsonCompra.jsonCompra['monto_total']} MXN',
+              '\$${orden['monto_total']} MXN',
               style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
@@ -596,7 +639,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
               flex: 2,
               child: prodjson['galeria'].length == 0
                   ? getAsset('logoDrug.png', 60)
-                  : Image.network(prodjson['galeria'][0]['url']),
+                  : getNetworkImage(prodjson['galeria'][0]['url']),
             ),
             Flexible(
               flex: 4,
@@ -658,7 +701,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
   }
 
   pago() {
-    var jsonLogs = jsonDecode(widget.jsonCompra.jsonCompra['logs_de_cargo']);
+    var jsonLogs = jsonDecode(orden['detalles_cargo']);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -709,7 +752,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             ),
             Flexible(
               child: Text(
-                '${widget.jsonCompra.jsonCompra['colonia']}, ${widget.jsonCompra.jsonCompra['colonia']}, ${widget.jsonCompra.jsonCompra['numero_exterior']}, ${widget.jsonCompra.jsonCompra['numero_interior']}, ${widget.jsonCompra.jsonCompra['codigo_postal']}',
+                '${orden['colonia']}, ${orden['colonia']}, ${orden['numero_exterior']}, ${orden['numero_interior']}, ${orden['codigo_postal']}',
                 style: TextStyle(color: Colors.black),
               ),
             ),
@@ -726,7 +769,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             ),
             Flexible(
               child: Text(
-                '${widget.jsonCompra.jsonCompra['cliente']}',
+                '${orden['cliente']}',
                 style: TextStyle(color: Colors.black),
               ),
             ),

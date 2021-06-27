@@ -8,6 +8,7 @@ import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/loginVendedor_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
+import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
@@ -47,18 +48,30 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
     super.initState();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
     var jsonMenu = jsonDecode(itemsMenu.toString());
-    validateClientToken(context).then((value) {
-      if (value == 'null') {
-        CJNavigator.navigator.push(context,'/login');
-      } else {
-        validateClient(context, value).then((value) {
-          print("Resultado: " + value.toString());
-        });
-      }
-    });
+    validateToken();
+    //  validateClientToken(context).then((value) {
+    //   if (value == 'null') {
+    //     CJNavigator.navigator.push(context, '/login');
+    //   } else {
+    //     validateClient(context, value).then((value) {
+    //       print("Resultado: " + value.toString());
+    //       if (!value) {
+    //         CJNavigator.navigator.push(context, '/login');
+    //       }
+    //     });
+    //   }
+    // });
     // sharedPrefs.init().then((value) {
     //   getUserData();
     // });
+  }
+
+  validateToken() async {
+    await validateClientToken(context).then((value) {
+      if (!value) {
+        Navigator.pushNamed(context, '/login').then((value) => setState(() {}));
+      }
+    });
   }
 
   @override
@@ -168,9 +181,9 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
                             onTap: () {
-                              if (Uri.base.path != '/farmacia/miTienda') {
+                              if (Uri.base.path != '/farmacia/miTienda/') {
                                 Navigator.pushNamed(
-                                        context, '/farmacia/miTienda')
+                                        context, '/farmacia/miTienda/')
                                     .then((value) => setState(() {}));
                               }
                             },
@@ -189,7 +202,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                       //         CircleAvatar(
                       //           backgroundImage: userModel.imgUrl == null
                       //               ? AssetImage('images/logoDrug.png')
-                      //               : NetworkImage(userModel.imgUrl),
+                      //               : getNetworkImage(userModel.imgUrl),
                       //         )
                       //       ],
                       //     )),
@@ -210,9 +223,11 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                           child: InkWell(
                               onTap: () {
                                 if (jsonMenu[index]['action'] == "/logout") {
-                                  logoutUser().then((value) =>
-                                      Navigator.pushReplacementNamed(
-                                          context, '/login'));
+                                  logoutUser()
+                                      .then((value) =>
+                                          Navigator.pushReplacementNamed(
+                                              context, '/login'))
+                                      .then((value) => setState(() {}));
                                 } else if (jsonMenu[index]['action'] ==
                                     '/miTienda-EDITADO') {
                                   bool tokenVendor;
@@ -276,11 +291,14 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                           .then((value) => setState(() {}));
                                     }
                                   });
+                                } else if (jsonMenu[index]['action'] == '/') {
+                                  CJNavigator.navigator.push(context, '/');
                                 } else {
                                   if (Uri.base.path !=
                                       jsonMenu[index]['action']) {
-                                    CJNavigator.navigator.push(
-                                        context, jsonMenu[index]['action']);
+                                    Navigator.pushNamed(
+                                            context, jsonMenu[index]['action'])
+                                        .then((value) => setState(() {}));
                                   }
                                 }
                               },
@@ -582,59 +600,9 @@ class _DrawerUserState extends State<DrawerUser> {
                 "title": "Prodcutos favoritos"
               }),
             ).then((value) => setState(() {}));
-          } else if (action == '/miTienda') {
-            bool tokenVendor;
-            sharedPrefs.init().then((value) {
-              tokenVendor = sharedPrefs.partnerUserToken == '' ? false : true;
-
-              if (tokenVendor) {
-                RestFun rest = RestFun();
-                var jsonTienda;
-                rest
-                    .restService('', '${urlApi}obtener/mi-farmacia',
-                        sharedPrefs.partnerUserToken, 'get')
-                    .then((value) {
-                  if (value['status'] == 'server_true') {
-                    setState(() {
-                      jsonTienda = jsonDecode(value['response']);
-                    });
-                    Navigator.pushNamed(
-                      context,
-                      ProductView.routeName,
-                      arguments: ProductosDetallesArguments({
-                        "farmacia_id": jsonTienda[1]['farmacia_id'],
-                        "userQuery": null,
-                        "favoritos": false,
-                        "availability": null,
-                        "stock": "available",
-                        "priceFilter": null,
-                        "myLabels": [],
-                        "myCats": [],
-                        "tienda": jsonTienda[1],
-                        "title": "Mi tienda"
-                      }),
-                    ).then((value) => setState(() {}));
-                  } else {
-                    //  Navigator.pushNamed(context, '/farmacia/login/miTienda')
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (context) => LoginVendedor(
-                                  miTienda: true,
-                                )))
-                        .then((value) => setState(() {}));
-                  }
-                });
-              } else {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                        builder: (context) => LoginVendedor(
-                              miTienda: true,
-                            )))
-                    .then((value) => setState(() {}));
-              }
-            });
           } else {
             if (Uri.base.path != action) {
+              // print('ok');
               Navigator.pushNamed(context, action)
                   .then((value) => setState(() {}));
             }
@@ -874,7 +842,7 @@ class _DrawerUserState extends State<DrawerUser> {
 //                               CircleAvatar(
 //                                 backgroundImage: userModel.imgUrl == null
 //                                     ? AssetImage('images/logoDrug.png')
-//                                     : NetworkImage(userModel.imgUrl),
+//                                     : getNetworkImage(userModel.imgUrl),
 //                               )
 //                             ],
 //                           )),
@@ -1031,7 +999,7 @@ class _DrawerUserState extends State<DrawerUser> {
 //                           image: DecorationImage(
 //                             image: userModel.imgUrl == null
 //                                 ? AssetImage('images/logoDrug.png')
-//                                 : NetworkImage(userModel.imgUrl),
+//                                 : getNetworkImage(userModel.imgUrl),
 //                             fit: BoxFit.cover,
 //                           ),
 //                         ),

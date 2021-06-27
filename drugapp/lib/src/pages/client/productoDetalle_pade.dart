@@ -14,6 +14,7 @@ import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
@@ -56,9 +57,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
   }
 
   getProdcut() async {
-    var arrayData = {
-      "id_de_producto": widget.productID.toString()
-    };
+    var arrayData = {"id_de_producto": widget.productID.toString()};
     await restFun
         .restService(arrayData, '$apiUrl/obtener/producto',
             sharedPrefs.clientToken, 'post')
@@ -726,29 +725,32 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                   ),
                 ),
                 SizedBox(width: smallPadding * 1.5),
-                Container(
-                  height: 37,
-                  width: 37,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.1),
-                          blurRadius: 4, // soften the shadow
-                          spreadRadius: 1.0, //extend the shadow
-                          offset: Offset(
-                            0.0, // Move to right 10  horizontally
-                            3.0, // Move to bottom 10 Vertically
-                          ),
-                        )
-                      ],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(100)),
-                  child: Icon(
-                    Icons.share_outlined,
-                    color: Theme.of(context).primaryColor,
-                    size: 25,
+                InkWell(
+                  onTap: () => _displayShareDialog(productModel),
+                  child: Container(
+                    height: 37,
+                    width: 37,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.1),
+                            blurRadius: 4, // soften the shadow
+                            spreadRadius: 1.0, //extend the shadow
+                            offset: Offset(
+                              0.0, // Move to right 10  horizontally
+                              3.0, // Move to bottom 10 Vertically
+                            ),
+                          )
+                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(100)),
+                    child: Icon(
+                      Icons.share_outlined,
+                      color: Theme.of(context).primaryColor,
+                      size: 25,
+                    ),
                   ),
                 ),
               ],
@@ -760,9 +762,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
   }
 
   addFav() async {
-    var arrayData = {
-      "id_de_producto": widget.productID.toString()
-    };
+    var arrayData = {"id_de_producto": widget.productID.toString()};
 
     String url = fav ? '$apiUrl/desmarcar/favorito' : '$apiUrl/marcar/favorito';
 
@@ -1053,6 +1053,81 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                 ),
               ),
             );
+          });
+        });
+  }
+
+  Future _displayShareDialog(producto) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, StateSetter setState) {
+            return AlertDialog(
+                scrollable: true,
+                contentPadding: EdgeInsets.symmetric(
+                    horizontal: smallPadding, vertical: smallPadding * 3),
+                content: Container(
+                    height: MediaQuery.of(context).size.height / 5,
+                    width: MediaQuery.of(context).size.width / 3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                height: MediaQuery.of(context).size.height / 12,
+                                child: productModel.galeria.length == 0
+                                    ? Image.asset('images/logoDrug.png')
+                                    : getNetworkImage(
+                                        productModel.galeria[0]['url'],
+                                      )),
+                            SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                "Copia este link y comparte ${producto.nombre}.",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 15.0,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                              color: bgGrey,
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Row(
+                            children: [
+                              Container(
+                                child: Flexible(
+                                  child: Text(
+                                    '¡Ve ${producto.nombre} en Drug! www.app.drugsiteonline.com/farmacia/${producto.nombre}/productos',
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                              BotonSimple(
+                                  action: () {
+                                    Clipboard.setData(ClipboardData(
+                                        text:
+                                            "¡Ve ${producto.nombre} en Drug! www.app.drugsiteonline.com/farmacia/${producto.nombre}/productos"));
+                                  },
+                                  contenido: Text(
+                                    'Copiar',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  estilo: estiloBotonPrimary)
+                            ],
+                          ),
+                        )
+                      ],
+                    )));
           });
         });
   }

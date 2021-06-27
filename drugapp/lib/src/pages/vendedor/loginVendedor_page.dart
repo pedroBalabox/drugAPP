@@ -11,6 +11,7 @@ import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginVendedor extends StatefulWidget {
@@ -32,7 +33,6 @@ class _LoginVendedorState extends State<LoginVendedor> {
   void initState() {
     sharedPrefs.init();
     super.initState();
-    print('---ok');
   }
 
   @override
@@ -61,13 +61,13 @@ class _LoginVendedorState extends State<LoginVendedor> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/drug3.jpg',
+                                'images/coverDrug.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
                               ),
                               Opacity(
-                                  opacity: 0.75,
+                                  opacity: 0.6,
                                   child: Image.asset('images/coverColor.png',
                                       width: double.maxFinite,
                                       height: 400,
@@ -128,13 +128,13 @@ class _LoginVendedorState extends State<LoginVendedor> {
                     flex: 6,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/drug3.jpg',
+                        'images/coverDrug.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
                       ),
                       Opacity(
-                          opacity: 0.75,
+                          opacity: 0.6,
                           child: Image.asset('images/coverColor.png',
                               width: double.maxFinite,
                               height: 400,
@@ -206,7 +206,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         ? Container()
                         : InkWell(
                             onTap: () => Navigator.pushNamed(
-                                context, '/farmacia/registro'),
+                                context, '/farmacia/registro/'),
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(

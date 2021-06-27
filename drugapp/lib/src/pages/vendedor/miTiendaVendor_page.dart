@@ -1,14 +1,19 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
+import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
 import 'package:drugapp/src/pages/vendedor/editarProducto_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
+import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
+import 'package:drugapp/src/widget/drawerVendedor_widget.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,18 +22,17 @@ import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
-class ProductView extends StatefulWidget {
-  static const routeName = '/productosDetalles';
-  final bool myStore;
+class MiTiendaPage extends StatefulWidget {
   final dynamic jsonData;
 
-  ProductView({Key key, this.jsonData, this.myStore = false}) : super(key: key);
+  MiTiendaPage({Key key, this.jsonData}) : super(key: key);
 
   @override
-  _ProductViewState createState() => _ProductViewState();
+  _MiTiendaPageState createState() => _MiTiendaPageState();
 }
 
-class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
+class _MiTiendaPageState extends State<MiTiendaPage>
+    with WidgetsBindingObserver {
   var prod;
 
   // Filtros de búsqueda
@@ -92,68 +96,34 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
-    myStore = widget.myStore;
-    if (myStore != null && myStore) {
-      // print("Call checkIfAllowed();");
-      checkIfAllowed();
-    } else {
-      // print("first mistake");
-      setState(() {
-        newJsonData = widget.jsonData.jsonData;
-      });
-      loadData();
-    }
-  }
-
-  @override
-  void dispose() {
-    _catalogBloc.dispose();
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      print("Resumed");
-    }
+    // print("first mistake");
+    setState(() {
+      newJsonData = widget.jsonData;
+    });
+    loadData();
   }
 
   loadData() {
     setState(() {
-      _catalogBloc = CatalogBloc();
-      _catalogBloc.sendEvent.add(GetCatalogEvent());
-      print("Primero" + newJsonData.toString());
       sharedPrefs.init().then((value) {
-        if (newJsonData['farmacia_id'] != null) {
-          print("Will get farm");
-          getFarmacia();
-        } else {
-          print("Wont");
-          print("Aquí va" + newJsonData['farmacia'].toString());
-          getCate();
-        }
+        getFarmacia();
       });
 
-      if (myStore != null && !myStore) {
-        famaciaID = widget.jsonData.jsonData['farmacia_id'];
-      }
-      famaciaID = widget.jsonData.jsonData['farmacia_id'];
-      userQuery = widget.jsonData.jsonData['userQuery'];
-      favorite = widget.jsonData.jsonData['favoritos'];
-      availability = widget.jsonData.jsonData['availability'];
-      stock = widget.jsonData.jsonData['stock'];
-      priceFilter = widget.jsonData.jsonData['priceFilter'];
-      myCats = widget.jsonData.jsonData['myCats'];
-      myLabels = widget.jsonData.jsonData['myLabels'];
+      userQuery = widget.jsonData['userQuery'];
+      favorite = widget.jsonData['favoritos'];
+      availability = widget.jsonData['availability'];
+      stock = widget.jsonData['stock'];
+      priceFilter = widget.jsonData['priceFilter'];
+      myCats = widget.jsonData['myCats'];
+      myLabels = widget.jsonData['myLabels'];
     });
   }
 
   getCate() async {
     await rest
-        .restService(
-            null, '${urlApi}obtener/categorias', sharedPrefs.clientToken, 'get')
+        .restService(null, '${urlApi}obtener/categorias',
+            sharedPrefs.partnerUserToken, 'get')
         .then((value) {
       if (value['status'] == 'server_true') {
         _itemCat = value['response'];
@@ -176,10 +146,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
         }
 
         for (int j = 0; j <= _categories.length - 1; j++) {
-          for (int i = 0;
-              i <= widget.jsonData.jsonData['myCats'].length - 1;
-              i++) {
-            if (widget.jsonData.jsonData['myCats'][i] == _categories[j].id) {
+          for (int i = 0; i <= widget.jsonData['myCats'].length - 1; i++) {
+            if (widget.jsonData['myCats'][i] == _categories[j].id) {
               _myCat.add(_categories[j]);
             }
           }
@@ -198,8 +166,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
 
   getLabels() async {
     await rest
-        .restService(
-            null, '${urlApi}obtener/etiquetas', sharedPrefs.clientToken, 'get')
+        .restService(null, '${urlApi}obtener/etiquetas',
+            sharedPrefs.partnerUserToken, 'get')
         .then((value) {
       if (value['status'] == 'server_true') {
         _itemLabel = value['response'];
@@ -222,10 +190,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
         }
 
         for (int j = 0; j <= _labels.length - 1; j++) {
-          for (int i = 0;
-              i <= widget.jsonData.jsonData['myLabels'].length - 1;
-              i++) {
-            if (widget.jsonData.jsonData['myLabels'][i] == _labels[j].id) {
+          for (int i = 0; i <= widget.jsonData['myLabels'].length - 1; i++) {
+            if (widget.jsonData['myLabels'][i] == _labels[j].id) {
               _myLabels.add(_labels[j]);
             }
           }
@@ -246,10 +212,9 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   }
 
   getFarmacia() async {
-    var arrayData = {"farmacia_id": widget.jsonData.jsonData['farmacia_id']};
     await rest
-        .restService(arrayData, '$apiUrl/perfil/farmacia',
-            sharedPrefs.clientToken, 'post')
+        .restService('', '${urlApi}obtener/mi-farmacia',
+            sharedPrefs.partnerUserToken, 'get')
         .then((value) {
       if (value['status'] == 'server_true') {
         var dataResp = value['response'];
@@ -257,6 +222,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
         setState(() {
           miTienda = dataResp[1];
           loadmiTienda = false;
+          famaciaID = miTienda['farmacia_id'];
         });
         getCate();
         getProductos();
@@ -285,7 +251,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
 
     await rest
         .restService(arrayData, '$apiUrl/listar/producto',
-            sharedPrefs.clientToken, 'post')
+            sharedPrefs.partnerUserToken, 'post')
         .then((value) {
       if (value['status'] == 'server_true') {
         var dataResp = value['response'];
@@ -305,96 +271,81 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
     });
   }
 
-  addFav(idProd, fav) async {
-    var arrayData = {"id_de_producto": idProd};
+  // addFav(idProd, fav) async {
+  //   var arrayData = {"id_de_producto": idProd};
 
-    String url = fav ? '$apiUrl/desmarcar/favorito' : '$apiUrl/marcar/favorito';
+  //   String url = fav ? '$apiUrl/desmarcar/favorito' : '$apiUrl/marcar/favorito';
 
-    await rest
-        .restService(arrayData, url, sharedPrefs.clientToken, 'post')
-        .then((value) {
-      if (value['status'] == 'server_true') {
-        setState(() {
-          fav = !fav;
-        });
-        getProductos();
-      } else {}
-    });
-  }
+  //   await rest
+  //       .restService(arrayData, url, sharedPrefs.partnerUserToken, 'post')
+  //       .then((value) {
+  //     if (value['status'] == 'server_true') {
+  //       setState(() {
+  //         fav = !fav;
+  //       });
+  //       getProductos();
+  //     } else {}
+  //   });
+  // }
 
-  checkIfAllowed() {
-    bool tokenVendor;
-    sharedPrefs.init().then((value) {
-      tokenVendor = sharedPrefs.partnerUserToken == '' ? false : true;
-      if (tokenVendor) {
-        RestFun rest = RestFun();
-        var jsonTienda;
-        rest
-            .restService('', '${urlApi}obtener/mi-farmacia',
-                sharedPrefs.partnerUserToken, 'get')
-            .then((value) {
-          if (value['status'] == 'server_true') {
-            setState(() {
-              jsonTienda = jsonDecode(value['response']);
-              famaciaID = jsonTienda[1]['farmacia_id'].toString();
-              newJsonData = widget.jsonData.jsonData;
-              newJsonData["farmacia"] = jsonTienda[1];
-              newJsonData["farmacia_id"] = famaciaID;
-              print("ID de farmacia: " + newJsonData["farmacia"].toString());
-              loadData();
-            });
-          } else {
-            //CJNavigator.navigator.push(context, '/farmacia/login');
-            Navigator.pushReplacementNamed(context, '/cliente/farmacia/login')
-                .then((value) => setState(() {}));
-          }
-        });
-      } else {
-        //CJNavigator.navigator.push(context, '/farmacia/login');
-        Navigator.pushReplacementNamed(context, '/cliente/farmacia/login')
-            .then((value) => setState(() {}));
-      }
-    });
-  }
+  // checkIfAllowed() async {
+  //   bool tokenVendor;
+  //   await sharedPrefs.init().then((value) {
+  //     tokenVendor = sharedPrefs.partnerUserToken == '' ? false : true;
+  //     if (tokenVendor) {
+  //       RestFun rest = RestFun();
+  //       var jsonTienda;
+  //       rest
+  //           .restService('', '${urlApi}obtener/mi-farmacia',
+  //               sharedPrefs.partnerUserToken, 'get')
+  //           .then((value) {
+  //         if (value['status'] == 'server_true') {
+  //           setState(() {
+  //             jsonTienda = jsonDecode(value['response']);
+  //             famaciaID = jsonTienda[1]['farmacia_id'].toString();
+  //             newJsonData = widget.jsonData;
+  //             newJsonData["farmacia"] = jsonTienda[1];
+  //             newJsonData["farmacia_id"] = famaciaID;
+  //             print("ID de farmacia: " + newJsonData["farmacia"].toString());
+  //             loadData();
+  //           });
+  //         } else {
+  //           //CJNavigator.navigator.push(context, '/farmacia/login');
+  //           // Navigator.pushReplacementNamed(context, '/cliente/farmacia/login')
+  //           //     .then((value) => setState(() {}));
+  //         }
+  //       });
+  //     } else {
+  //       //CJNavigator.navigator.push(context, '/farmacia/login');
+  //       // Navigator.pushReplacementNamed(context, '/cliente/farmacia/login')
+  //       //     .then((value) => setState(() {}));
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return ResponsiveAppBar(
+    return ResponsiveAppBarVendedor(
         screenWidht: MediaQuery.of(context).size.width,
-        body: StreamBuilder<List<ProductoModel>>(
-            initialData: [],
-            stream: _catalogBloc.catalogStream,
-            builder: (context, snapshot) {
-              return widget.jsonData.jsonData['farmacia_id'] == null
-                  ? load
-                      ? bodyLoad(context)
-                      : error
-                          ? errorWidget(errorStr, context)
-                          : bodyCategoria(snapshot)
-                  : loadmiTienda
-                      ? bodyLoad(context)
-                      : miTienda['estatus'] == 'approved'
-                          ? load
-                              ? bodyLoad(context)
-                              : error
-                                  ? errorWidget(errorStr, context)
-                                  : bodyCategoria(snapshot)
-                          : Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: size.width > 700
-                                      ? size.width / 3
-                                      : medPadding * .5,
-                                  vertical: medPadding * 1.5),
-                              color: bgGrey,
-                              width: size.width,
-                              child: statusTienda(),
-                            );
-            }),
-        // : bodyTienda(),
-        title: widget.jsonData.jsonData['title'] == null
-            ? 'Productos'
-            : widget.jsonData.jsonData['title']);
+        title: widget.jsonData['title'],
+        body: loadmiTienda
+            ? bodyLoad(context)
+            : miTienda['estatus'] == 'approved'
+                ? load
+                    ? bodyLoad(context)
+                    : error
+                        ? errorWidget(errorStr, context)
+                        : bodyCategoria()
+                : Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:
+                            size.width > 700 ? size.width / 3 : medPadding * .5,
+                        vertical: medPadding * 1.5),
+                    color: bgGrey,
+                    width: size.width,
+                    child: statusTienda(),
+                  ));
   }
 
   statusTienda() {
@@ -789,7 +740,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
     }
   }
 
-  bodyCategoria(snapshot) {
+  bodyCategoria() {
     return Container(
       color: bgGrey,
       child: Column(
@@ -944,11 +895,9 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                widget.jsonData.jsonData['farmacia_id'] != null
-                    ? cardTienda()
-                    : Container(),
+                cardTienda(),
                 Flexible(
-                  child: detallesTienda(snapshot.data),
+                  child: detallesTienda(),
                 ),
               ],
             ),
@@ -958,7 +907,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
     );
   }
 
-  detallesTienda(snapshot) {
+  detallesTienda() {
     var size = MediaQuery.of(context).size;
 
     return size.width > 900
@@ -1205,7 +1154,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                         ? bodyLoad(context)
                         : errorProd
                             ? errorWidget(errorStrProd, context)
-                            : listProducts(snapshot))
+                            : listProducts())
               ],
             ),
           )
@@ -1216,7 +1165,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 ? bodyLoad(context)
                 : errorProd
                     ? errorWidget(errorStrProd, context)
-                    : listProducts(snapshot),
+                    : listProducts(),
           );
   }
 
@@ -1292,9 +1241,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       ),
                     ),
                     InkWell(
-                      onTap: () => _displayDialog(miTienda),
-                      // Clipboard.setData(
-                      //     ClipboardData(text: "¡Compatrir url de Tienda!")),
+                      onTap: () => Clipboard.setData(
+                          ClipboardData(text: "¡Compatrir url de Tienda!")),
                       child: Container(
                         height: 37,
                         width: 37,
@@ -1332,22 +1280,18 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                 ),
-                !widget.myStore
-                    ? Container()
-                    : SizedBox(
-                        height: smallPadding,
-                      ),
-                !widget.myStore
-                    ? Container()
-                    : BotonSimple(
-                        contenido: Text('Link a panel web',
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
-                        estilo: estiloBotonPrimary,
-                        action: () => launchURL(
-                            'https://app.drugsiteonline.com/farmacia/login'),
-                      )
+                SizedBox(
+                  height: smallPadding,
+                ),
+                BotonSimple(
+                  contenido: Text('Link a panel web',
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                  estilo: estiloBotonPrimary,
+                  action: () => launchURL(
+                      'https://app.drugsiteonline.com/farmacia/login'),
+                )
                 // Align(
                 //   alignment: Alignment.bottomCenter,
                 //   child: Row(
@@ -1482,7 +1426,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
     });
   }
 
-  listProducts(snapshot) {
+  listProducts() {
     return prod.length == 0
         ? Center(
             child: Column(
@@ -1510,26 +1454,17 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 // Generate 100 widgets that display their index in the List.
                 children: List.generate(
                     _isSearching ? searchList.length : prod.length, (index) {
-                  return productFav(true,
-                      _isSearching ? searchList[index] : prod[index], snapshot);
+                  return productFav(
+                      true, _isSearching ? searchList[index] : prod[index]);
                 }),
               ))
             ],
           );
   }
 
-  productFav(fav, prod, snapshot) {
+  productFav(fav, prod) {
     bool inCart = false;
     int index;
-
-    if (snapshot.length > 0) {
-      for (int i = 0; i <= snapshot.length - 1; i++) {
-        if (snapshot[i].idDeProducto == prod['id_de_producto']) {
-          inCart = true;
-          index = i;
-        }
-      }
-    }
 
     var size = MediaQuery.of(context).size;
     // final double itemHeight = 280;
@@ -1578,35 +1513,31 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                         ),
                   Align(
                       alignment: Alignment.topRight,
-                      child: InkWell(
-                        onTap: () => addFav(
-                            productoModel.idDeProducto, productoModel.favorito),
-                        child: Container(
-                          height: 25,
-                          width: 25,
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.1),
-                                  blurRadius: 4, // soften the shadow
-                                  spreadRadius: 1.0, //extend the shadow
-                                  offset: Offset(
-                                    0.0, // Move to right 10  horizontally
-                                    3.0, // Move to bottom 10 Vertically
-                                  ),
-                                )
-                              ],
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100)),
-                          child: Icon(
-                            favProduct
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_outline,
-                            color: Colors.pink[300],
-                            size: 17,
-                          ),
+                      child: Container(
+                        height: 25,
+                        width: 25,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(0, 0, 0, 0.1),
+                                blurRadius: 4, // soften the shadow
+                                spreadRadius: 1.0, //extend the shadow
+                                offset: Offset(
+                                  0.0, // Move to right 10  horizontally
+                                  3.0, // Move to bottom 10 Vertically
+                                ),
+                              )
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Icon(
+                          favProduct
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_outline,
+                          color: Colors.pink[300],
+                          size: 17,
                         ),
                       )),
                   Align(
@@ -1653,247 +1584,182 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
               )),
           Flexible(
             flex: 3,
-            child: InkWell(
-              onTap: () => Navigator.pushNamed(
-                      context,
-                      '/detalles/producto/' +
-                          productoModel.idDeProducto.toString())
-                  .then((value) => getProductos()),
-              // CJNavigator.navigator.push(
-              //     context,
-              //     '/detalles/producto/' +
-              //         productoModel.idDeProducto.toString()),
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      productoModel.nombre,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                    ),
-                    Text(
-                      productoModel.nombre_farmacia,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      style: TextStyle(
-                          color: Colors.black45,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '\$${productoModel.precio}',
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    productoModel.nombre,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                  Text(
+                    productoModel.nombre_farmacia,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: Colors.black45,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '\$${productoModel.precio}',
+                        style: TextStyle(
+                            color: Colors.black45,
+                            decoration: productoModel.precioConDescuento == null
+                                ? null
+                                : TextDecoration.lineThrough),
+                      ),
+                      productoModel.precioConDescuento == null
+                          ? Container()
+                          : Text(
+                              '\$${productoModel.precioConDescuento}',
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                    ],
+                  ),
+                  int.parse(productoModel.stock) <= 0
+                      ? Text(
+                          'No disponilbe',
                           style: TextStyle(
-                              color: Colors.black45,
-                              decoration:
-                                  productoModel.precioConDescuento == null
-                                      ? null
-                                      : TextDecoration.lineThrough),
-                        ),
-                        productoModel.precioConDescuento == null
-                            ? Container()
-                            : Text(
-                                '\$${productoModel.precioConDescuento}',
-                                style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                      ],
-                    ),
-                    int.parse(productoModel.stock) <= 0
-                        ? Text(
-                            'No disponilbe',
-                            style: TextStyle(
-                                color: Colors.red[700],
-                                fontWeight: FontWeight.bold),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Flexible(flex: 1, child: Container()),
-                              Flexible(
-                                flex: 2,
-                                child: Material(
-                                  color: Colors.blueGrey,
-                                  borderRadius: BorderRadius.circular(40),
-                                  child: new InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        if (inCart) {
-                                          if (snapshot[index].cantidad > 1) {
-                                            productoModel.cantidad =
-                                                snapshot[index].cantidad - 1;
-                                            _catalogBloc.sendEvent.add(
-                                                EditCatalogItemEvent(
-                                                    productoModel));
-                                          } else {
-                                            productoModel.cantidad =
-                                                snapshot[index].cantidad;
-                                            _catalogBloc.sendEvent.add(
-                                                RemoveCatalogItemEvent(
-                                                    productoModel));
-                                          }
-                                        }
-                                      });
-                                    },
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: new Container(
-                                      width: 22,
-                                      height: 22,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                      child: Icon(
-                                        Icons.remove,
-                                        color: Colors.white,
-                                        size: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 3,
-                                child: Container(
-                                  height: 30,
-                                  width: 30,
-                                  // padding: EdgeInsets.symmetric(
-                                  //     vertical: 0.3, horizontal: 15),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(40),
-                                      color: bgGrey),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                      inCart
-                                          ? snapshot[index].cantidad.toString()
-                                          : '0',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Theme.of(context).primaryColor,
-                                          fontWeight: FontWeight.w700)),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 2,
-                                child: Material(
-                                  color: Colors.blueGrey,
-                                  borderRadius: BorderRadius.circular(40),
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        inCart
-                                            ? productoModel.cantidad =
-                                                snapshot[index].cantidad + 1
-                                            : productoModel.cantidad = 1;
-                                        _catalogBloc.sendEvent.add(
-                                            EditCatalogItemEvent(
-                                                productoModel));
-                                      });
-                                    },
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Container(
-                                      width: 22,
-                                      height: 22,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(40),
-                                      ),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: Colors.white,
-                                        size: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Flexible(flex: 1, child: Container()),
-                            ],
-                          )
-                  ],
-                ),
+                              color: Colors.red[700],
+                              fontWeight: FontWeight.bold),
+                        )
+                      : Container()
+                  // StreamBuilder<List<ProductoModel>>(
+                  //     initialData: [],
+                  //     stream: _catalogBloc.catalogStream,
+                  //     builder: (context, snapshot) {
+                  //       var index;
+                  //       bool inCart = false;
+                  //       for (int i = 0; i <= snapshot.data.length - 1; i++) {
+                  //         if (snapshot.data[i].idDeProducto ==
+                  //             productoModel.idDeProducto) {
+                  //           index = i;
+                  //           inCart = true;
+                  //         }
+                  //       }
+                  //       return Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: <Widget>[
+                  //           Flexible(flex: 1, child: Container()),
+                  //           Flexible(
+                  //             flex: 2,
+                  //             child: Material(
+                  //               color: Colors.blueGrey,
+                  //               borderRadius: BorderRadius.circular(40),
+                  //               child: new InkWell(
+                  //                 onTap: () {
+                  //                   setState(() {
+                  //                     if (inCart) {
+                  //                       if (snapshot.data[index].cantidad >
+                  //                           1) {
+                  //                         productoModel.cantidad =
+                  //                             snapshot.data[index].cantidad -
+                  //                                 1;
+                  //                         _catalogBloc.sendEvent.add(
+                  //                             EditCatalogItemEvent(
+                  //                                 productoModel));
+                  //                       } else {
+                  //                         productoModel.cantidad =
+                  //                             snapshot.data[index].cantidad;
+                  //                         _catalogBloc.sendEvent.add(
+                  //                             RemoveCatalogItemEvent(
+                  //                                 productoModel));
+                  //                       }
+                  //                     }
+                  //                   });
+                  //                 },
+                  //                 borderRadius: BorderRadius.circular(40),
+                  //                 child: new Container(
+                  //                   width: 22,
+                  //                   height: 22,
+                  //                   decoration: BoxDecoration(
+                  //                     borderRadius: BorderRadius.circular(40),
+                  //                   ),
+                  //                   child: Icon(
+                  //                     Icons.remove,
+                  //                     color: Colors.white,
+                  //                     size: 10,
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           ),
+                  //           Flexible(
+                  //             flex: 3,
+                  //             child: Container(
+                  //               height: 30,
+                  //               width: 30,
+                  //               // padding: EdgeInsets.symmetric(
+                  //               //     vertical: 0.3, horizontal: 15),
+                  //               decoration: BoxDecoration(
+                  //                   borderRadius: BorderRadius.circular(40),
+                  //                   color: bgGrey),
+                  //               alignment: Alignment.center,
+                  //               child: Text(
+                  //                   inCart
+                  //                       ? snapshot.data[index].cantidad
+                  //                           .toString()
+                  //                       : '0',
+                  //                   style: TextStyle(
+                  //                       fontSize: 12,
+                  //                       color: Theme.of(context).primaryColor,
+                  //                       fontWeight: FontWeight.w700)),
+                  //             ),
+                  //           ),
+                  //           Flexible(
+                  //             flex: 2,
+                  //             child: Material(
+                  //               color: Colors.blueGrey,
+                  //               borderRadius: BorderRadius.circular(40),
+                  //               child: InkWell(
+                  //                 onTap: () {
+                  //                   setState(() {
+                  //                     inCart
+                  //                         ? productoModel.cantidad =
+                  //                             snapshot.data[index].cantidad +
+                  //                                 1
+                  //                         : productoModel.cantidad = 1;
+                  //                     _catalogBloc.sendEvent.add(
+                  //                         EditCatalogItemEvent(
+                  //                             productoModel));
+                  //                   });
+                  //                 },
+                  //                 borderRadius: BorderRadius.circular(40),
+                  //                 child: Container(
+                  //                   width: 22,
+                  //                   height: 22,
+                  //                   decoration: BoxDecoration(
+                  //                     borderRadius: BorderRadius.circular(40),
+                  //                   ),
+                  //                   child: Icon(
+                  //                     Icons.add,
+                  //                     color: Colors.white,
+                  //                     size: 10,
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           ),
+                  //           Flexible(flex: 1, child: Container()),
+                  //         ],
+                  //       );
+                  //     }),
+                ],
               ),
             ),
           ),
         ],
       ),
     );
-  }
-
-  Future _displayDialog(miFarmacia) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, StateSetter setState) {
-            return AlertDialog(
-                scrollable: true,
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: smallPadding, vertical: smallPadding * 3),
-                content: Container(
-                    height: MediaQuery.of(context).size.height / 5,
-                    width: MediaQuery.of(context).size.width / 3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                                height: MediaQuery.of(context).size.height / 12,
-                                child: getNetworkImage(miFarmacia['logo'])),
-                            SizedBox(width: 10),
-                            Flexible(
-                              child: Text(
-                                "Copia este link y comparte ${miFarmacia['nombre']} y sus productos.",
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 5),
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                              color: bgGrey,
-                              borderRadius: BorderRadius.circular(15)),
-                          child: Row(
-                            children: [
-                              Container(
-                                child: Flexible(
-                                  child: Text(
-                                    '¡Ve la farmacia ${miFarmacia['nombre']} en Drug! www.app.drugsiteonline.com/farmacia/${miFarmacia['farmacia_id'].toString()}/productos',
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                  ),
-                                ),
-                              ),
-                              BotonSimple(
-                                  action: () {
-                                    Clipboard.setData(ClipboardData(
-                                        text:
-                                            "¡Ve la famrmacia ${miFarmacia['nombre']} en Drug! www.app.drugsiteonline.com/farmacia/${miFarmacia['farmacia_id'].toString()}/productos"));
-                                  },
-                                  contenido: Text(
-                                    'Copiar',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  estilo: estiloBotonPrimary)
-                            ],
-                          ),
-                        )
-                      ],
-                    )));
-          });
-        });
   }
 }

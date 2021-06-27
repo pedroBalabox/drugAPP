@@ -3,6 +3,7 @@ import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:flutter/material.dart';
 
 class RegisterVendedor extends StatefulWidget {
@@ -49,13 +50,13 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/drug3.jpg',
+                                'images/coverDrug.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
                               ),
                               Opacity(
-                                  opacity: 0.75,
+                                  opacity: 0.6,
                                   child: Image.asset('images/coverColor.png',
                                       width: double.maxFinite,
                                       height: 400,
@@ -116,13 +117,13 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                     flex: 6,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/drug3.jpg',
+                        'images/coverDrug.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
                       ),
                       Opacity(
-                          opacity: 0.75,
+                          opacity: 0.6,
                           child: Image.asset('images/coverColor.png',
                               width: double.maxFinite,
                               height: 400,
@@ -169,7 +170,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                     _formReg(),
                     SizedBox(height: medPadding),
                     InkWell(
-                      onTap: () => Navigator.pushNamed(context, '/login'),
+                      onTap: () =>
+                          Navigator.pushNamed(context, '/farmacia/login/'),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -228,13 +230,15 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'opcional',
+            requerido: false,
             onChanged: (value) {
               setState(() {
                 second_lastname = value;
               });
             },
           ),
-          EntradaTexto(
+          EntradaTextoTest(
+            longMaxima: 50,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,
@@ -306,7 +310,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                   ),
                 ),
                 action: (value) =>
-                    Navigator.pushNamed(context, '/farmacia/login'),
+                    Navigator.pushNamed(context, '/farmacia/login/'),
                 errorStyle: TextStyle(
                   color: Colors.red[700],
                   fontWeight: FontWeight.w600,

@@ -133,3 +133,8 @@ BoxDecoration estiloValidar = BoxDecoration(boxShadow: [
     ),
   )
 ], gradient: gradientGreen);
+
+TextStyle estiloErrorStr = TextStyle(
+  color: Colors.red[700],
+  fontWeight: FontWeight.w600,
+);

@@ -111,6 +111,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.6"
+  flutter_openpay:
+    dependency: "direct main"
+    description:
+      name: flutter_openpay
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_page_indicator:
     dependency: transitive
     description:
@@ -247,6 +254,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  openpay:
+    dependency: "direct main"
+    description:
+      name: openpay
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:drugapp/src/utils/theme.dart';
+import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,6 +40,12 @@ var dummyVenta =
 
 var dummyDocs =
     '{"avi_func": "active", "act_cons": "active", "comp_dom": "active", "ine": "active", "ced_fis": "rejected"}';
+
+var giroFarmacia = [
+  'Farmacia de medicamentos',
+  'Farmacia productos ',
+  'Farmacia especializada'
+];
 
 Widget footer(context) {
   return Container(
@@ -141,4 +148,30 @@ isJson(string) {
     print("Error en la respuesta: " + err.toString());
   }
   return decodeSucceeded;
+}
+
+getNetworkImage(String path) {
+  return Image.network(
+    path,
+    fit: BoxFit.cover,
+    errorBuilder:
+        (BuildContext context, Object exception, StackTrace stackTrace) {
+      return Image.asset('images/logoDrug.png');
+    },
+    loadingBuilder:
+        (BuildContext ctx, Widget child, ImageChunkEvent loadingProgress) {
+      if (loadingProgress == null) {
+        return child;
+      } else {
+        return Container(
+          color: Colors.white,
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          ),
+        );
+      }
+    },
+  );
 }

@@ -50,13 +50,13 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/drug3.jpg',
+                                'images/coverMed.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
                               ),
                               Opacity(
-                                  opacity: 0.75,
+                                  opacity: 0.3,
                                   child: Image.asset('images/coverColor.png',
                                       width: double.maxFinite,
                                       height: 400,
@@ -117,13 +117,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     flex: 6,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/drug3.jpg',
+                        'images/coverMed.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
                       ),
                       Opacity(
-                          opacity: 0.75,
+                          opacity: 0.3,
                           child: Image.asset('images/coverColor.png',
                               width: double.maxFinite,
                               height: 400,

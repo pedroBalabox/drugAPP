@@ -95,7 +95,7 @@ class _PaymentFunctionsState extends State<PaymentFunctions> {
                             iconCard = Icon(FontAwesomeIcons.ccMastercard,
                                 color: Colors.black.withOpacity(0.7));
                             break;
-                          case 'americanexpress':
+                          case 'american_express':
                             iconCard = Icon(FontAwesomeIcons.ccAmex,
                                 color: Colors.black.withOpacity(0.7));
                             break;

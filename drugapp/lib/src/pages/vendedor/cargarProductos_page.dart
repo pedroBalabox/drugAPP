@@ -61,14 +61,17 @@ class _CargarProductosState extends State<CargarProductos> {
   }
 
   subirDoc() async {
-    FilePickerResult result = await FilePicker.platform
-        .pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
-
-    var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
-    setState(() {
-      docName = result.files.single.name;
-      docBase64 = uri;
-    });
+    try {
+      FilePickerResult result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
+      if (result.files.single.size <= 10000) {
+        var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+        setState(() {
+          docName = result.files.single.name;
+          docBase64 = uri;
+        });
+      }
+    } catch (e) {}
   }
 
   @override
@@ -222,6 +225,10 @@ class _CargarProductosState extends State<CargarProductos> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 BotonSimple(
+                    action: () {
+                      launchURL(
+                          "https://sandbox.app.drugsiteonline.com/app/uploads/archivogtsOW2tQB7yv.png");
+                    },
                     estilo: estiloBotonPrimary,
                     contenido: Text(
                       'Descargar plantilla',

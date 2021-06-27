@@ -45,6 +45,9 @@ dependencies:
   flow_builder: ^0.0.2
   font_awesome_flutter: ^9.0.0
   fluro: ^2.0.3
+  flutter_openpay: ^1.0.0
+  openpay: ^1.0.0
+
 
 
 dev_dependencies:

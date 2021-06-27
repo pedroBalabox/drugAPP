@@ -122,7 +122,7 @@ class _TabDraftState extends State<TabDraft> {
               ),
               action: (value) => Navigator.pushNamedAndRemoveUntil(
                     context,
-                    '/farmacia/miTienda',
+                    '/farmacia/miTienda/',
                     ModalRoute.withName('/farmacia/miCuenta'),
                   ).then((value) => setState(() {})),
               errorStyle: TextStyle(
@@ -287,7 +287,9 @@ class _TabDraftState extends State<TabDraft> {
                     child: Row(
                       children: [
                         Icon(Icons.store_outlined),
-                        SizedBox(width: 7,),
+                        SizedBox(
+                          width: 7,
+                        ),
                         Text("Tipo de persona: " + value.toString()),
                       ],
                     ),
@@ -317,16 +319,34 @@ class _TabDraftState extends State<TabDraft> {
               });
             },
           ),
-          EntradaTexto(
-            valorInicial: farmaciaModel.giro,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Giro del negocio', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onChanged: (value) {
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Giro del negocio"),
+            value: farmaciaModel.giro,
+            items: giroFarmacia.map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(Icons.store_outlined),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Giro del negocio: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
               setState(() {
-                farmaciaModel.giro = value;
+                // tipoPersona = val;
+                farmaciaModel.giro = val;
               });
             },
           ),
@@ -363,7 +383,7 @@ class _TabDraftState extends State<TabDraft> {
                 ),
                 /* action: (value) => Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/farmacia/miTienda',
+                      '/farmacia/miTienda/',
                       ModalRoute.withName('/farmacia/miCuenta'),
                     ).then((value) => setState(() {})), */
                 action: (value) => () {},
@@ -413,51 +433,55 @@ class _TabDraftState extends State<TabDraft> {
   }
 
   subirDoc(String docType) async {
-    FilePickerResult result =
-        await FilePicker.platform.pickFiles(withData: true);
+    try {
+      FilePickerResult result =
+          await FilePicker.platform.pickFiles(withData: true);
 
-    if (result != null) {
-      // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
-      // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
+      if (result != null) {
+        if (result.files.single.size <= 10000) {
+          // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
+          // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
 
-      var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+          var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
 
-      switch (docType) {
-        case 'Aviso de funcionamiento':
-          setState(() {
-            fileaviso = result.files.single.name;
-            aviso = uri;
-          });
-          break;
-        case 'Acta constitutiva':
-          setState(() {
-            fileacta = result.files.single.name;
-            acta = uri;
-          });
-          break;
-        case 'Comprobante de domicilio':
-          setState(() {
-            filecomprobante = result.files.single.name;
-            comprobante = uri;
-          });
-          break;
-        case 'INE vigente':
-          setState(() {
-            fileine = result.files.single.name;
-            ine = uri;
-          });
-          break;
-        case 'Cédula fiscal SAT':
-          setState(() {
-            filecedula = result.files.single.name;
-            cedula = uri;
-          });
-          break;
-        default:
+          switch (docType) {
+            case 'Aviso de funcionamiento':
+              setState(() {
+                fileaviso = result.files.single.name;
+                aviso = uri;
+              });
+              break;
+            case 'Acta constitutiva':
+              setState(() {
+                fileacta = result.files.single.name;
+                acta = uri;
+              });
+              break;
+            case 'Comprobante de domicilio':
+              setState(() {
+                filecomprobante = result.files.single.name;
+                comprobante = uri;
+              });
+              break;
+            case 'INE vigente':
+              setState(() {
+                fileine = result.files.single.name;
+                ine = uri;
+              });
+              break;
+            case 'Cédula fiscal SAT':
+              setState(() {
+                filecedula = result.files.single.name;
+                cedula = uri;
+              });
+              break;
+            default:
+          }
+        } else {
+          // User canceled the picker
+        }
       }
-    } else {
-      // User canceled the picker
-    }
+    } catch (e) {}
   }
 
   document(doc) {

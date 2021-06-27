@@ -4,16 +4,14 @@ import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/producto_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
-import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
 import 'package:drugapp/src/pages/vendedor/editarProducto_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
-import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
@@ -39,8 +37,34 @@ class _TabProductosState extends State<TabProductos> {
   var _fieldList = ['Selecciona una opción', 'Menor a mayor', 'Mayor a menor'];
   String chosenFilter;
   bool disponible = false;
-  String priceFilter;
   String userSearch;
+
+  String userQuery;
+  bool favorite;
+  String availability;
+  bool stock = true;
+  String priceFilter;
+  List myCats = [];
+  List myLabels = [];
+
+  bool errorProd = false;
+  String errorStrProd;
+
+  List<Category> _categories = [];
+  List<Category> _labels = [];
+
+  var _itemsCat;
+
+  var _itemCat;
+
+  var _itemsLabel;
+
+  var _itemLabel;
+
+  List<Category> _myCat = [];
+
+  List<Category> _myLabels = [];
+
   final TextEditingController _searchController = TextEditingController();
 
   final _items = _cat
@@ -68,16 +92,22 @@ class _TabProductosState extends State<TabProductos> {
 
   String errorStr;
   bool load = true;
+  bool loadProd = true;
   bool error = false;
 
   List searchList = [];
   bool _isSearching = false;
+
+  List<Category> _selectedCat2 = [];
+
+  List<Category> _selectedLabel2 = [];
 
   @override
   void initState() {
     super.initState();
     sharedPrefs.init();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
+
     getTienda();
   }
 
@@ -91,6 +121,7 @@ class _TabProductosState extends State<TabProductos> {
           jsonTienda = jsonDecode(value['response']);
         });
         getProductos();
+        getCate();
       } else {
         setState(() {
           load = false;
@@ -101,17 +132,98 @@ class _TabProductosState extends State<TabProductos> {
     });
   }
 
-  getProductos() async {
-    setState(() {
-      load = true;
+  getCate() async {
+    await rest
+        .restService(null, '${urlApi}obtener/categorias',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        _itemCat = value['response'];
+        _itemCat = jsonDecode(_itemCat)[1]['categories'];
+
+        for (int i = 0; i <= _itemCat.length - 1; i++) {
+          var myCat = _itemCat[i];
+          var myId = myCat['categoria_id'];
+          var myName = myCat['nombre'];
+
+          // _cat.add(Category(id: myId, name: myName));
+          // _myItemCat = [Category(id: myId, name: myName)];
+
+          setState(() {
+            _categories.add(Category(id: myId, name: myName));
+            _itemsCat = _categories
+                .map((cat) => MultiSelectItem<Category>(cat, cat.name))
+                .toList();
+          });
+        }
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    }).then((value) {
+      getLabels();
     });
+  }
+
+  getLabels() async {
+    await rest
+        .restService(null, '${urlApi}obtener/etiquetas',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        _itemLabel = value['response'];
+        _itemLabel = jsonDecode(_itemLabel)[1]['tags'];
+
+        for (int i = 0; i <= _itemLabel.length - 1; i++) {
+          var myCat = _itemLabel[i];
+          var myId = myCat['id_de_etiqueta'];
+          var myName = myCat['nombre'];
+
+          // _cat.add(Category(id: myId, name: myName));
+          // _myItemCat = [Category(id: myId, name: myName)];
+
+          setState(() {
+            _labels.add(Category(id: myId, name: myName));
+            _itemsLabel = _labels
+                .map((label) => MultiSelectItem<Category>(label, label.name))
+                .toList();
+          });
+        }
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    }).then((value) {
+      setState(() {
+        load = false;
+      });
+    });
+  }
+
+  getProductos() async {
+    print('***' + jsonTienda[1]['farmacia_id']);
+    // setState(() {
+    //   load = true;
+    // });
+    print(stock);
     var arrayData = {
       "farmacia_id": jsonTienda[1]['farmacia_id'],
+      "userQuery": userQuery,
+      "favoritos": favorite,
+      "availability": availability,
+      "stock": stock ? 'available' : 'out',
       "priceFilter": priceFilter,
-      "inStock": disponible
+      "categorias": myCats,
+      "etiquetas": myLabels,
     };
     await rest
-        .restService(arrayData, '${urlApi}farmacia/mis-productos',
+        .restService(arrayData, '${urlApi}listar/producto',
             sharedPrefs.partnerUserToken, 'post')
         .then((value) {
       if (value['status'] == 'server_true') {
@@ -120,7 +232,7 @@ class _TabProductosState extends State<TabProductos> {
         setState(() {
           prod = productosResp['productos'];
           prod = productosResp.values.toList();
-          load = false;
+          loadProd = false;
           if (userSearch != null && userSearch != "") {
             searchOperation(userSearch);
             _searchController.value = _searchController.value.copyWith(
@@ -128,12 +240,15 @@ class _TabProductosState extends State<TabProductos> {
               selection: TextSelection.collapsed(offset: userSearch.length),
             );
           }
+          setState(() {
+            loadProd = false;
+          });
         });
       } else {
         setState(() {
-          load = false;
-          error = true;
-          errorStr = value['message'];
+          loadProd = false;
+          errorProd = true;
+          errorStrProd = value['message'];
         });
       }
     });
@@ -178,7 +293,7 @@ class _TabProductosState extends State<TabProductos> {
                     SizedBox(width: smallPadding),
                     BotonSimple(
                       action: () => Navigator.pushNamed(
-                              context, '/farmacia/cargar-productos')
+                              context, '/farmacia/cargar-productos/r')
                           .then((value) => setState(() {})),
                       contenido: Text('Agregar productos',
                           style: TextStyle(
@@ -232,18 +347,18 @@ class _TabProductosState extends State<TabProductos> {
                                     onChanged: (String val) {
                                       setState(() {
                                         if (val == 'Menor a mayor') {
-                                          load = true;
+                                          loadProd = true;
                                           chosenFilter = val;
                                           priceFilter = "low_to_high";
                                           getProductos();
                                         } else if (val == 'Mayor a menor') {
-                                          load = true;
+                                          loadProd = true;
                                           chosenFilter = val;
                                           priceFilter = "high_to_low";
                                           getProductos();
                                         } else {
                                           if (priceFilter != null) {
-                                            load = true;
+                                            loadProd = true;
                                             priceFilter = null;
                                             chosenFilter = val;
                                             getProductos();
@@ -269,11 +384,11 @@ class _TabProductosState extends State<TabProductos> {
                                         height: 3,
                                       ),
                                       Switch(
-                                        value: disponible,
+                                        value: stock,
                                         onChanged: (value) {
                                           setState(() {
-                                            disponible = value;
-                                            load = true;
+                                            stock = value;
+                                            loadProd = true;
                                             getProductos();
                                           });
                                         },
@@ -376,7 +491,7 @@ class _TabProductosState extends State<TabProductos> {
                           SizedBox(height: smallPadding),
                           BotonSimple(
                             action: () => Navigator.pushNamed(
-                                    context, '/farmacia/cargar-productos')
+                                    context, '/farmacia/cargar-productos/')
                                 .then((value) => setState(() {})),
                             contenido: Text('Agregar productos',
                                 style: TextStyle(
@@ -387,7 +502,7 @@ class _TabProductosState extends State<TabProductos> {
                           ),
                           SizedBox(height: smallPadding),
                           Text(
-                            'Filtar lista',
+                            'Filtrar lista',
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Colors.black54,
@@ -409,7 +524,8 @@ class _TabProductosState extends State<TabProductos> {
                               ),
                               SizedBox(height: smallPadding),
                               DropdownButton<String>(
-                                hint: Text("Selecciona una opción"),
+                                hint: Text("Elige una opción",
+                                    overflow: TextOverflow.ellipsis),
                                 value: chosenFilter,
                                 items: _fieldList.map((value) {
                                   return DropdownMenuItem<String>(
@@ -424,18 +540,18 @@ class _TabProductosState extends State<TabProductos> {
                                 onChanged: (String val) {
                                   setState(() {
                                     if (val == 'Menor a mayor') {
-                                      load = true;
+                                      loadProd = true;
                                       chosenFilter = val;
                                       priceFilter = "low_to_high";
                                       getProductos();
                                     } else if (val == 'Mayor a menor') {
-                                      load = true;
+                                      loadProd = true;
                                       chosenFilter = val;
                                       priceFilter = "high_to_low";
                                       getProductos();
                                     } else {
                                       if (priceFilter != null) {
-                                        load = true;
+                                        loadProd = true;
                                         priceFilter = null;
                                         chosenFilter = val;
                                         getProductos();
@@ -464,20 +580,115 @@ class _TabProductosState extends State<TabProductos> {
                                 height: 3,
                               ),
                               Switch(
-                                value: disponible,
+                                value: stock,
                                 onChanged: (value) {
                                   setState(() {
-                                    disponible = value;
-                                    load = true;
+                                    stock = value;
+                                    loadProd = true;
                                     getProductos();
                                   });
                                 },
                               )
                             ],
                           ),
+                          MultiSelectDialogField<Category>(
+                            chipDisplay: MultiSelectChipDisplay(
+                                icon: Icon(Icons.close),
+                                items: _itemsCat,
+                                onTap: (value) {
+                                  setState(() {
+                                    _selectedCat2.remove(value);
+                                    myCats = [];
+                                    for (int j = 0;
+                                        j <= _selectedCat2.length - 1;
+                                        j++) {
+                                      myCats.add(_selectedCat2[j].id);
+                                    }
+                                    print('------' + myCats.length.toString());
+                                    loadProd = true;
+                                    getProductos();
+                                  });
+                                }),
+                            searchHint: 'Buscar',
+                            buttonText: Text(
+                              'Categoría',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black54,
+                                  fontSize: 15),
+                            ),
+                            buttonIcon: Icon(Icons.arrow_drop_down),
+                            title: Text(
+                              'Categorias',
+                            ),
+                            cancelText: Text('CANCELAR'),
+                            searchable: true,
+                            listType: MultiSelectListType.CHIP,
+                            items: _itemsCat,
+                            // initialValue: _myCat,
+                            onConfirm: (values) {
+                              setState(() {
+                                _selectedCat2 = values;
+                                myCats = [];
+                                for (int j = 0; j <= values.length - 1; j++) {
+                                  myCats.add(values[j].id);
+                                }
+                                loadProd = true;
+                                getProductos();
+                              });
+                            },
+                            // maxChildSize: 0.8,
+                          ),
+                          MultiSelectDialogField<Category>(
+                            chipDisplay: MultiSelectChipDisplay(
+                                icon: Icon(Icons.close),
+                                items: _itemsCat,
+                                onTap: (value) {
+                                  setState(() {
+                                    _selectedLabel2.remove(value);
+                                    myLabels = [];
+                                    for (int j = 0;
+                                        j <= _selectedLabel2.length - 1;
+                                        j++) {
+                                      myLabels.add(_selectedLabel2[j].id);
+                                    }
+                                    loadProd = true;
+                                    getProductos();
+                                  });
+                                }),
+                            searchHint: 'Buscar',
+                            buttonText: Text(
+                              'Etiquetas',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black54,
+                                  fontSize: 15),
+                            ),
+                            buttonIcon: Icon(Icons.arrow_drop_down),
+                            title: Text(
+                              'Etiquetas',
+                            ),
+                            cancelText: Text('CANCELAR'),
+                            searchable: true,
+                            listType: MultiSelectListType.CHIP,
+                            items: _itemsLabel,
+                            initialValue: _myLabels,
+                            onConfirm: (values) {
+                              setState(() {
+                                _selectedLabel2 = values;
+                                myLabels = [];
+                                for (int j = 0; j <= values.length - 1; j++) {
+                                  myLabels.add(values[j].id);
+                                }
+                                loadProd = true;
+                                getProductos();
+                              });
+                            },
+                            // maxChildSize: 0.8,
+                          ),
                           /* SizedBox(height: smallPadding),
                           MultiSelectBottomSheetField(
-                            searchHint: 'Búscar...',
+                            searchHint: 'Buscar...',
                             cancelText: Text('Cancelar'),
                             confirmText: Text('Seleccionar'),
                             decoration: BoxDecoration(
@@ -499,7 +710,7 @@ class _TabProductosState extends State<TabProductos> {
                               padding: EdgeInsets.only(left: smallPadding),
                               child: Text("Categorías"),
                             ),
-                            items: _items,
+                            items: _itemsCat,
                             onConfirm: (values) {
                               _selectedCat = values;
                             },
@@ -519,7 +730,7 @@ class _TabProductosState extends State<TabProductos> {
                           //     cancelText: Text('CANCELAR'),
                           //     searchable: true,
                           //     listType: MultiSelectListType.CHIP,
-                          //     items: _items,
+                          //     items: _itemsCat,
                           //     initialValue: _selectedCat,
                           //     onConfirm: (values) => print('ok'),
                           //     // maxChildSize: 0.8,
@@ -528,14 +739,23 @@ class _TabProductosState extends State<TabProductos> {
                         ],
                       ),
                     )),
-                Expanded(child: listProducts())
+                Expanded(
+                    child: loadProd
+                        ? bodyLoad(context)
+                        : errorProd
+                            ? errorWidget(errorStrProd, context)
+                            : listProducts())
               ],
             ),
           )
         : Container(
             // height: size.height,
             color: bgGrey,
-            child: listProducts(),
+            child: loadProd
+                ? bodyLoad(context)
+                : errorProd
+                    ? errorWidget(errorStrProd, context)
+                    : listProducts(),
           );
   }
 
@@ -676,71 +896,37 @@ class _TabProductosState extends State<TabProductos> {
       child: Column(
         children: [
           Flexible(
-              flex: 3,
+              flex: 2,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Container(
                     height: 220,
                     margin: EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(fdtImageURL),
-                            fit: BoxFit.cover)),
+                    // decoration: BoxDecoration(
+                    //     image: DecorationImage(
+                    //         image: NetworkImage(fdtImageURL),
+                    //         fit: BoxFit.cover)),
+                    child: getNetworkImage(fdtImageURL),
                   ),
-                  // Align(
-                  //   alignment: Alignment.topLeft,
-                  //   child: Container(
-                  //       width: 45,
-                  //       padding: EdgeInsets.all(5),
-                  //       decoration: BoxDecoration(
-                  //           color: Colors.grey.withOpacity(0.8),
-                  //           borderRadius: BorderRadius.circular(10)),
-                  //       child: Row(
-                  //         children: [
-                  //           // Icon(Icons.star, color: Colors.amber, size: 15),
-                  //           /* RatingBarIndicator(
-                  //             unratedColor: Colors.white.withOpacity(0.5),
-                  //             rating:
-                  //                 double.parse(prod['stars']) * 100 / 5 / 100,
-                  //             itemBuilder: (context, index) => Icon(
-                  //               Icons.star,
-                  //               color: Colors.amber,
-                  //             ),
-                  //             itemCount: 1,
-                  //             itemSize: 15.0,
-                  //             direction: Axis.horizontal,
-                  //           ), */
-                  //           /* Text(prod['stars'],
-                  //               style: TextStyle(
-                  //                   color: Colors.white,
-                  //                   fontSize: 12,
-                  //                   fontWeight: FontWeight.w500)) */
-                  //         ],
-                  //       )),
-                  //),
                 ],
               )),
           Flexible(
             flex: 2,
             child: InkWell(
-              onTap: () => Navigator.pushNamed(
-                context,
-                EditarProducto.routeName,
-                arguments: EdiaterProductoDetallesArguments(
-                  prod,
-                ),
-              ).then((value) => setState(() {
-                    setState(() {
-                      if (userSearch != null && userSearch != "") {
-                        load = true;
-                        searchOperation(userSearch);
-                      }
-                      //load = true;
-                      _isSearching = false;
-                      getProductos();
-                    });
-                  })),
+              onTap: () => Navigator.pushNamed(context,
+                      '/farmacia/editar-producto/' + prod['id_de_producto'])
+                  .then((value) => setState(() {
+                        setState(() {
+                          if (userSearch != null && userSearch != "") {
+                            loadProd = true;
+                            searchOperation(userSearch);
+                          }
+                          //load = true;
+                          _isSearching = false;
+                          getProductos();
+                        });
+                      })),
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -784,24 +970,30 @@ class _TabProductosState extends State<TabProductos> {
                               ),
                       ],
                     ),
+                    prod['stock'] == '0'
+                        ? Text(
+                            'No disponilbe',
+                            style: TextStyle(
+                                color: Colors.red[700],
+                                fontWeight: FontWeight.bold),
+                          )
+                        : Container(),
                     BotonSimple(
                       action: () => Navigator.pushNamed(
-                        context,
-                        EditarProducto.routeName,
-                        arguments: EdiaterProductoDetallesArguments(
-                          prod,
-                        ),
-                      ).then((value) => setState(() {
-                            setState(() {
-                              if (userSearch != null && userSearch != "") {
-                                load = true;
-                                searchOperation(userSearch);
-                              }
-                              //load = true;
-                              _isSearching = false;
-                              getProductos();
-                            });
-                          })),
+                              context,
+                              '/farmacia/editar-producto/' +
+                                  prod['id_de_producto'])
+                          .then((value) => setState(() {
+                                setState(() {
+                                  if (userSearch != null && userSearch != "") {
+                                    load = true;
+                                    searchOperation(userSearch);
+                                  }
+                                  //load = true;
+                                  _isSearching = false;
+                                  getProductos();
+                                });
+                              })),
                       contenido: Text('Editar producto',
                           style: TextStyle(
                               color: Colors.white,

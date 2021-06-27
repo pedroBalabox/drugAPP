@@ -4,6 +4,7 @@ import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
@@ -129,21 +130,18 @@ class _TiendasPageState extends State<TiendasPage> {
 
   tiendaCard(tiendas) {
     return InkWell(
+      // onTap: () => CJNavigator.navigator
+      //     .push(
+      //         context,
+      // '/' +
+      //     tiendas['nombre'] +
+      //     '/' +
+      //     tiendas['farmacia_id'] +
+      //     '/productos')
+      //     .then((value) => setState(() {})),
       onTap: () => Navigator.pushNamed(
-        context,
-        ProductView.routeName,
-        arguments: ProductosDetallesArguments({
-          "farmacia_id": tiendas['farmacia_id'],
-          "userQuery": null,
-          "favorite": false,
-          "availability": null,
-          "stock": "available",
-          "priceFilter": null,
-          "myLabels": [],
-          "myCats": [],
-           "title": "${tiendas['nombre']}"
-        }),
-      ).then((value) => setState(() {})),
+              context, '/farmacia' + '/' + tiendas['farmacia_id'] + '/productos')
+          .then((value) => setState(() {})),
       child: Container(
         margin: EdgeInsets.symmetric(
             horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
@@ -166,33 +164,36 @@ class _TiendasPageState extends State<TiendasPage> {
           children: [
             Flexible(
               flex: 2,
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage('${tiendas['logo']}'),
-                        fit: BoxFit.contain)),
-                // child: Align(
-                //   alignment: Alignment.topRight,
-                //   child: Container(
-                //     width: 80,
-                //     child: Tooltip(
-                //       message: 'Farmacia verificada.',
-                //       child: Container(
-                //         padding: EdgeInsets.all(3),
-                //         color: Colors.green.withOpacity(0.7),
-                //         child: Row(
-                //           children: [
-                //             Icon(Icons.verified_outlined, size: 13, color: Colors.white,),
-                //             Text('verificada',
-                //                 style: TextStyle(
-                //                     fontSize: 13, color: Colors.white))
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // )
+              child: getNetworkImage(
+                tiendas['logo'],
               ),
+              // child: Container(
+              //   decoration: BoxDecoration(
+              //       image: DecorationImage(
+              //           image: getNetworkImage('${tiendas['logo']}'),
+              //           fit: BoxFit.contain)),
+              //   // child: Align(
+              //   //   alignment: Alignment.topRight,
+              //   //   child: Container(
+              //   //     width: 80,
+              //   //     child: Tooltip(
+              //   //       message: 'Farmacia verificada.',
+              //   //       child: Container(
+              //   //         padding: EdgeInsets.all(3),
+              //   //         color: Colors.green.withOpacity(0.7),
+              //   //         child: Row(
+              //   //           children: [
+              //   //             Icon(Icons.verified_outlined, size: 13, color: Colors.white,),
+              //   //             Text('verificada',
+              //   //                 style: TextStyle(
+              //   //                     fontSize: 13, color: Colors.white))
+              //   //           ],
+              //   //         ),
+              //   //       ),
+              //   //     ),
+              //   //   ),
+              //   // )
+              // ),
             ),
             Flexible(
                 flex: 3,

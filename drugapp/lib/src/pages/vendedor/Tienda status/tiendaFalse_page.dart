@@ -346,7 +346,7 @@ class _TabFalseState extends State<TabFalse> {
                 ),
                 action: (value) => Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/farmacia/miTienda',
+                      '/farmacia/miTienda/',
                       ModalRoute.withName('/farmacia/miCuenta'),
                     ).then((value) => setState(() {})),
                 errorStyle: TextStyle(
@@ -395,46 +395,50 @@ class _TabFalseState extends State<TabFalse> {
   }
 
   subirDoc(String docType) async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    try {
+      FilePickerResult result = await FilePicker.platform.pickFiles();
 
-    if (result != null) {
-      var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
-      switch (docType) {
-        case 'Aviso de funcionamiento':
-          setState(() {
-            fileaviso = result.files.single.name;
-            aviso = uri;
-          });
-          break;
-        case 'Acta constitutiva':
-          setState(() {
-            fileacta = result.files.single.name;
-            acta = uri;
-          });
-          break;
-        case 'Comprobante de domicilio':
-          setState(() {
-            filecomprobante = result.files.single.name;
-            comprobante = uri;
-          });
-          break;
-        case 'INE vigente':
-          setState(() {
-            fileine = result.files.single.name;
-            ine = uri;
-          });
-          break;
-        case 'Cédula fiscal SAT':
-          setState(() {
-            filecedula = result.files.single.name;
-            cedula = uri;
-          });
-          break;
-        default:
+      if (result != null) {
+        if (result.files.single.size <= 10000) {
+          var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+          switch (docType) {
+            case 'Aviso de funcionamiento':
+              setState(() {
+                fileaviso = result.files.single.name;
+                aviso = uri;
+              });
+              break;
+            case 'Acta constitutiva':
+              setState(() {
+                fileacta = result.files.single.name;
+                acta = uri;
+              });
+              break;
+            case 'Comprobante de domicilio':
+              setState(() {
+                filecomprobante = result.files.single.name;
+                comprobante = uri;
+              });
+              break;
+            case 'INE vigente':
+              setState(() {
+                fileine = result.files.single.name;
+                ine = uri;
+              });
+              break;
+            case 'Cédula fiscal SAT':
+              setState(() {
+                filecedula = result.files.single.name;
+                cedula = uri;
+              });
+              break;
+            default:
+          }
+        } else {
+          // User canceled the picker
+        }
       }
-    } else {
-      // User canceled the picker
-    }
+    } catch (e) {}
   }
 
   document(doc) {

@@ -150,7 +150,7 @@ class _HomeInfoCardState extends State<HomeInfoCard> {
   }
 }
 
-cardInfoDrug(context) {
+cardInfoDrug(context, icon, title, desc) {
   return Container(
     padding: EdgeInsets.all(smallPadding),
     child: Column(
@@ -166,20 +166,20 @@ cardInfoDrug(context) {
                 ),
                 borderRadius: BorderRadius.circular(100)),
             child: Icon(
-              Icons.favorite_border_outlined,
+             icon,
               color: Colors.blue,
               size: 55,
             )),
         SizedBox(height: smallPadding),
         Text(
-          'Paga con tarjeta de crédito o débito.',
+          title,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontWeight: FontWeight.w700, color: Colors.grey, fontSize: 17),
         ),
         SizedBox(height: smallPadding),
         Text(
-          'No te preocupes por tu información, tus transacciones están seguras con nosotros.',
+          desc,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontWeight: FontWeight.w400, color: Colors.grey, fontSize: 17),

@@ -56,13 +56,13 @@ var rutasDrug = {
   // V e n d e d o r  W E B
   '/farmacia/login': (context) => LobbyVendor(ruta: '/farmacia/login'),
   '/farmacia/login/miTienda': (context) =>
-      LobbyVendor(ruta: '/farmacia/miTienda'),
+      LobbyVendor(ruta: '/farmacia/miTienda/'),
   '/farmacia/registro': (context) => LobbyVendor(ruta: '/farmacia/registro'),
   '/farmacia/miCuenta': (context) => LobbyVendor(ruta: '/farmacia/miCuenta'),
-  '/farmacia/miTienda': (context) => LobbyVendor(ruta: '/farmacia/miTienda'),
+  '/farmacia/miTienda/': (context) => LobbyVendor(ruta: '/farmacia/miTienda/'),
 
-  '/farmacia/cargar-productos': (context) =>
-      LobbyVendor(ruta: '/farmacia/cargar-productos'),
+  '/farmacia/cargar-productos/': (context) =>
+      LobbyVendor(ruta: '/farmacia/cargar-productos/'),
   '/farmacia/terminos-y-condiciones': (context) => TermCondVendedor()
 };
 
@@ -93,7 +93,7 @@ var rutasDrug = {
 //       ),
 //   '/farmacia/registro': (context) => RegisterVendedor(),
 //   '/farmacia/miCuenta': (context) => MiCuentaVendedor(),
-//   '/farmacia/miTienda': (context) => MiTiendaVendedor(),
+//   '/farmacia/miTienda/': (context) => MiTiendaVendedor(),
 //   '/farmacia/terminos-y-condiciones': (context) => TermCondVendedor(),
-//   '/farmacia/cargar-productos': (context) => CargarProductos(),
+//   '/farmacia/cargar-productos/': (context) => CargarProductos(),
 // };

@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'package:drugapp/model/user_model.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
+import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 var itemsMenu =
-    '[{"icon": 62466, "title": "Mi cuenta", "action": "/farmacia/miCuenta"}, {"icon": 62445, "title": "Mi tienda", "action": "/farmacia/miTienda"},  {"icon": 63627, "title": "Cerrar sesión", "action": "/farmacia/logout"}]';
+    '[{"icon": 62466, "title": "Mi cuenta", "action": "/farmacia/miCuenta/"}, {"icon": 62445, "title": "Mi tienda", "action": "/farmacia/miTienda/"},  {"icon": 63627, "title": "Cerrar sesión", "action": "/farmacia/logout/"}]';
+
+var itemsMobileMenu =
+    '[{"icon": 62466, "title": "Mi cuenta", "action": "/farmacia/miCuenta/"}, {"icon": 62445, "title": "Mi tienda", "action": "/farmacia/miTienda/mobile"},  {"icon": 63627, "title": "Cerrar sesión", "action": "/farmacia/logout/"}]';
 
 class ResponsiveAppBarVendedor extends StatefulWidget {
   final screenWidht;
@@ -29,12 +34,16 @@ class ResponsiveAppBarVendedor extends StatefulWidget {
 }
 
 class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
-  var jsonMenu = jsonDecode(itemsMenu.toString());
+  var jsonMenu;
 
   @override
   void initState() {
     super.initState();
-    var jsonMenu = jsonDecode(itemsMenu.toString());
+    if (kIsWeb) {
+      jsonMenu = jsonDecode(itemsMenu.toString());
+    } else {
+      jsonMenu = jsonDecode(itemsMobileMenu.toString());
+    }
     // sharedPrefs.init().then((value) {
     //   getUserData();
     // });
@@ -136,9 +145,9 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
                             onTap: () {
-                              if (Uri.base.path != '/farmacia/miTienda') {
+                              if (Uri.base.path != '/farmacia/miTienda/') {
                                 Navigator.pushNamed(
-                                        context, '/farmacia/miTienda')
+                                        context, '/farmacia/miTienda/')
                                     .then((value) => setState(() {}));
                               }
                             },
@@ -157,7 +166,7 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                       //         CircleAvatar(
                       //           backgroundImage: userModel.imgUrl == null
                       //               ? AssetImage('images/logoDrug.png')
-                      //               : NetworkImage(userModel.imgUrl),
+                      //               : getNetworkImage(userModel.imgUrl),
                       //         )
                       //       ],
                       //     )),
@@ -178,10 +187,10 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                           child: InkWell(
                               onTap: () {
                                 if (jsonMenu[index]['action'] ==
-                                    "/farmacia/logout") {
+                                    "/farmacia/logout/") {
                                   logoutVendor().then((value) =>
                                       Navigator.pushReplacementNamed(
-                                          context, '/farmacia/login'));
+                                          context, '/farmacia/login/'));
                                 } else {
                                   if (Uri.base.path !=
                                       jsonMenu[index]['action']) {
@@ -252,6 +261,7 @@ class DrawerUser extends StatefulWidget {
 
 class _DrawerUserState extends State<DrawerUser> {
   UserModel userModel = UserModel();
+  var jsonMenu;
 
   @override
   void initState() {
@@ -259,6 +269,11 @@ class _DrawerUserState extends State<DrawerUser> {
     sharedPrefs.init().then((value) {
       getUserData();
     });
+    if (kIsWeb) {
+      jsonMenu = jsonDecode(itemsMenu.toString());
+    } else {
+      jsonMenu = jsonDecode(itemsMobileMenu.toString());
+    }
   }
 
   getUserData() {
@@ -270,7 +285,6 @@ class _DrawerUserState extends State<DrawerUser> {
 
   @override
   Widget build(BuildContext context) {
-    var jsonMenu = jsonDecode(itemsMenu.toString());
     MediaQueryData queryData = MediaQuery.of(context);
 
     return Drawer(
@@ -360,9 +374,9 @@ Widget listMenu(BuildContext context, IconData iconMenu, Color colorIcon,
         style: TextStyle(color: Colors.grey[700]),
       ),
       onTap: () {
-        if (action == "/farmacia/logout") {
+        if (action == "/farmacia/logout/") {
           logoutVendor().then((value) =>
-              Navigator.pushReplacementNamed(context, '/farmacia/login'));
+              Navigator.pushReplacementNamed(context, '/farmacia/login/'));
         } else {
           if (Uri.base.path != action) {
             Navigator.pushNamed(context, action);

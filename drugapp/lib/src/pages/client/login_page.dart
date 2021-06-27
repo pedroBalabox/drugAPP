@@ -31,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     sharedPrefs.init();
+    print('okk client');
     super.initState();
   }
 
@@ -56,13 +57,13 @@ class _LoginPageState extends State<LoginPage> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/drug3.jpg',
+                                'images/coverMed.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
                               ),
                               Opacity(
-                                  opacity: 0.75,
+                                  opacity: 0.3,
                                   child: Image.asset('images/coverColor.png',
                                       width: double.maxFinite,
                                       height: 400,
@@ -123,13 +124,13 @@ class _LoginPageState extends State<LoginPage> {
                     flex: 6,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/drug3.jpg',
+                        'images/coverMed.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
                       ),
                       Opacity(
-                          opacity: 0.75,
+                          opacity: 0.3,
                           child: Image.asset('images/coverColor.png',
                               width: double.maxFinite,
                               height: 400,
@@ -213,7 +214,8 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: smallPadding * 1.25),
                     InkWell(
                       onTap: () =>
-                          Navigator.pushNamed(context, '/farmacia/login'),
+                          Navigator.pushNamed(context, '/farmacia/login/')
+                              .then((value) => setState(() {})),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -353,9 +355,13 @@ class _LoginPageState extends State<LoginPage> {
 
   _infoContainer(constraints) {
     return Padding(
-      padding: EdgeInsets.all(constraints.maxWidth < 700 ? 30 : 55.0),
+      padding: EdgeInsets.symmetric(
+          horizontal: constraints.maxWidth < 700 ? 30 : 55.0,
+          vertical: constraints.maxWidth < 700
+              ? 30
+              : MediaQuery.of(context).size.width / 8),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        // mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(

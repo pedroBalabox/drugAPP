@@ -8,6 +8,7 @@ import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawerVendedor_widget.dart';
+import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -94,21 +95,23 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
           height: smallPadding,
         ),
         Container(child: miCuenta(context)),
-        SizedBox(
-          height: smallPadding * 4,
-        ),
-        InkWell(
-          onTap: () => logoutVendor()
-              .then((value) => Navigator.pushNamed(context, '/farmacia/login')),
-          child: Text(
-            'Cerrar sesión',
-            style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 18),
+        SizedBox(height: medPadding / 2),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
+          child: BotonSimple(
+            action: () => Navigator.pushNamed(context, '/farmacia/cambiar-contraseña/'),
+            contenido: Text(
+              'Cambiar contraseña',
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            estilo: estiloBotonSecundary,
           ),
-        ),
+        )
       ],
     );
   }
@@ -232,16 +235,18 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'opcional',
+            requerido: false,
             onChanged: (value) {
               setState(() {
                 second_lastname = value;
               });
             },
           ),
-          EntradaTexto(
+          EntradaTextoTest(
+            longMaxima: 50,
             valorInicial: userModel.mail.toString(),
             estilo: inputPrimarystyle(
-                context, Icons.person_outline, 'Correo', null),
+                context, Icons.person_outline, 'Correo *', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.none,
             tipo: 'correo',

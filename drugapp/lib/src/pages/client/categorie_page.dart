@@ -4,6 +4,7 @@ import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
@@ -129,56 +130,72 @@ class _CategoriaPageState extends State<CategoriaPage> {
   categorieCard(cat) {
     return InkWell(
       onTap: () => Navigator.pushNamed(
-        context,
-        ProductView.routeName,
-        arguments: ProductosDetallesArguments({
-          "farmacia_id": null,
-          "userQuery": null,
-          "favorite": false,
-          "availability": null,
-          "stock": "available",
-          "priceFilter": null,
-          "myLabels": [],
-          "myCats": [cat['categoria_id']],
-          "title": "${cat['nombre']}"
-        }),
-      ),
+              context, '/productos/' + cat['categoria_id'] + '/' + cat['nombre'])
+          .then((value) => setState(() {})),
       child: Container(
         width: 200,
         height: 200,
         decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.1),
-                blurRadius: 4, // soften the shadow
-                spreadRadius: 1.0, //extend the shadow
-                offset: Offset(
-                  0.0, // Move to right 10  horizontally
-                  3.0, // Move to bottom 10 Vertically
-                ),
-              )
-            ],
-            image: DecorationImage(
-                image: NetworkImage(cat['imagen']), fit: BoxFit.cover)),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              blurRadius: 4, // soften the shadow
+              spreadRadius: 1.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                3.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ],
+        ),
+        // image: DecorationImage(
+        //     image: getNetworkImage(cat['imagen']), fit: BoxFit.cover)
+        //     ),
         margin: EdgeInsets.symmetric(
             horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-              padding: EdgeInsets.all(smallPadding / 2),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.7),
-              ),
-              child: Text(
-                cat['nombre'],
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 17),
-              )),
+        // child: Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: Container(
+        //       padding: EdgeInsets.all(smallPadding / 2),
+        //       width: double.infinity,
+        //       decoration: BoxDecoration(
+        //         color: Theme.of(context).primaryColor.withOpacity(0.7),
+        //       ),
+        //       child: Text(
+        //         cat['nombre'],
+        //         maxLines: 1,
+        //         overflow: TextOverflow.ellipsis,
+        //         style: TextStyle(
+        //             color: Colors.white,
+        //             fontWeight: FontWeight.w500,
+        //             fontSize: 17),
+        //       )),
+        child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.expand,
+          children: [
+            getNetworkImage(
+              cat['imagen'],
+            ),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: EdgeInsets.all(smallPadding / 2),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.7),
+                  ),
+                  child: Text(
+                    cat['nombre'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17),
+                  ),
+                )),
+          ],
         ),
       ),
     );

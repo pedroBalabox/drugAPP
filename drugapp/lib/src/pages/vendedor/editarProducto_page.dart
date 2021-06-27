@@ -37,11 +37,9 @@ class ImageGallery {
 }
 
 class EditarProducto extends StatefulWidget {
-  static const routeName = '/farmacia/editar-prodcuto';
+  final String idProducto;
 
-  final dynamic jsonProducto;
-
-  EditarProducto({Key key, this.jsonProducto}) : super(key: key);
+  EditarProducto({Key key, this.idProducto}) : super(key: key);
 
   @override
   _EditarProductoState createState() => _EditarProductoState();
@@ -49,8 +47,14 @@ class EditarProducto extends StatefulWidget {
 
 class _EditarProductoState extends State<EditarProducto> {
   List<Category> _categories = [];
+  List<Category> _labels = [];
+  var _itemsCat;
 
-  var _items;
+  var _itemCat;
+
+  var _itemsLabel;
+
+  var _itemLabel;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   ProductoModel productoModel = ProductoModel();
@@ -64,66 +68,162 @@ class _EditarProductoState extends State<EditarProducto> {
 
   var jsonGallery;
 
-  var _itemCat;
-
   var _newCats = [];
 
-  bool load = true;
+  bool loadCat = true;
+  bool loadLabel = true;
+
+  bool error = false;
+  String errorStr;
 
   List<Category> _myCat = [];
+
+  List<Category> _myLabels = [];
+
+  List myCats = [];
+  List myLabels = [];
+
+  bool conReceta = false;
+
+  bool loadProduct = true;
+
+  dynamic productData;
 
   @override
   void initState() {
     super.initState();
-    sharedPrefs.init().then((value) {
-      rest
-          .restService(null, '${urlApi}obtener/categorias',
-              sharedPrefs.partnerUserToken, 'get')
-          .then((value) {
-        if (value['status'] == 'server_true') {
-          _itemCat = value['response'];
-          _itemCat = jsonDecode(_itemCat)[1]['categories'];
 
-          for (int i = 0; i <= _itemCat.length - 1; i++) {
-            var myCat = _itemCat[i];
-            var myId = myCat['categoria_id'];
-            var myName = myCat['nombre'];
+    sharedPrefs.init().then((value) => getProduct());
 
-            // _cat.add(Category(id: myId, name: myName));
-            // _myItemCat = [Category(id: myId, name: myName)];
+    // productoModel = ProductoModel.fromJson(widget.jsonProducto.jsonProducto);
+    // setState(() {
+    // conReceta = productoModel.requiereReceta == 'SI' ? true : false;
+    // jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
+    // });
 
-            setState(() {
-              _categories.add(Category(id: myId, name: myName));
-              _items = _categories
-                  .map((cat) => MultiSelectItem<Category>(cat, cat.name))
-                  .toList();
-            });
-          }
+    // sharedPrefs.init().then((value) => getCate());
+    // sharedPrefs.init().then((value) => getLabels());
+  }
 
-          for (int j = 0; j <= _categories.length - 1; j++) {
-            for (int i = 0; i <= productoModel.categorias.length - 1; i++) {
-              if (productoModel.categorias[i]['categoria_id'] ==
-                  _categories[j].id) {
-                _myCat.add(_categories[j]);
-              }
-            }
-          }
+  getProduct() async {
+    var arrayData = {"id_de_producto": widget.idProducto.toString()};
+    await rest
+        .restService(arrayData, urlApi + 'obtener/producto',
+            sharedPrefs.partnerUserToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        // var _itemData = value['response'];
+        // _itemData = jsonDecode(value['response']);
+        setState(() {
+          // productoModel = ProductoModel.fromJson(_itemData);
+          productData = jsonDecode(value['response'])[1];
+          productoModel = ProductoModel.fromJson(productData[0]);
+          conReceta = productoModel.requiereReceta == 'SI' ? true : false;
+          jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
+          loadProduct = false;
+        });
+        print(productData[0]['nombre']);
+        getCate();
+      } else {
+        setState(() {
+          loadProduct = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
+  }
+
+  getCate() async {
+    await rest
+        .restService(null, '${urlApi}obtener/categorias',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        _itemCat = value['response'];
+        _itemCat = jsonDecode(_itemCat)[1]['categories'];
+
+        for (int i = 0; i <= _itemCat.length - 1; i++) {
+          var myCat = _itemCat[i];
+          var myId = myCat['categoria_id'];
+          var myName = myCat['nombre'];
+
+          // _cat.add(Category(id: myId, name: myName));
+          // _myItemCat = [Category(id: myId, name: myName)];
 
           setState(() {
-            load = false;
+            _categories.add(Category(id: myId, name: myName));
+            _itemsCat = _categories
+                .map((cat) => MultiSelectItem<Category>(cat, cat.name))
+                .toList();
           });
         }
-      });
+
+        for (int j = 0; j <= _categories.length - 1; j++) {
+          for (int i = 0; i <= productoModel.categorias.length - 1; i++) {
+            if (productoModel.categorias[i]['categoria_id'] ==
+                _categories[j].id) {
+              _myCat.add(_categories[j]);
+            }
+          }
+        }
+        setState(() {
+          loadCat = false;
+        });
+        getLabels();
+      } else {
+        setState(() {
+          loadCat = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    }).then((value) {});
+  }
+
+  getLabels() async {
+    await rest
+        .restService(null, '${urlApi}obtener/etiquetas',
+            sharedPrefs.partnerUserToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        _itemLabel = value['response'];
+        _itemLabel = jsonDecode(_itemLabel)[1]['tags'];
+
+        for (int i = 0; i <= _itemLabel.length - 1; i++) {
+          var myLabel = _itemLabel[i];
+          var myId = myLabel['id_de_etiqueta'];
+          var myName = myLabel['nombre'];
+
+          // _cat.add(Category(id: myId, name: myName));
+          // _myItemCat = [Category(id: myId, name: myName)];
+
+          setState(() {
+            _labels.add(Category(id: myId, name: myName));
+            _itemsLabel = _labels
+                .map((label) => MultiSelectItem<Category>(label, label.name))
+                .toList();
+          });
+        }
+
+        for (int j = 0; j <= _labels.length - 1; j++) {
+          for (int i = 0; i <= productoModel.etiquetas.length - 1; i++) {
+            if (productoModel.etiquetas[i]['id_de_etiqueta'] == _labels[j].id) {
+              _myLabels.add(_labels[j]);
+            }
+          }
+        }
+        setState(() {
+          loadLabel = false;
+        });
+      } else {
+        setState(() {
+          loadLabel = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
     });
-
-    productoModel = ProductoModel.fromJson(widget.jsonProducto.jsonProducto);
-
-    labeltoList();
-    setState(() {
-      jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
-    });
-
-    print('----' + productoModel.categorias.toString());
   }
 
   @override
@@ -132,23 +232,23 @@ class _EditarProductoState extends State<EditarProducto> {
     super.dispose();
   }
 
-  labeltoList() {
-    if (productoModel.etiqueta1 != null) {
-      labels.add(productoModel.etiqueta1);
-    }
-    if (productoModel.etiqueta2 != null) {
-      labels.add(productoModel.etiqueta2);
-    }
-    if (productoModel.etiqueta3 != null) {
-      labels.add(productoModel.etiqueta3);
-    }
-    if (productoModel.etiqueta4 != null) {
-      labels.add(productoModel.etiqueta4);
-    }
-    if (productoModel.etiqueta5 != null) {
-      labels.add(productoModel.etiqueta5);
-    }
-  }
+  // labeltoList() {
+  //   if (productoModel.etiqueta1 != null) {
+  //     labels.add(productoModel.etiqueta1);
+  //   }
+  //   if (productoModel.etiqueta2 != null) {
+  //     labels.add(productoModel.etiqueta2);
+  //   }
+  //   if (productoModel.etiqueta3 != null) {
+  //     labels.add(productoModel.etiqueta3);
+  //   }
+  //   if (productoModel.etiqueta4 != null) {
+  //     labels.add(productoModel.etiqueta4);
+  //   }
+  //   if (productoModel.etiqueta5 != null) {
+  //     labels.add(productoModel.etiqueta5);
+  //   }
+  // }
 
   deletePicture(archivoId) async {
     var arrayData = {
@@ -171,7 +271,11 @@ class _EditarProductoState extends State<EditarProducto> {
     return ResponsiveAppBarVendedor(
       title: 'Editar prodcuto',
       screenWidht: MediaQuery.of(context).size.width,
-      body: bodyProducto(),
+      body: loadProduct
+          ? bodyLoad(context)
+          : error
+              ? errorWidget(errorStr, context)
+              : bodyProducto(),
     );
   }
 
@@ -231,26 +335,51 @@ class _EditarProductoState extends State<EditarProducto> {
         SizedBox(
           height: medPadding,
         ),
+        Text(
+          'Etiquetas',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        SizedBox(
+          height: smallPadding,
+        ),
+        Container(child: miLabel(context)),
+        SizedBox(
+          height: medPadding,
+        ),
         Padding(
           padding: EdgeInsets.symmetric(
               vertical: smallPadding, horizontal: medPadding),
           child: BotonRestTest(
             arrayData: {
               "id_de_producto": productoModel.idDeProducto,
-              "sku": productoModel.sku,
+              // "sku": productoModel.sku,
+              // "requiere_receta": conReceta ? 'SI' : 'NO',
+              // "nombre": productoModel.nombre,
               "descripcion": productoModel.descripcion,
-              "precio": productoModel.precio,
-              "precio_con_descuento": productoModel.precioConDescuento,
-              "precio_mayoreo": productoModel.precioMayoreo,
-              "cantidad_mayoreo": int.parse(productoModel.cantidadMayoreo),
-              "categorias": _newCats,
+              // "marca": productoModel.marca,
+              // "precio": productoModel.precio,
+              // "precio_con_descuento": productoModel.precioConDescuento,
+              // "precio_mayoreo": productoModel.precioMayoreo,
+              // "cantidad_mayoreo": productoModel.cantidadMayoreo == ''
+              //     ? null
+              //     : int.parse(productoModel.cantidadMayoreo),
+              // "stock": productoModel.stock == ''
+              //     ? null
+              //     : int.parse(productoModel.stock),
+              "categorias": myCats,
+              "etiquetas": myLabels,
               "galeria": base64Gallery
             },
             token: sharedPrefs.partnerUserToken,
             method: 'post',
             showSuccess: true,
             stringCargando: 'Actualizando producto...',
-            action: (value) => null,
+            action: (value) {
+              setState(() {
+                base64Gallery = [];
+              });
+            },
             url: '${urlApi}actualizar/mi-producto',
             contenido: Text('Actualizar producto',
                 style: TextStyle(
@@ -294,13 +423,13 @@ class _EditarProductoState extends State<EditarProducto> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              jsonGallery.length >= 10
+              jsonGallery.length >= 5
                   ? Container()
                   : Padding(
                       padding: EdgeInsets.symmetric(vertical: smallPadding),
                       child: BotonSimple(
                         action: () =>
-                            jsonGallery.length >= 10 ? null : pickImage(),
+                            jsonGallery.length >= 5 ? null : pickImage(),
                         contenido: Text('Agregar imágen',
                             style: TextStyle(
                                 color: Colors.white,
@@ -373,9 +502,10 @@ class _EditarProductoState extends State<EditarProducto> {
         child: Stack(
           children: [
             Center(
-                child: jsonGallery[index]['type'] == 'network'
-                    ? Image.network("${jsonGallery[index]['url']}",
-                        fit: BoxFit.cover)
+                child: jsonGallery[index]['type'] == null
+                    // ? Image.network("${jsonGallery[index]['url']}",
+                    //     fit: BoxFit.cover)
+                    ? getNetworkImage("${jsonGallery[index]['url']}")
                     : Image.memory(base64Decode(jsonGallery[index]['path']),
                         fit: BoxFit.cover)),
             InkWell(
@@ -507,8 +637,8 @@ class _EditarProductoState extends State<EditarProducto> {
       child: Column(
         children: [
           EntradaTexto(
-            valorInicial: productoModel.nombre,
             habilitado: false,
+            valorInicial: productoModel.nombre,
             estilo: inputPrimarystyle(
                 context, Icons.medical_services_outlined, 'Nombre', null),
             tipoEntrada: TextInputType.emailAddress,
@@ -517,31 +647,36 @@ class _EditarProductoState extends State<EditarProducto> {
             onChanged: (value) {
               setState(() {
                 // name = value;
+                productoModel.nombre = value;
               });
             },
           ),
           EntradaTexto(
-            valorInicial: productoModel.marca,
             habilitado: false,
+            valorInicial: productoModel.marca,
             estilo: inputPrimarystyle(context, Icons.medical_services_outlined,
                 'Laboratorio / Marca', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'textoLargo',
             onChanged: (value) {
-              setState(() {});
+              setState(() {
+                productoModel.marca = value;
+              });
             },
           ),
           EntradaTexto(
-            valorInicial: productoModel.sku,
             habilitado: false,
+            valorInicial: productoModel.sku,
             estilo: inputPrimarystyle(
                 context, Icons.medical_services_outlined, 'SKU', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'textoLargo',
             onChanged: (value) {
-              setState(() {});
+              setState(() {
+                productoModel.sku = value;
+              });
             },
           ),
           EntradaTexto(
@@ -565,11 +700,13 @@ class _EditarProductoState extends State<EditarProducto> {
                   valorInicial: productoModel.precio,
                   estilo: inputPrimarystyle(
                       context, Icons.attach_money_outlined, 'Precio', null),
-                  tipoEntrada: TextInputType.name,
+                  tipoEntrada: TextInputType.number,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'textoLargo',
+                  tipo: 'numeroINT',
                   onChanged: (value) {
-                    setState(() {});
+                    setState(() {
+                      productoModel.precio = value;
+                    });
                   },
                 ),
               ),
@@ -582,11 +719,13 @@ class _EditarProductoState extends State<EditarProducto> {
                       Icons.attach_money_outlined,
                       'Precio con Descuento',
                       null),
-                  tipoEntrada: TextInputType.name,
+                  tipoEntrada: TextInputType.number,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'textolargo',
+                  tipo: 'numeroINT',
                   onChanged: (value) {
-                    setState(() {});
+                    setState(() {
+                      productoModel.precioConDescuento = value;
+                    });
                   },
                 ),
               ),
@@ -600,11 +739,13 @@ class _EditarProductoState extends State<EditarProducto> {
                   valorInicial: productoModel.precioMayoreo,
                   estilo: inputPrimarystyle(context,
                       Icons.attach_money_outlined, 'Precio mayorista', null),
-                  tipoEntrada: TextInputType.name,
+                  tipoEntrada: TextInputType.number,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'textolargo',
+                  tipo: 'numeroINT',
                   onChanged: (value) {
-                    setState(() {});
+                    setState(() {
+                      productoModel.precioMayoreo = value;
+                    });
                   },
                 ),
               ),
@@ -614,79 +755,112 @@ class _EditarProductoState extends State<EditarProducto> {
                   valorInicial: productoModel.cantidadMayoreo,
                   estilo: inputPrimarystyle(context, Icons.add_box_outlined,
                       'Cantidad mayoreo', null),
-                  tipoEntrada: TextInputType.name,
+                  tipoEntrada: TextInputType.number,
                   textCapitalization: TextCapitalization.words,
-                  tipo: 'textolargo',
+                  tipo: 'numeroINT',
                   onChanged: (value) {
-                    setState(() {});
+                    setState(() {
+                      productoModel.cantidadMayoreo = value;
+                    });
                   },
                 ),
               ),
             ],
           ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: productoModel.stock,
-            estilo: inputPrimarystyle(
-                context, Icons.add_box_outlined, 'Stock', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: productoModel.categoria,
-            estilo: inputPrimarystyle(
-                context, Icons.medical_services_outlined, 'Categoría', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: productoModel.subcategoria1,
-            estilo: inputPrimarystyle(
-                context, Icons.medical_services_outlined, 'SubCategoría', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: productoModel.subcategoria2,
-            estilo: inputPrimarystyle(
-                context, Icons.medical_services_outlined, 'SubCategoría', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: productoModel.subcategoria3,
-            estilo: inputPrimarystyle(
-                context, Icons.medical_services_outlined, 'SubCategoría', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'textolargo',
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
+          Row(
+            children: [
+              Flexible(
+                child: EntradaTexto(
+                  habilitado: false,
+                  valorInicial: productoModel.stock,
+                  estilo: inputPrimarystyle(
+                      context, Icons.add_box_outlined, 'Stock', null),
+                  tipoEntrada: TextInputType.number,
+                  textCapitalization: TextCapitalization.words,
+                  tipo: 'numeroINT',
+                  onChanged: (value) {
+                    setState(() {
+                      productoModel.stock = value;
+                    });
+                  },
+                ),
+              ),
+              Flexible(
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Con receta'),
+                  Switch(
+                    value: conReceta,
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                  )
+                ],
+              ))
+            ],
+          )
         ],
       ),
     );
+  }
+
+  miLabel(context) {
+    var size = MediaQuery.of(context).size;
+    return Container(
+        padding: EdgeInsets.all(smallPadding * 2),
+        width: size.width,
+        // height: size.height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              blurRadius: 5.0, // soften the shadow
+              spreadRadius: 1.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                3.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ],
+        ),
+        child: loadLabel
+            ? Container()
+            : Column(
+                children: [
+                  MultiSelectDialogField<Category>(
+                    searchHint: 'Buscar',
+                    buttonText: Text(
+                      'Etiquetas',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                          fontSize: 15),
+                    ),
+                    buttonIcon: Icon(Icons.arrow_drop_down),
+                    title: Text(
+                      'Etiquetas',
+                    ),
+                    cancelText: Text('CANCELAR'),
+                    searchable: true,
+                    listType: MultiSelectListType.CHIP,
+                    items: _itemsLabel,
+                    initialValue: _myLabels,
+                    onConfirm: (values) {
+                      setState(() {
+                        myLabels = [];
+                        for (int j = 0; j <= values.length - 1; j++) {
+                          myLabels.add(values[j].id);
+                        }
+                      });
+                    },
+                    // maxChildSize: 0.8,
+                  ),
+                  labelsWidget(),
+                ],
+              ));
   }
 
   miEtiqeuta(context) {
@@ -709,32 +883,78 @@ class _EditarProductoState extends State<EditarProducto> {
             )
           ],
         ),
-        child: Column(
-          children: [
-            load
-                ? Container()
-                : MultiSelectDialogField<Category>(
-                    buttonText: Text('Categoría'),
+        child: loadCat
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  MultiSelectDialogField<Category>(
+                    searchHint: 'Buscar',
+                    buttonText: Text(
+                      'Categoría',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                          fontSize: 15),
+                    ),
                     buttonIcon: Icon(Icons.arrow_drop_down),
-                    title: Text('Categorias'),
+                    title: Text(
+                      'Categorias',
+                    ),
                     cancelText: Text('CANCELAR'),
                     searchable: true,
                     listType: MultiSelectListType.CHIP,
-                    items: _items,
+                    items: _itemsCat,
+                    // chipDisplay: MultiSelectChipDisplay(
+                    //   icon: Icon(Icons.close),
+                    //   items: _itemsCat,
+                    //   // onTap: (value) => setState(() {
+                    //   //   _myCat = value;
+                    //   // }),
+                    // ),
                     initialValue: _myCat,
                     onConfirm: (values) {
                       setState(() {
-                        _newCats = [];
+                        myCats = [];
                         for (int j = 0; j <= values.length - 1; j++) {
-                          _newCats.add(values[j].id);
+                          myCats.add(values[j].id);
                         }
                       });
                     },
                     // maxChildSize: 0.8,
                   ),
-            labelsWidget(),
-          ],
-        ));
+                  // MultiSelectDialogField<Category>(
+                  //   searchHint: 'Buscar',
+                  //   buttonText: Text(
+                  //     'Etiquetas',
+                  //     style: TextStyle(
+                  //         fontWeight: FontWeight.w500,
+                  //         color: Colors.black54,
+                  //         fontSize: 15),
+                  //   ),
+                  //   buttonIcon: Icon(Icons.arrow_drop_down),
+                  //   title: Text(
+                  //     'Etiquetas',
+                  //   ),
+                  //   cancelText: Text('CANCELAR'),
+                  //   searchable: true,
+                  //   listType: MultiSelectListType.CHIP,
+                  //   items: _itemsLabel,
+                  //   initialValue: _myLabels,
+                  //   onConfirm: (values) {
+                  //     setState(() {
+                  //       myLabels = [];
+                  //       for (int j = 0; j <= values.length - 1; j++) {
+                  //         myLabels.add(values[j].id);
+                  //       }
+                  //     });
+                  //   },
+                  //   // maxChildSize: 0.8,
+                  // ),
+                  labelsWidget(),
+                ],
+              ));
   }
 
   labelsWidget() {

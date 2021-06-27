@@ -4,6 +4,7 @@ import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
+import 'package:drugapp/src/service/jsFlutter/auth_class.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
@@ -15,6 +16,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CarritoPage extends StatefulWidget {
   CarritoPage({Key key}) : super(key: key);
@@ -38,8 +40,6 @@ class _CarritoPageState extends State<CarritoPage> {
   String telefono_contacto;
   String comentarios;
   String card_id;
-  // String card_id = 'kfipluyqmroronvvllsj';
-  String device_session_id = 'kfipluyqmroronvvllsj';
 
   List productos = [];
 
@@ -60,9 +60,41 @@ class _CarritoPageState extends State<CarritoPage> {
 
   bool recetaMedica = true;
 
+  bool errorSession = true;
+  var _deviceSessionId;
+
   @override
   void initState() {
     super.initState();
+
+    if (kIsWeb) {
+      AuthManager.instance.funTest().then((value) {
+        setState(() {
+          try {
+            _deviceSessionId = value;
+            errorSession = false;
+          } catch (e) {
+            errorSession = true;
+          }
+        });
+      });
+    } else {
+      AuthManager.instance.funTest().then((value) {
+        setState(() {
+          if (value == 'error') {
+            errorSession = true;
+          } else {
+            try {
+              _deviceSessionId = value;
+              errorSession = false;
+            } catch (e) {
+              errorSession = true;
+            }
+          }
+        });
+      });
+    }
+
     _catalogBloc.sendEvent.add(GetCatalogEvent());
     var jsonMenu = jsonDecode(itemsMenu.toString());
     sharedPrefs.init().then((value) => getCards());
@@ -302,67 +334,70 @@ class _CarritoPageState extends State<CarritoPage> {
                     : Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: medPadding * 2),
-                        child: BotonRestTest(
-                            primerAction: () {
-                              setState(() {
-                                productos = [];
-                              });
-                              for (int i = 0; i < data.length; i++) {
-                                // productos.add(ProductosOrden(
-                                //     id_de_producto: data[i].idDeProducto,
-                                //     cantidad: data[i].cantidad));
-                                productos.add({
-                                  "id_de_producto": data[i].idDeProducto,
-                                  "cantidad": data[i].cantidad
-                                });
-                              }
-                              if (formKey.currentState.validate()) {
-                                formKey.currentState.save();
-                              }
-                              ;
-                            },
-                            arrayData: {
-                              "receta_medica": docBase64,
-                              "calle": calle,
-                              "colonia": colonia,
-                              "numero_exterior": numero_exterior,
-                              "numero_interior": numero_interior,
-                              "codigo_postal": codigo_postal,
-                              "referencias": referencias,
-                              "telefono_contacto": telefono_contacto,
-                              "comentarios": comentarios,
-                              "card_id": 'klun7krv2gpqxzz1t6qz',
-                              "device_session_id": "device_session_id",
-                              "productos": productos,
-                            },
-                            showSuccess: true,
-                            url: '$apiUrl/crear/orden',
-                            method: 'post',
-                            formkey: formKey,
-                            token: sharedPrefs.clientToken,
-                            contenido: Text(
-                              'Comprar ahora',
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            action: (value) {
-                              setState(() {
-                                _catalogBloc.sendEvent
-                                    .add(RemoveAllCatalogItemEvent());
-                                // compraRealizada = true;
-                                Navigator.pushNamed(context, '/miCuenta');
-                              });
-                            },
-                            errorStyle: TextStyle(
-                              color: Colors.red[700],
-                              fontWeight: FontWeight.w600,
-                            ),
-                            estilo: estiloBotonPrimary),
+                        child: errorSession
+                            ? Text('Ha ocurrido un error',
+                                style: estiloErrorStr)
+                            : BotonRestTest(
+                                primerAction: () {
+                                  setState(() {
+                                    productos = [];
+                                  });
+                                  for (int i = 0; i < data.length; i++) {
+                                    // productos.add(ProductosOrden(
+                                    //     id_de_producto: data[i].idDeProducto,
+                                    //     cantidad: data[i].cantidad));
+                                    productos.add({
+                                      "id_de_producto": data[i].idDeProducto,
+                                      "cantidad": data[i].cantidad
+                                    });
+                                  }
+                                  if (formKey.currentState.validate()) {
+                                    formKey.currentState.save();
+                                  }
+                                  ;
+                                },
+                                arrayData: {
+                                  "receta_medica": docBase64,
+                                  "calle": calle,
+                                  "colonia": colonia,
+                                  "numero_exterior": numero_exterior,
+                                  "numero_interior": numero_interior,
+                                  "codigo_postal": codigo_postal,
+                                  "referencias": referencias,
+                                  "telefono_contacto": telefono_contacto,
+                                  "comentarios": comentarios,
+                                  "card_id": card_id,
+                                  "device_session_id": _deviceSessionId,
+                                  "productos": productos,
+                                },
+                                showSuccess: true,
+                                url: '$apiUrl/crear/orden',
+                                method: 'post',
+                                formkey: formKey,
+                                token: sharedPrefs.clientToken,
+                                contenido: Text(
+                                  'Comprar ahora',
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                action: (value) {
+                                  setState(() {
+                                    _catalogBloc.sendEvent
+                                        .add(RemoveAllCatalogItemEvent());
+                                    // compraRealizada = true;
+                                    Navigator.pushNamed(context, '/miCuenta');
+                                  });
+                                },
+                                errorStyle: TextStyle(
+                                  color: Colors.red[700],
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                estilo: estiloBotonPrimary),
                       ),
       ],
     );
@@ -414,20 +449,23 @@ class _CarritoPageState extends State<CarritoPage> {
   }
 
   subirDoc() async {
-    FilePickerResult result =
-        await FilePicker.platform.pickFiles(withData: true);
+    try {
+      FilePickerResult result =
+          await FilePicker.platform.pickFiles(withData: true);
 
-    if (result != null) {
-      // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
-      // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
-
-      var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
-      setState(() {
-        docName = result.files.single.name;
-        docBase64 = uri;
-        recetaMedica = true;
-      });
-    }
+      if (result != null) {
+        // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
+        // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
+        if (result.files.single.size <= 10000) {
+          var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+          setState(() {
+            docName = result.files.single.name;
+            docBase64 = uri;
+            recetaMedica = true;
+          });
+        }
+      }
+    } catch (e) {}
   }
 
   misDetalles(Widget contenido) {
@@ -940,7 +978,7 @@ class _CarritoPageState extends State<CarritoPage> {
                                       .primaryColor
                                       .withOpacity(0.7));
                               break;
-                            case 'americanexpress':
+                            case 'american_express':
                               iconCard = Icon(FontAwesomeIcons.ccAmex,
                                   color: Theme.of(context)
                                       .primaryColor

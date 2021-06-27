@@ -74,7 +74,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
             : Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/login', (route) => false);
         break;
-      case '/farmacia/miTienda':
+      case '/farmacia/miTienda/':
         if (clientAuth) {
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => MiTiendaVendedor()),
@@ -88,7 +88,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
               context, '/farmacia/login', (route) => false);
         }
         break;
-      case '/farmacia/cargar-productos':
+      case '/farmacia/cargar-productos/':
         clientAuth
             ? Navigator.of(context)
                 .push(
@@ -101,7 +101,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
         print("Shit happens");
 
         if (clientAuth) {
-          Navigator.of(context).pushNamed('/farmacia/miTienda');
+          Navigator.of(context).pushNamed('/farmacia/miTienda/');
         } else {
           Navigator.pushNamedAndRemoveUntil(
               context, '/farmacia/login', (route) => false);

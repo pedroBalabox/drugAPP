@@ -6,12 +6,11 @@ import 'package:drugapp/model/orden_model.dart';
 import 'package:drugapp/model/user_model.dart';
 import 'package:drugapp/src/bloc/user_bloc.dart/bloc_user.dart';
 import 'package:drugapp/src/bloc/user_bloc.dart/event_user.dart';
-import 'package:drugapp/src/pages/client/detallesCompra_page.dart';
 import 'package:drugapp/src/pages/client/payments/paymentFunctions.dart';
+import 'package:drugapp/src/service/jsFlutter/auth_class.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
-import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
@@ -19,8 +18,12 @@ import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_number_input_formatter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+// import 'package:flutter_openpay/flutter_openpay.dart'
+//     if (dart.library.html) 'dart:js' as js;
 
 class MiCuentaClient extends StatefulWidget {
   MiCuentaClient({Key key}) : super(key: key);
@@ -45,6 +48,8 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   String base64Image;
   UserBloc _userBloc = UserBloc();
 
+  bool loadmiInfo = true;
+
   //New card
   String cardHolder;
   String cp;
@@ -54,6 +59,10 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   int year;
   int cvc;
   var myCards;
+
+  bool errorSession = true;
+
+  var _deviceSessionId;
 
 //Pedido especial
   String productName;
@@ -66,10 +75,35 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   @override
   void initState() {
     super.initState();
-    //   sharedPrefs.init();
-    //   var jsonUser = jsonDecode(sharedPrefs.clientData);
-    //   userModel = UserModel.fromJson(jsonUser);
-    // }
+
+    if (kIsWeb) {
+      AuthManager.instance.funTest().then((value) {
+        setState(() {
+          try {
+            _deviceSessionId = value;
+            errorSession = false;
+          } catch (e) {
+            errorSession = true;
+          }
+        });
+      });
+    } else {
+      AuthManager.instance.funTest().then((value) {
+        setState(() {
+          if (value == 'error') {
+            errorSession = true;
+          } else {
+            try {
+              _deviceSessionId = value;
+              errorSession = false;
+            } catch (e) {
+              errorSession = true;
+            }
+          }
+        });
+      });
+    }
+
     sharedPrefs.init().then((value) {
       getUserData();
     });
@@ -82,6 +116,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
 
     setState(() {
       userModel = UserModel.fromJson(jsonDecode(sharedPrefs.clientData));
+      loadmiInfo = false;
     });
   }
 
@@ -122,36 +157,42 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                 ),
                 footer(context),
               ]),
-              ListView(children: [
-                SizedBox(
-                  height: medPadding,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal:
-                          size.width > 700 ? size.width / 3 : medPadding * .5,
-                      vertical: medPadding * 1.5),
-                  color: bgGrey,
-                  width: size.width,
-                  child: tabMisTarjetas(),
-                ),
-                footer(context),
-              ]),
-              ListView(children: [
-                SizedBox(
-                  height: medPadding,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal:
-                          size.width > 700 ? size.width / 3 : medPadding * .5,
-                      vertical: medPadding * 1.5),
-                  color: bgGrey,
-                  width: size.width,
-                  child: tabPedidoEspecial(),
-                ),
-                footer(context),
-              ]),
+              Container(
+                color: bgGrey,
+                child: ListView(children: [
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:
+                            size.width > 700 ? size.width / 3 : medPadding * .5,
+                        vertical: medPadding * 1.5),
+                    color: bgGrey,
+                    width: size.width,
+                    child: tabMisTarjetas(),
+                  ),
+                  // footer(context),
+                ]),
+              ),
+              Container(
+                color: bgGrey,
+                child: ListView(children: [
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:
+                            size.width > 700 ? size.width / 3 : medPadding * .5,
+                        vertical: medPadding * 1.5),
+                    color: bgGrey,
+                    width: size.width,
+                    child: tabPedidoEspecial(),
+                  ),
+                  footer(context),
+                ]),
+              ),
               TabCompras(),
             ],
           ),
@@ -199,43 +240,67 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   }
 
   tabMiCuenta() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Mis datos',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Text(
-          'Datos personales',
-          style: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Container(child: miCuenta(context)),
-        // SizedBox(
-        //   height: smallPadding * 4,
-        // ),
-        // Text(
-        //   'Dirección',
-        //   style: TextStyle(
-        //       color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
-        // ),
-        // SizedBox(
-        //   height: smallPadding,
-        // ),
-        // Container(
-        //   child: miDireccion(context),
-        // ),
-      ],
-    );
+    return loadmiInfo
+        ? bodyLoad(context)
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Mis datos',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20),
+              ),
+              SizedBox(
+                height: smallPadding,
+              ),
+              Text(
+                'Datos personales',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18),
+              ),
+              SizedBox(
+                height: smallPadding,
+              ),
+              Container(child: miCuenta(context)),
+              SizedBox(height: medPadding / 2),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
+                child: BotonSimple(
+                  action: () =>
+                      Navigator.pushNamed(context, '/cambiar-contraseña'),
+                  contenido: Text(
+                    'Cambiar contraseña',
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  estilo: estiloBotonSecundary,
+                ),
+              )
+              // SizedBox(
+              //   height: smallPadding * 4,
+              // ),
+              // Text(
+              //   'Dirección',
+              //   style: TextStyle(
+              //       color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
+              // ),
+              // SizedBox(
+              //   height: smallPadding,
+              // ),
+              // Container(
+              //   child: miDireccion(context),
+              // ),
+            ],
+          );
   }
 
   Future<String> networkImageToBase64(String imageUrl) async {
@@ -292,7 +357,6 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           ],
         ),
         child: Column(
-         
           children: [
             Align(
               alignment: Alignment.topCenter,
@@ -393,6 +457,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
             child: BotonRestTest(
+                showSuccess: true,
                 token: sharedPrefs.clientToken,
                 url: '$apiUrl/actualizar/usuario',
                 method: 'post',
@@ -747,6 +812,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                 },
                               ), */
                               TextFormField(
+                                keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.next,
                                 inputFormatters: [
                                   CreditCardNumberInputFormatter()
@@ -767,10 +833,12 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                   });
                                 },
                                 onChanged: (value) {
-                                  setState(() {
-                                    toSendCardNumber = int.parse(value
-                                        .replaceAll(new RegExp(r"\s+"), ""));
-                                  });
+                                  if (value != "") {
+                                    setState(() {
+                                      toSendCardNumber = int.parse(value
+                                          .replaceAll(new RegExp(r"\s+"), ""));
+                                    });
+                                  }
                                 },
                               ),
                               Row(
@@ -785,9 +853,11 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                           labelText: 'Mes',
                                           counterText: ''),
                                       onSaved: (value) {
-                                        setState(() {
-                                          month = int.parse(value);
-                                        });
+                                        if (value != "") {
+                                          setState(() {
+                                            month = int.parse(value);
+                                          });
+                                        }
                                       },
                                       onChanged: (value) {
                                         setState(() {
@@ -814,9 +884,11 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                         });
                                       },
                                       onChanged: (value) {
-                                        setState(() {
-                                          year = int.parse(value);
-                                        });
+                                        if (value != "") {
+                                          setState(() {
+                                            year = int.parse(value);
+                                          });
+                                        }
                                       },
                                     ),
                                   ),
@@ -837,9 +909,11 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                   });
                                 },
                                 onChanged: (value) {
-                                  setState(() {
-                                    cvc = int.parse(value);
-                                  });
+                                  if (value != "") {
+                                    setState(() {
+                                      cvc = int.parse(value);
+                                    });
+                                  }
                                 },
                               ),
                             ],
@@ -875,40 +949,39 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                         SizedBox(
                           width: 25,
                         ), */
-                        Flexible(
-                          child: BotonRestTest(
-                              primerAction: () {
-                                if (_formKey.currentState.validate()) {
-                                  _formKey.currentState.save();
-                                }
-                              },
-                              formkey: _formKey,
-                              token: sharedPrefs.clientToken,
-                              url: '$apiUrl/crear/tarjeta',
-                              method: 'post',
-                              arrayData: {
-                                "card_number": toSendCardNumber,
-                                "holder_name": cardHolder,
-                                "expiration_year": year,
-                                "expiration_month": month,
-                                "cvv2": cvc,
-                                "device_session_id": "device_session_id"
-                              },
-                              showSuccess: true,
-                              action: (value) {
-                                Navigator.pop(context);
-                              },
-                              contenido: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: smallPadding),
-                                child: Text('Agregar',
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal)),
+                        errorSession
+                            ? Text('Ha ocurrido un error',
+                                style: estiloErrorStr)
+                            : Flexible(
+                                child: BotonRestTest(
+                                    primerAction: () {},
+                                    formkey: _formKey,
+                                    token: sharedPrefs.clientToken,
+                                    url: '$apiUrl/crear/tarjeta',
+                                    method: 'post',
+                                    arrayData: {
+                                      "card_number": toSendCardNumber,
+                                      "holder_name": cardHolder,
+                                      "expiration_year": year,
+                                      "expiration_month": month,
+                                      "cvv2": cvc,
+                                      "device_session_id": _deviceSessionId
+                                    },
+                                    showSuccess: true,
+                                    action: (value) {
+                                      Navigator.pop(context);
+                                    },
+                                    contenido: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: smallPadding),
+                                      child: Text('Agregar',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.normal)),
+                                    ),
+                                    estilo: estiloBotonPrimary),
                               ),
-                              estilo: estiloBotonPrimary),
-                        ),
                       ],
                     ),
                   ],
@@ -1194,21 +1267,24 @@ class _TabComprasState extends State<TabCompras> {
         ? bodyLoad(context)
         : error
             ? errorWidget(errorStr, context)
-            : ListView(children: [
-                SizedBox(
-                  height: medPadding,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal:
-                          size.width > 700 ? size.width / 3 : medPadding * .5,
-                      vertical: medPadding * 1.5),
-                  color: bgGrey,
-                  width: size.width,
-                  child: tabCompras(),
-                ),
-                footer(context),
-              ]);
+            : Container(
+                color: bgGrey,
+                child: ListView(children: [
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:
+                            size.width > 700 ? size.width / 3 : medPadding * .5,
+                        vertical: medPadding * 1.5),
+                    color: bgGrey,
+                    width: size.width,
+                    child: tabCompras(),
+                  ),
+                  // footer(context),
+                ]),
+              );
   }
 
   tabCompras() {
@@ -1473,12 +1549,9 @@ class _TabComprasState extends State<TabCompras> {
                           // ),
                           InkWell(
                             onTap: () => Navigator.pushNamed(
-                              context,
-                              DetallesCompra.routeName,
-                              arguments: CompraDetailArguments(
-                                comprajson,
-                              ),
-                            ),
+                                context,
+                                '/miCuenta/compra/' +
+                                    comprajson['id_de_orden']),
                             child: Text(
                               'Ver detalles',
                               style: TextStyle(color: Colors.blue),

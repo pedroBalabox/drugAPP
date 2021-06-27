@@ -22,19 +22,40 @@ Future<bool> validateClient(context, token) async {
       });
     }
   });
-  return userModel == null ? false : true;
+  return userModel.user_id == null ? false : true;
 }
 
-Future<String> validateClientToken(context) async {
+Future<bool> validateClientToken(context) async {
+  RestFun rest = RestFun();
+  UserModel userModel = UserModel();
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   var clientToken = prefs.getString("user_token");
+  bool tokenValid;
 
-  if (clientToken != null) {
-    return clientToken.toString();
+  if (clientToken == null) {
+    tokenValid = false;
+    return tokenValid;
+    // return clientToken.toString();
   } else {
-    return clientToken.toString();
+  await  rest
+        .restService('', '${urlApi}perfil/usuario', clientToken, 'get')
+        .then((value) {
+      print(value);
+      if (value['status'] == 'server_true') {
+        var jsonUser = jsonDecode(value['response']);
+        userModel = UserModel.fromJson(jsonUser[1]);
+        saveUserModel(userModel);
+        tokenValid = true;
+        // return clientToken.toString();
+      } else {
+        tokenValid = false;
+      }
+      // return null.toString();
+    });
+    return userModel.user_id == null ? false : true;
   }
+  // return tokenValid;
 }
 
 Future<bool> validateVendor(context, token) async {

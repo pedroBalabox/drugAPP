@@ -293,7 +293,7 @@ class _TabAceptadaState extends State<TabAceptada> {
                 action: (value) {},
                 // Navigator.pushNamedAndRemoveUntil(
                 //       context,
-                //       '/farmacia/miTienda',
+                //       '/farmacia/miTienda/',
                 //       ModalRoute.withName('/farmacia/miCuenta'),
                 //     ).then((value) => setState(() {})),
                 errorStyle: TextStyle(
