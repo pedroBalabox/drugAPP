@@ -428,9 +428,10 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
             },
           ),
           EntradaTexto(
+            requerido: false,
             valorInicial: userModel.second_lastname,
             estilo: inputPrimarystyle(
-                context, Icons.person_outline, 'Segundo apellido', null),
+                context, Icons.person_outline, 'Segundo apellido (opcional)', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'apellido',
@@ -443,10 +444,23 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           EntradaTexto(
             valorInicial: userModel.mail.toString(),
             estilo: inputPrimarystyle(
+                context, Icons.mail_outline, 'Correo', null),
+            tipoEntrada: TextInputType.phone,
+            textCapitalization: TextCapitalization.none,
+            tipo: 'correo',
+            onChanged: (value) {
+              setState(() {
+                mail = value.toString();
+              });
+            },
+          ),
+           EntradaTexto(
+            valorInicial: userModel.phone,
+            estilo: inputPrimarystyle(
                 context, Icons.phone_outlined, 'Teléfono', null),
             tipoEntrada: TextInputType.phone,
             textCapitalization: TextCapitalization.none,
-            tipo: 'phone',
+            tipo: 'telefono',
             onChanged: (value) {
               setState(() {
                 phone = value.toString();
@@ -469,6 +483,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                   "second_lastname": second_lastname,
                   "password": "123456789",
                   "phone": phone,
+                  "mail": mail,
                   "base64": base64Image == null ? null : base64Image
                 },
                 contenido: Text(

@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/model/user_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
@@ -41,6 +44,8 @@ class ResponsiveAppBar extends StatefulWidget {
 class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
   var jsonMenu = jsonDecode(itemsMenu.toString());
   CatalogBloc _catalogBloc = CatalogBloc();
+  String query;
+
   // UserBloc _userBloc = UserBloc();
 
   @override
@@ -67,29 +72,12 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
   }
 
   validateToken() async {
-    await validateClientToken(context).then((value) {
+    await validateClientToken().then((value) {
       if (!value) {
         Navigator.pushNamed(context, '/login').then((value) => setState(() {}));
       }
     });
   }
-
-  @override
-  void dispose() {
-    _catalogBloc.dispose();
-    // _userBloc.dispose();
-    super.dispose();
-  }
-
-  // getUserData() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  //   var jsonUser = jsonDecode(prefs.getString('partner_data'));
-
-  //   setState(() {
-  //     userModel = UserModel.fromJson(jsonUser);
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -113,31 +101,65 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                         ? Flexible(
                             child: Text(widget.title,
                                 overflow: TextOverflow.ellipsis))
-                        : Container(),
-                    // : Flexible(
-                    //     flex: 3,
-                    //     child: Container(
-                    //       height: 35,
-                    //       child: TextField(
-                    //         textInputAction: TextInputAction.search,
-                    //         textAlignVertical: TextAlignVertical.bottom,
-                    //         decoration: InputDecoration(
-                    //             prefixIcon: Icon(Icons.search),
-                    //             focusedBorder: OutlineInputBorder(
-                    //                 borderSide: BorderSide.none,
-                    //                 borderRadius: BorderRadius.circular(0)),
-                    //             enabledBorder: OutlineInputBorder(
-                    //                 borderSide: BorderSide.none,
-                    //                 borderRadius: BorderRadius.circular(0)),
-                    //             hintStyle: TextStyle(),
-                    //             hintText:
-                    //                 'Búsca una medicina, sítnoma o farmacia...',
-                    //             fillColor: Colors.white,
-                    //             filled: true),
-                    //       ),
-                    //     ),
-                    //   ),
-                    Flexible(flex: 2, child: Container())
+                        // : Container(),
+                        : Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  flex: 4,
+                                  child: Container(
+                                    height: 35,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        if (value != null ||
+                                            value != '' ||
+                                            value != ' ') {
+                                          query = value;
+                                        }
+                                      },
+                                      textInputAction: TextInputAction.search,
+                                      textAlignVertical:
+                                          TextAlignVertical.bottom,
+                                      decoration: InputDecoration(
+                                          prefixIcon: Icon(Icons.search),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(0)),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                              borderRadius:
+                                                  BorderRadius.circular(0)),
+                                          hintStyle: TextStyle(),
+                                          hintText:
+                                              'Búsca una medicina, sítnoma o farmacia...',
+                                          fillColor: Colors.white,
+                                          filled: true),
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                    flex: 1,
+                                    child: BotonSimple(
+                                        contenido: Text('Buscar',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            )),
+                                        action: () {
+                                          Navigator.pushNamed(context,
+                                              '/productos-query/$query/');
+                                        },
+                                        estilo: estiloBotonPrimary)),
+                                Flexible(
+                                  flex: 1,
+                                  child: Container(),
+                                )
+                              ],
+                            ),
+                          ),
+                    // Flexible(flex: 1, child: Container())
                   ],
                 ),
                 actions: [
@@ -209,7 +231,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                     ],
                   ) */
                   Container(
-                    width: 550,
+                    width: 570,
                     alignment: Alignment.bottomCenter,
                     child: ListView.builder(
                       itemCount: jsonMenu.length,
@@ -353,27 +375,54 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
             : AppBar(
                 elevation: 0,
                 backgroundColor: Theme.of(context).accentColor,
-                title: widget.title != null ? Text(widget.title) : Container(),
-                // : Container(
-                //     height: 35,
-                //     child: TextField(
-                //       textInputAction: TextInputAction.search,
-                //       textAlignVertical: TextAlignVertical.bottom,
-                //       decoration: InputDecoration(
-                //           prefixIcon: Icon(Icons.search),
-                //           focusedBorder: OutlineInputBorder(
-                //               borderSide: BorderSide.none,
-                //               borderRadius: BorderRadius.circular(0)),
-                //           enabledBorder: OutlineInputBorder(
-                //               borderSide: BorderSide.none,
-                //               borderRadius: BorderRadius.circular(0)),
-                //           hintStyle: TextStyle(),
-                //           hintText:
-                //               'Búsca una medicina, sítnoma o farmacia...',
-                //           fillColor: Colors.white,
-                //           filled: true),
-                //     ),
-                //   ),
+                title: widget.title != null
+                    ? Text(widget.title)
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            flex: 4,
+                            child: Container(
+                              height: 35,
+                              child: TextField(
+                                onChanged: (value) {
+                                  if (value != null ||
+                                      value != '' ||
+                                      value != ' ') {
+                                    query = value;
+                                  }
+                                },
+                                textInputAction: TextInputAction.search,
+                                textAlignVertical: TextAlignVertical.bottom,
+                                decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.search),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(0)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        borderRadius: BorderRadius.circular(0)),
+                                    hintStyle: TextStyle(),
+                                    hintText:
+                                        'Búsca una medicina, sítnoma o farmacia...',
+                                    fillColor: Colors.white,
+                                    filled: true),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                              flex: 1,
+                              child: BotonSimple(
+                                  contenido: Icon(Icons.search),
+                                  action: () {
+                                    Navigator.pushNamed(
+                                        context, '/productos-query/$query/');
+                                  },
+                                  estilo: estiloBotonPrimary)),
+                          Container()
+                        ],
+                      ),
                 actions: [
                   // Align(
                   //   alignment: Alignment.center,
@@ -526,6 +575,29 @@ class _DrawerUserState extends State<DrawerUser> {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
+            IconData menuIcon;
+
+            switch (jsonMenu[index]['title']) {
+              case 'Inicio':
+                menuIcon = (Icons.home_outlined);
+                break;
+              case 'Mi cuenta':
+                menuIcon = (Icons.person_outline);
+                break;
+              case 'Favoritos':
+                menuIcon = (Icons.favorite_outline);
+                break;
+              case 'Mi tienda':
+                menuIcon = (Icons.store_outlined);
+                break;
+
+              case 'Cerrar sesión':
+                menuIcon = (Icons.logout_outlined);
+                break;
+              default:
+                menuIcon = (Icons.medication_outlined);
+            }
+
             return jsonMenu[index]['title'] == 'Carrito'
                 ? ListTile(
                     leading: Stack(
@@ -559,13 +631,8 @@ class _DrawerUserState extends State<DrawerUser> {
                     onTap: () => Navigator.pushNamed(context, '/carrito')
                         .then((value) => setState(() {})),
                   )
-                : listMenu(
-                    context,
-                    IconData(jsonMenu[index]['icon'],
-                        fontFamily: 'MaterialIcons'),
-                    Colors.grey,
-                    jsonMenu[index]['title'],
-                    jsonMenu[index]['action']);
+                : listMenu(context, (menuIcon), Colors.grey,
+                    jsonMenu[index]['title'], jsonMenu[index]['action']);
           },
         ),
       ]),

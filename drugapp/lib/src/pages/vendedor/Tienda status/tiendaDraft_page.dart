@@ -45,6 +45,8 @@ class _TabDraftState extends State<TabDraft> {
   var ine;
   var cedula;
 
+  bool errorSize = false;
+
   @override
   void initState() {
     super.initState();
@@ -86,6 +88,18 @@ class _TabDraftState extends State<TabDraft> {
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
+        errorSize
+            ? Padding(
+                padding: EdgeInsets.only(top: smallPadding),
+                child: Text(
+                  'Adjunta un documento de máximo 10 MB.',
+                  style: TextStyle(
+                    color: Colors.red[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            : Container(),
         SizedBox(
           height: smallPadding,
         ),
@@ -95,9 +109,31 @@ class _TabDraftState extends State<TabDraft> {
         SizedBox(
           height: medPadding,
         ),
+        aviso == null
+            ? textDocs()
+            : acta == null
+                ? textDocs()
+                : comprobante == null
+                    ? textDocs()
+                    : ine == null
+                        ? textDocs()
+                        : cedula == null
+                            ? textDocs()
+                            : Container(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
           child: BotonRestTest(
+              habilitado: aviso == null
+                  ? false
+                  : acta == null
+                      ? false
+                      : comprobante == null
+                          ? false
+                          : ine == null
+                              ? false
+                              : cedula == null
+                                  ? false
+                                  : true,
               token: sharedPrefs.partnerUserToken,
               url: '$apiUrl/cargar/documentos',
               method: 'post',
@@ -135,6 +171,23 @@ class _TabDraftState extends State<TabDraft> {
               ),
               estilo: estiloBotonPrimary),
         ),
+      ],
+    );
+  }
+
+  textDocs() {
+    return Column(
+      children: [
+        Text(
+          'Adjunta todos los documentos.',
+          style: TextStyle(
+            color: Colors.red[700],
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(
+          height: smallPadding,
+        )
       ],
     );
   }
@@ -438,10 +491,12 @@ class _TabDraftState extends State<TabDraft> {
           await FilePicker.platform.pickFiles(withData: true);
 
       if (result != null) {
-        if (result.files.single.size <= 10000) {
+        if (result.files.single.size <= 10000000) {
           // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
           // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
-
+          setState(() {
+            errorSize = false;
+          });
           var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
 
           switch (docType) {
@@ -479,6 +534,9 @@ class _TabDraftState extends State<TabDraft> {
           }
         } else {
           // User canceled the picker
+          setState(() {
+            errorSize = true;
+          });
         }
       }
     } catch (e) {}

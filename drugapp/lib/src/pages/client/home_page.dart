@@ -4,10 +4,12 @@ import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/pages/Lobby/validate_page.dart';
+import 'package:drugapp/src/service/jsFlutter/auth_class.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
+import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/card_widget.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:flutter/material.dart';
@@ -33,23 +35,87 @@ class _HomeClientState extends State<HomeClient> {
   void initState() {
     cat = jsonDecode(dummyCat);
 
-    validateToken().then((value) => setState(() {
+    AuthManager.instance.homeFunction().then((value) {
+      if (value != 'load') {
+        try {
+          Navigator.pushNamed(context, value).then((value) => setState(() {}));
+        } catch (e) {
+          Navigator.pushNamed(context, '/login')
+              .then((value) => setState(() {}));
+        }
+      } else {
+        setState(() {
           load = false;
-        }));
+        });
+      }
+    });
+
+    // var url = window.location.href;
+
+    // if (url.contains('farmacia')) {
+    //   validateFarmaciaToken();
+    // } else if (url.contains('terminos-y-condiciones') ||
+    //     url.contains('aviso-de-privacidad')) {
+    //   try {
+    // Navigator.pushNamed(context, window.location.pathname.toString())
+    //     .then((value) => setState(() {}));
+    //   } catch (e) {
+    //     validateToken();
+    //   }
+    // } else {
+    //   validateToken();
+    // }
+
     super.initState();
   }
 
-  validateToken() async {
-    await validateClientToken(context).then((value) {
-      if (!value) {
-        Navigator.pushNamed(context, '/login').then((value) => setState(() {}));
-      }
-    });
-  }
+  // validateToken() async {
+  //   await validateClientToken(context).then((value) {
+  //     if (!value) {
+  //       if (window.location.pathname.toString().contains('Recuperar')) {
+  //         Navigator.pushNamedAndRemoveUntil(
+  //             context, window.location.pathname.toString(), (route) => false);
+  //       } else {
+  //         Navigator.pushNamed(context, '/login')
+  //             .then((value) => setState(() {}));
+  //       }
+  //     } else {
+  // setState(() {
+  //   load = false;
+  // });
+  //     }
+  //   });
+  // }
+
+  // validateFarmaciaToken() async {
+  //   var url = window.location.href;
+
+  //   await validateVendorToken(context).then((value) {
+  //     if (url.contains('farmacia')) {
+  //       validateVendorToken(context).then((value) {
+  //         if (!value) {
+  //           Navigator.pushNamed(context, '/farmacia/login/')
+  //               .then((value) => setState(() {}));
+  //         } else {
+  //           if (url.contains('/login') || url.contains('/registro')) {
+  //             Navigator.pushNamedAndRemoveUntil(
+  //                     context, '/farmacia/miCuenta/', (route) => false)
+  //                 .then((value) => setState(() {}));
+  //           } else {
+  //             Navigator.pushNamedAndRemoveUntil(
+  //                 context,
+  //                 window.location.pathname.toString(),
+  //                 (route) => false).then((value) => setState(() {}));
+  //           }
+  //         }
+  //       });
+  //     } else {}
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return load ? bodyLoad(context) : BodyHome(cat: cat);
+    return load ? Scaffold(body: bodyLoad(context)) : BodyHome(cat: cat);
   }
 }
 
@@ -193,7 +259,7 @@ class _BodyHomeState extends State<BodyHome> {
                     width: MediaQuery.of(context).size.width,
                     child: loadBanner
                         ? bodyLoad(context)
-                        : Swiper(
+                        : banner.length == 0 ?  getAsset('bannerPH.png', constraints.maxWidth) :Swiper(
                             itemCount: banner.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 // Image.asset("images/${imgList[index]}", fit: BoxFit.cover),
@@ -260,7 +326,8 @@ class _BodyHomeState extends State<BodyHome> {
                                 image: 'drug1.jpg',
                                 nav: () =>
                                     Navigator.pushNamed(context, '/tiendas')
-                                        .then((value) => setState(() {})),
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
                               )),
                               Flexible(
                                   child: HomeInfoCard(
@@ -268,7 +335,8 @@ class _BodyHomeState extends State<BodyHome> {
                                 image: 'drug2.jpg',
                                 nav: () =>
                                     Navigator.pushNamed(context, '/productos')
-                                        .then((value) => setState(() {})),
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
                               )),
                               Flexible(
                                   child: HomeInfoCard(
@@ -276,7 +344,8 @@ class _BodyHomeState extends State<BodyHome> {
                                 image: 'drug3.jpg',
                                 nav: () =>
                                     Navigator.pushNamed(context, '/categorias')
-                                        .then((value) => setState(() {})),
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
                               )),
                             ],
                           )
@@ -289,21 +358,24 @@ class _BodyHomeState extends State<BodyHome> {
                                 image: 'drug1.jpg',
                                 nav: () =>
                                     Navigator.pushNamed(context, '/tiendas')
-                                        .then((value) => setState(() {})),
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
                               ),
                               HomeInfoCard(
                                 title: 'Productos',
                                 image: 'drug2.jpg',
                                 nav: () =>
                                     Navigator.pushNamed(context, '/productos')
-                                        .then((value) => setState(() {})),
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
                               ),
                               HomeInfoCard(
-                                title: 'Cateogrias',
+                                title: 'Categorias',
                                 image: 'drug3.jpg',
                                 nav: () =>
                                     Navigator.pushNamed(context, '/categorias')
-                                        .then((value) => setState(() {})),
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
                               ),
                             ],
                           ),
@@ -482,7 +554,8 @@ class _BodyHomeState extends State<BodyHome> {
       child: InkWell(
         onTap: () => Navigator.pushNamed(context,
                 '/detalles/producto/' + productoModel.idDeProducto.toString())
-            .then((value) => setState(() {})),
+            .then((value) => setState(() {}))
+            .then((value) => getProductos()),
         child: Column(
           children: [
             Flexible(

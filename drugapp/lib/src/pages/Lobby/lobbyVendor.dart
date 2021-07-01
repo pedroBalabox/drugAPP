@@ -20,12 +20,12 @@ class _LobbyVendorState extends State<LobbyVendor> {
     super.initState();
     print('----' + widget.ruta);
     /* print("La ruta es: "+widget.ruta); */
-    validateVendorToken(context).then((value) {
+    validateVendorToken().then((value) {
       if (value == 'null') {
         /* print("Entró como null"); */
         redirigirRuta(false);
       } else {
-        validateVendor(context, value).then((value) {
+        validateVendor(value).then((value) {
           /* print("Entró bien: " + value.toString());
           print(widget.ruta); */
           redirigirRuta(value);

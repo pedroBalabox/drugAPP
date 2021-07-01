@@ -352,12 +352,23 @@ class _DrawerUserState extends State<DrawerUser> {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            return listMenu(
-                context,
-                IconData(jsonMenu[index]['icon'], fontFamily: 'MaterialIcons'),
-                Colors.grey,
-                jsonMenu[index]['title'],
-                jsonMenu[index]['action']);
+            IconData menuIcon;
+
+            switch (jsonMenu[index]['title']) {
+              case 'Mi cuenta':
+                menuIcon = (Icons.person_outline);
+                break;
+              case 'Mi tienda':
+                menuIcon = (Icons.store_mall_directory_outlined);
+                break;
+              case 'Cerrar sesión':
+                menuIcon = (Icons.logout_outlined);
+                break;
+              default:
+                menuIcon = (Icons.medication_outlined);
+            }
+            return listMenu(context, menuIcon, Colors.grey,
+                jsonMenu[index]['title'], jsonMenu[index]['action']);
           },
         ),
       ]),

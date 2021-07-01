@@ -59,6 +59,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
         setState(() {
           orden = dataResp['details'];
         });
+        print('----' + orden.toString());
         getPrducts();
       } else {
         setState(() {
@@ -73,7 +74,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
   @override
   Widget build(BuildContext context) {
     if (orden != null) {
-      switch (orden['status']) {
+      switch (orden['estatus_de_envio']) {
         case 'preparing':
           statusWidget = tabProceso();
           break;
@@ -758,23 +759,23 @@ class _DetallesCompraState extends State<DetallesCompra> {
             ),
           ],
         ),
-        SizedBox(
-          height: smallPadding,
-        ),
-        Row(
-          children: [
-            Icon(Icons.person_outline, color: Theme.of(context).primaryColor),
-            SizedBox(
-              width: smallPadding,
-            ),
-            Flexible(
-              child: Text(
-                '${orden['cliente']}',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
-        )
+        // SizedBox(
+        //   height: smallPadding,
+        // ),
+        // Row(
+        //   children: [
+        //     Icon(Icons.person_outline, color: Theme.of(context).primaryColor),
+        //     SizedBox(
+        //       width: smallPadding,
+        //     ),
+        //     // Flexible(
+        //     //   child: Text(
+        //     //     '${orden['cliente']}',
+        //     //     style: TextStyle(color: Colors.black),
+        //     //   ),
+        //     // ),
+        //   ],
+        // )
       ],
     );
   }

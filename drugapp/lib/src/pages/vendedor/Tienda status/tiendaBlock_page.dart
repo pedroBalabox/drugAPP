@@ -141,7 +141,7 @@ class _TabBlockState extends State<TabBlock> {
       Navigator.pushNamedAndRemoveUntil(
         context,
         '/farmacia/miTienda/',
-        ModalRoute.withName('/farmacia/miCuenta'),
+        ModalRoute.withName('/farmacia/miCuenta/'),
       ).then((value) => setState(() {}));
       // print(jsonDetalles['avi_func']['status']);
     });
@@ -200,7 +200,7 @@ class _TabBlockState extends State<TabBlock> {
             height: smallPadding,
           ),
           Text(
-            'Revisa tu correo electrónico para ver mas detalles del status de tu farmacia.',
+            'Revisa tu correo electrónico para ver mas detalles del estatus de tu farmacia.',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -390,7 +390,7 @@ class _TabBlockState extends State<TabBlock> {
           await FilePicker.platform.pickFiles(withData: true);
 
       if (result != null) {
-        if (result.files.single.size <= 10000) {
+        if (result.files.single.size <= 10000000) {
           // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
           // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
 

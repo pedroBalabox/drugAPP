@@ -1,3 +1,4 @@
+import 'package:drugapp/src/pages/Lobby/validate_page.dart';
 import 'package:flutter_openpay/flutter_openpay.dart';
 
 import 'auth_class.dart';
@@ -19,6 +20,25 @@ class Auth0Manager extends AuthManager {
       deviceSessionId = "error";
     }
     return deviceSessionId;
+  }
+
+  Future<String> homeFunction() async {
+    String returnSmt;
+
+    await validateClientToken().then((value) async {
+      if (!value) {
+        await validateVendorToken().then((value) {
+          if (!value) {
+            returnSmt = '/login';
+          } else {
+            returnSmt = '/farmacia/miCuenta/';
+          }
+        });
+      } else {
+        returnSmt = 'load';
+      }
+    });
+    return returnSmt;
   }
 }
 

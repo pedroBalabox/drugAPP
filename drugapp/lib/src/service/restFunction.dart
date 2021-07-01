@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' show Client;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-String urlApi = "https://sandbox.app.drugsiteonline.com/";
+// String urlApi = "https://api.production.drugsiteonline.com/";
+var urlApi = 'https://sandbox.app.drugsiteonline.com/';
 
 class RestFun {
   Client client = Client();
@@ -92,6 +93,8 @@ class RestFun {
         );
         break;
     }
+    var miResp = response.body;
+    print(miResp.toString());
     var jsonResponse = jsonDecode(response.body);
     if (response.statusCode == 200) {
       if (jsonResponse.length == 4) {

@@ -16,6 +16,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
+import 'package:pagination_view/pagination_view.dart';
 
 class ProductView extends StatefulWidget {
   static const routeName = '/productosDetalles';
@@ -90,6 +91,18 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
 
   bool loadmiTienda = true;
 
+  // paginacion variables
+  var listProd = [];
+  var myList = [];
+
+  bool storeExist = true;
+
+  ScrollController _scrollController = ScrollController();
+
+  int page;
+  PaginationViewType paginationViewType;
+  GlobalKey<PaginationViewState> key;
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -105,6 +118,29 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
       });
       loadData();
     }
+    page = -1;
+    paginationViewType = PaginationViewType.listView;
+    key = GlobalKey<PaginationViewState>();
+  }
+
+  createProdList() {
+    var x = prod.length;
+
+    var j = 0;
+
+    for (int i = 0; i < x; i++) {
+      print(x);
+      if (x >= 25) {
+        myList.add(prod.sublist(j, j + 25));
+        print('add');
+        x = x - 25;
+        j = j + 25;
+      } else {
+        myList.add(prod.sublist(j, x));
+      }
+      listProd.add(myList);
+    }
+    print(listProd.length);
   }
 
   @override
@@ -126,13 +162,19 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
       _catalogBloc.sendEvent.add(GetCatalogEvent());
       print("Primero" + newJsonData.toString());
       sharedPrefs.init().then((value) {
-        if (newJsonData['farmacia_id'] != null) {
-          print("Will get farm");
-          getFarmacia();
+        if (storeExist) {
+          if (newJsonData['farmacia_id'] != null) {
+            print("Will get farm");
+            getFarmacia();
+          } else {
+            print("Wont");
+            print("Aquí va" + newJsonData['farmacia'].toString());
+            getCate();
+          }
         } else {
-          print("Wont");
-          print("Aquí va" + newJsonData['farmacia'].toString());
-          getCate();
+          setState(() {
+            load = false;
+          });
         }
       });
 
@@ -295,6 +337,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           // orden = dataResp.values.toList();
           loadProd = false;
         });
+        createProdList();
       } else {
         setState(() {
           loadProd = false;
@@ -343,6 +386,12 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
               print("ID de farmacia: " + newJsonData["farmacia"].toString());
               loadData();
             });
+          } else if (value['message'] ==
+              '¡Parece que aún no cuentas con ninguna farmacia!') {
+            setState(() {
+              storeExist = false;
+              loadData();
+            });
           } else {
             //CJNavigator.navigator.push(context, '/farmacia/login');
             Navigator.pushReplacementNamed(context, '/cliente/farmacia/login')
@@ -371,7 +420,17 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       ? bodyLoad(context)
                       : error
                           ? errorWidget(errorStr, context)
-                          : bodyCategoria(snapshot)
+                          : !storeExist
+                              ? Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: size.width > 700
+                                          ? size.width / 3
+                                          : medPadding * .5,
+                                      vertical: medPadding * 1.5),
+                                  color: bgGrey,
+                                  width: size.width,
+                                  child: noTienda())
+                              : bodyCategoria(snapshot)
                   : loadmiTienda
                       ? bodyLoad(context)
                       : miTienda['estatus'] == 'approved'
@@ -395,6 +454,99 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
         title: widget.jsonData.jsonData['title'] == null
             ? 'Productos'
             : widget.jsonData.jsonData['title']);
+  }
+
+  noTienda() {
+    var size = MediaQuery.of(context).size;
+    return Container(
+      padding: EdgeInsets.all(smallPadding * 2),
+      width: size.width,
+      // height: size.height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.1),
+            blurRadius: 5.0, // soften the shadow
+            spreadRadius: 1.0, //extend the shadow
+            offset: Offset(
+              0.0, // Move to right 10  horizontally
+              3.0, // Move to bottom 10 Vertically
+            ),
+          )
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(3),
+            height: 130,
+            width: 130,
+            decoration: BoxDecoration(
+                gradient: gradientDrug,
+                borderRadius: BorderRadius.circular(100)),
+            child: CircleAvatar(
+                backgroundImage: AssetImage('images/logoDrug.png')),
+          ),
+          SizedBox(
+            height: medPadding / 2,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 17,
+                width: 17,
+                decoration: BoxDecoration(
+                    color: Colors.red[200],
+                    borderRadius: BorderRadius.circular(100)),
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              Flexible(
+                child: Text(
+                  'No tienes una farmacia registrada.',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            ],
+          ),
+          // SizedBox(
+          //   height: medPadding / 2.5,
+          // ),
+          // Text(
+          //   'Estamos revisando tu farmacia.',
+          //   maxLines: 3,
+          //   overflow: TextOverflow.ellipsis,
+          //   style: TextStyle(
+          //       fontSize: 15,
+          //       color: Colors.black54,
+          //       fontWeight: FontWeight.bold),
+          // ),
+          SizedBox(
+            height: medPadding / 2,
+          ),
+          BotonSimple(
+            contenido: Text('Link a panel web',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+            estilo: estiloBotonPrimary,
+            action: () =>
+                launchURL('https://app.drugsiteonline.com/farmacia/login'),
+          )
+        ],
+      ),
+    );
   }
 
   statusTienda() {
@@ -432,11 +584,12 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
-                  backgroundImage:
-                      widget.jsonData.jsonData['tienda']['image_name'] == null
-                          ? AssetImage('images/logoDrug.png')
-                          : NetworkImage(
-                              widget.jsonData.jsonData['tienda']['image_name']),
+                  backgroundImage: widget.jsonData.jsonData['farmacia']
+                              ['image_name'] ==
+                          null
+                      ? AssetImage('images/logoDrug.png')
+                      : NetworkImage(
+                          widget.jsonData.jsonData['farmacia']['image_name']),
                 ),
               ),
               SizedBox(
@@ -623,11 +776,12 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
-                  backgroundImage:
-                      widget.jsonData.jsonData['tienda']['image_name'] == null
-                          ? AssetImage('images/logoDrug.png')
-                          : NetworkImage(
-                              widget.jsonData.jsonData['tienda']['image_name']),
+                  backgroundImage: widget.jsonData.jsonData['farmacia']
+                              ['image_name'] ==
+                          null
+                      ? AssetImage('images/logoDrug.png')
+                      : NetworkImage(
+                          widget.jsonData.jsonData['farmacia']['image_name']),
                 ),
               ),
               SizedBox(
@@ -721,11 +875,12 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
-                  backgroundImage:
-                      widget.jsonData.jsonData['tienda']['image_name'] == null
-                          ? AssetImage('images/logoDrug.png')
-                          : NetworkImage(
-                              widget.jsonData.jsonData['tienda']['image_name']),
+                  backgroundImage: widget.jsonData.jsonData['farmacia']
+                              ['image_name'] ==
+                          null
+                      ? AssetImage('images/logoDrug.png')
+                      : NetworkImage(
+                          widget.jsonData.jsonData['farmacia']['image_name']),
                 ),
               ),
               SizedBox(
@@ -1087,65 +1242,71 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               ),
                             ],
                           ),
-                          MultiSelectDialogField<Category>(
-                            searchHint: 'Buscar',
-                            buttonText: Text(
-                              'Categoría',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black54,
-                                  fontSize: 15),
+                          IgnorePointer(
+                            ignoring: _itemsCat == null ? true : false,
+                            child: MultiSelectDialogField<Category>(
+                              searchHint: 'Buscar',
+                              buttonText: Text(
+                                'Categoría',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black54,
+                                    fontSize: 15),
+                              ),
+                              buttonIcon: Icon(Icons.arrow_drop_down),
+                              title: Text(
+                                'Categorias',
+                              ),
+                              cancelText: Text('CANCELAR'),
+                              searchable: true,
+                              listType: MultiSelectListType.CHIP,
+                              items: _itemsCat,
+                              initialValue: _myCat,
+                              onConfirm: (values) {
+                                setState(() {
+                                  myCats = [];
+                                  for (int j = 0; j <= values.length - 1; j++) {
+                                    myCats.add(values[j].id);
+                                  }
+                                  loadProd = true;
+                                  getProductos();
+                                });
+                              },
+                              // maxChildSize: 0.8,
                             ),
-                            buttonIcon: Icon(Icons.arrow_drop_down),
-                            title: Text(
-                              'Categorias',
-                            ),
-                            cancelText: Text('CANCELAR'),
-                            searchable: true,
-                            listType: MultiSelectListType.CHIP,
-                            items: _itemsCat,
-                            initialValue: _myCat,
-                            onConfirm: (values) {
-                              setState(() {
-                                myCats = [];
-                                for (int j = 0; j <= values.length - 1; j++) {
-                                  myCats.add(values[j].id);
-                                }
-                                loadProd = true;
-                                getProductos();
-                              });
-                            },
-                            // maxChildSize: 0.8,
                           ),
-                          MultiSelectDialogField<Category>(
-                            searchHint: 'Buscar',
-                            buttonText: Text(
-                              'Etiquetas',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black54,
-                                  fontSize: 15),
+                          IgnorePointer(
+                            ignoring: _itemsLabel == null ? true : false,
+                            child: MultiSelectDialogField<Category>(
+                              searchHint: 'Buscar',
+                              buttonText: Text(
+                                'Etiquetas',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black54,
+                                    fontSize: 15),
+                              ),
+                              buttonIcon: Icon(Icons.arrow_drop_down),
+                              title: Text(
+                                'Etiquetas',
+                              ),
+                              cancelText: Text('CANCELAR'),
+                              searchable: true,
+                              listType: MultiSelectListType.CHIP,
+                              items: _itemsLabel,
+                              initialValue: _myLabels,
+                              onConfirm: (values) {
+                                setState(() {
+                                  myLabels = [];
+                                  for (int j = 0; j <= values.length - 1; j++) {
+                                    myLabels.add(values[j].id);
+                                  }
+                                  loadProd = true;
+                                  getProductos();
+                                });
+                              },
+                              // maxChildSize: 0.8,
                             ),
-                            buttonIcon: Icon(Icons.arrow_drop_down),
-                            title: Text(
-                              'Etiquetas',
-                            ),
-                            cancelText: Text('CANCELAR'),
-                            searchable: true,
-                            listType: MultiSelectListType.CHIP,
-                            items: _itemsLabel,
-                            initialValue: _myLabels,
-                            onConfirm: (values) {
-                              setState(() {
-                                myLabels = [];
-                                for (int j = 0; j <= values.length - 1; j++) {
-                                  myLabels.add(values[j].id);
-                                }
-                                loadProd = true;
-                                getProductos();
-                              });
-                            },
-                            // maxChildSize: 0.8,
                           ),
                           /* SizedBox(height: smallPadding),
                           MultiSelectBottomSheetField(
@@ -1382,83 +1543,133 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
 
   search() {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    return Container(
-        // height: 50,
-        child: Form(
-      key: formKey,
-      child: Row(
-        children: [
-          Flexible(
-              flex: 3,
-              child: Container(
-                // color: bgGrey,
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: EntradaTexto(
-                  // onChanged: (value) {
-                  //   if (value == '') {
-                  //     setState(() {
-                  //       buscarStr = value;
-                  //       loadProd = true;
-                  //       userQuery = buscarStr;
-                  //     });
-                  //     getProductos();
-                  //   }
-                  // },
-                  valorInicial: userQuery,
-                  lineasMax: 1,
-                  onSaved: (value) {
-                    setState(() {
-                      buscarStr = value;
-                    });
-                  },
-                  estilo: InputDecoration(
-                      isDense: true,
-                      counterText: "",
-                      focusColor: bgGrey,
-                      prefixIcon: Icon(Icons.search),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(0)),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(0)),
-                      hintStyle: TextStyle(),
-                      hintText: 'Buscar...',
-                      fillColor: bgGrey,
-                      filled: true,
-                      hoverColor: bgGrey),
-                ),
-              )),
-          Flexible(
-              flex: 1,
-              child: BotonSimple(
-                  contenido: Text('Buscar',
-                      style: TextStyle(
-                        color: Colors.white,
-                      )),
-                  // contenido: Icon(Icons.search, color: Colors.white),
-                  estilo: estiloBotonPrimary,
-                  action: () {
-                    formKey.currentState.save();
-                    setState(() {
-                      loadProd = true;
-                      userQuery = buscarStr;
-                    });
-                    getProductos();
-                  })
-              // : IconButton(
-              //     onPressed: () {
-              //       setState(() {
-              //         buscarStr = null;
-              //         userQuery = buscarStr;
-              //       });
-              //       getProductos();
-              //     },
-              //     icon: Icon(Icons.close)),
-              )
-        ],
-      ),
-    ));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          flex: 4,
+          child: Container(
+            height: 35,
+            child: TextField(
+              onChanged: (value) {
+                if (value != null || value != '' || value != ' ') {
+                  buscarStr = value;
+                }
+              },
+              textInputAction: TextInputAction.search,
+              textAlignVertical: TextAlignVertical.bottom,
+              decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(0)),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(0)),
+                  hintStyle: TextStyle(),
+                  hintText: 'Búscar...',
+                  fillColor: MediaQuery.of(context).size.width > 900
+                      ? bgGrey
+                      : Colors.white,
+                  filled: true),
+            ),
+          ),
+        ),
+        Flexible(
+            flex: 2,
+            child: BotonSimple(
+                contenido: Text('Buscar',
+                    style: TextStyle(
+                      color: Colors.white,
+                    )),
+                action: () {
+                  setState(() {
+                    loadProd = true;
+                    userQuery = buscarStr;
+                  });
+                  getProductos();
+                },
+                estilo: estiloBotonPrimary)),
+      ],
+    );
+    // return Container(
+    //     // height: 50,
+    //     child: Form(
+    //   key: formKey,
+    //   child: Row(
+    //     children: [
+    //       Flexible(
+    //           flex: 3,
+    //           child: Container(
+    //             // color: bgGrey,
+    //             margin: EdgeInsets.symmetric(vertical: 10),
+    //             child: EntradaTexto(
+    //               // onChanged: (value) {
+    //               //   if (value == '') {
+    //               //     setState(() {
+    //               //       buscarStr = value;
+    //               //       loadProd = true;
+    //               //       userQuery = buscarStr;
+    //               //     });
+    //               //     getProductos();
+    //               //   }
+    //               // },
+    //               valorInicial: userQuery,
+    //               lineasMax: 1,
+    //               onSaved: (value) {
+    //                 setState(() {
+    //                   buscarStr = value;
+    //                 });
+    //               },
+    //               estilo: InputDecoration(
+    //                   isDense: true,
+    //                   counterText: "",
+    //                   focusColor: bgGrey,
+    //                   prefixIcon: Icon(Icons.search),
+    //                   focusedBorder: OutlineInputBorder(
+    //                       borderSide: BorderSide.none,
+    //                       borderRadius: BorderRadius.circular(0)),
+    //                   enabledBorder: OutlineInputBorder(
+    //                       borderSide: BorderSide.none,
+    //                       borderRadius: BorderRadius.circular(0)),
+    //                   hintStyle: TextStyle(),
+    //                   hintText: 'Buscar...',
+    //                   fillColor: bgGrey,
+    //                   filled: true,
+    //                   hoverColor: bgGrey),
+    //             ),
+    //           )),
+    //       Flexible(
+    //           flex: 1,
+    //           child: BotonSimple(
+    //               contenido: Text('Buscar',
+    //                   style: TextStyle(
+    //                     color: Colors.white,
+    //                   )),
+    //               // contenido: Icon(Icons.search, color: Colors.white),
+    //               estilo: estiloBotonPrimary,
+    //               action: () {
+    //                 formKey.currentState.save();
+    //   setState(() {
+    //     loadProd = true;
+    //     userQuery = buscarStr;
+    //   });
+    //   getProductos();
+    // })
+    //           // : IconButton(
+    //           //     onPressed: () {
+    // setState(() {
+    //   buscarStr = null;
+    //   userQuery = buscarStr;
+    // });
+    // getProductos();
+    //           //     },
+    //           //     icon: Icon(Icons.close)),
+    //           )
+    //     ],
+    //   ),
+    // ));
   }
 
   // void searchOperation(String searchText) {
@@ -1483,6 +1694,12 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   }
 
   listProducts(snapshot) {
+    _scrollController
+      ..addListener(() {
+        if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {}
+      });
+
     return prod.length == 0
         ? Center(
             child: Column(
@@ -1493,6 +1710,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
         : ListView(
             // shrinkWrap: true,
             // physics: NeverScrollableScrollPhysics(),
+            controller: _scrollController,
             padding: EdgeInsets.all(smallPadding),
             children: [
               Container(
@@ -1508,8 +1726,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                         : 4
                     : 5,
                 // Generate 100 widgets that display their index in the List.
-                children: List.generate(
-                    _isSearching ? searchList.length : prod.length, (index) {
+                children: List.generate(prod.length, (index) {
                   return productFav(true,
                       _isSearching ? searchList[index] : prod[index], snapshot);
                 }),
@@ -1517,6 +1734,21 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
             ],
           );
   }
+
+  //  Future<List<String>> pageFetch(int offset) async {
+  //   print(offset);
+  //   page = (offset / 20).round();
+  //   // final Faker faker = Faker();
+  //   final List<String> nextUsersList = List.generate(
+  //     20,
+  //     (int index) => User(
+  //       faker.person.name() + ' - $page$index',
+  //       faker.internet.email(),
+  //     ),
+  //   );
+  //   await Future<List<User>>.delayed(Duration(seconds: 1));
+  //   return page == 5 ? [] : nextUsersList;
+  // }
 
   productFav(fav, prod, snapshot) {
     bool inCart = false;
@@ -1560,109 +1792,107 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           )
         ],
       ),
-      child: Column(
-        children: [
-          Flexible(
-              flex: 2,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  productoModel.galeria.length == 0
-                      ? Image(
-                          fit: BoxFit.contain,
-                          image: AssetImage("images/logoDrug.png"),
-                        )
-                      : Image(
-                          fit: BoxFit.contain,
-                          image: NetworkImage(productoModel.galeria[0]['url']),
-                        ),
-                  Align(
-                      alignment: Alignment.topRight,
-                      child: InkWell(
-                        onTap: () => addFav(
-                            productoModel.idDeProducto, productoModel.favorito),
-                        child: Container(
-                          height: 25,
-                          width: 25,
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.1),
-                                  blurRadius: 4, // soften the shadow
-                                  spreadRadius: 1.0, //extend the shadow
-                                  offset: Offset(
-                                    0.0, // Move to right 10  horizontally
-                                    3.0, // Move to bottom 10 Vertically
-                                  ),
-                                )
-                              ],
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100)),
-                          child: Icon(
-                            favProduct
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_outline,
-                            color: Colors.pink[300],
-                            size: 17,
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context,
+                '/detalles/producto/' + productoModel.idDeProducto.toString())
+            .then((value) {
+          setState(() {});
+          getProductos();
+        }),
+        child: Column(
+          children: [
+            Flexible(
+                flex: 2,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    productoModel.galeria.length == 0
+                        ? Image(
+                            fit: BoxFit.contain,
+                            image: AssetImage("images/logoDrug.png"),
+                          )
+                        : Image(
+                            fit: BoxFit.contain,
+                            image:
+                                NetworkImage(productoModel.galeria[0]['url']),
                           ),
-                        ),
-                      )),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                        width: 45,
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Icon(Icons.star, color: Colors.amber, size: 15),
-                            RatingBarIndicator(
-                              unratedColor: Colors.white.withOpacity(0.5),
-                              rating: productoModel.rating == null
-                                  ? 0
-                                  : double.parse(productoModel.rating) *
-                                      100 /
-                                      5 /
-                                      100,
-                              itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              itemCount: 1,
-                              itemSize: 15.0,
-                              direction: Axis.horizontal,
+                    Align(
+                        alignment: Alignment.topRight,
+                        child: InkWell(
+                          onTap: () => addFav(productoModel.idDeProducto,
+                              productoModel.favorito),
+                          child: Container(
+                            height: 25,
+                            width: 25,
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromRGBO(0, 0, 0, 0.1),
+                                    blurRadius: 4, // soften the shadow
+                                    spreadRadius: 1.0, //extend the shadow
+                                    offset: Offset(
+                                      0.0, // Move to right 10  horizontally
+                                      3.0, // Move to bottom 10 Vertically
+                                    ),
+                                  )
+                                ],
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Icon(
+                              favProduct
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_outline,
+                              color: Colors.pink[300],
+                              size: 17,
                             ),
-                            Text(
-                                productoModel.rating == null
-                                    ? "0"
-                                    : double.parse(productoModel.rating)
-                                        .toStringAsFixed(1),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500))
-                          ],
+                          ),
                         )),
-                  ),
-                ],
-              )),
-          Flexible(
-            flex: 3,
-            child: InkWell(
-              onTap: () => Navigator.pushNamed(
-                      context,
-                      '/detalles/producto/' +
-                          productoModel.idDeProducto.toString())
-                  .then((value) => getProductos()),
-              // CJNavigator.navigator.push(
-              //     context,
-              //     '/detalles/producto/' +
-              //         productoModel.idDeProducto.toString()),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                          width: 45,
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Icon(Icons.star, color: Colors.amber, size: 15),
+                              RatingBarIndicator(
+                                unratedColor: Colors.white.withOpacity(0.5),
+                                rating: productoModel.rating == null
+                                    ? 0
+                                    : double.parse(productoModel.rating) *
+                                        100 /
+                                        5 /
+                                        100,
+                                itemBuilder: (context, index) => Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                ),
+                                itemCount: 1,
+                                itemSize: 15.0,
+                                direction: Axis.horizontal,
+                              ),
+                              Text(
+                                  productoModel.rating == null
+                                      ? "0"
+                                      : double.parse(productoModel.rating)
+                                          .toStringAsFixed(1),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500))
+                            ],
+                          )),
+                    ),
+                  ],
+                )),
+            Flexible(
+              flex: 3,
               child: Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1820,8 +2050,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1871,7 +2101,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               Container(
                                 child: Flexible(
                                   child: Text(
-                                    '¡Ve la farmacia ${miFarmacia['nombre']} en Drug! www.app.drugsiteonline.com/farmacia/${miFarmacia['farmacia_id'].toString()}/productos',
+                                    '¡Ve la farmacia ${miFarmacia['nombre']} en Drug! https://app.drugsiteonline.com/productos-tienda/${miFarmacia['farmacia_id'].toString()}/',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                   ),
@@ -1881,7 +2111,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                                   action: () {
                                     Clipboard.setData(ClipboardData(
                                         text:
-                                            "¡Ve la famrmacia ${miFarmacia['nombre']} en Drug! www.app.drugsiteonline.com/farmacia/${miFarmacia['farmacia_id'].toString()}/productos"));
+                                            "¡Ve la famrmacia ${miFarmacia['nombre']} en Drug! https://app.drugsiteonline.com/productos-tienda/${miFarmacia['farmacia_id'].toString()}/"));
                                   },
                                   contenido: Text(
                                     'Copiar',

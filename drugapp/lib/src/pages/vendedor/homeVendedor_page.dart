@@ -99,7 +99,8 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
           child: BotonSimple(
-            action: () => Navigator.pushNamed(context, '/farmacia/cambiar-contraseña/'),
+            action: () =>
+                Navigator.pushNamed(context, '/farmacia/cambiar-contraseña/'),
             contenido: Text(
               'Cambiar contraseña',
               overflow: TextOverflow.fade,
@@ -124,7 +125,8 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
 
   pickImage() async {
     final _picker = ImagePicker();
-    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
+    PickedFile image =
+        await _picker.getImage(source: ImageSource.gallery, imageQuality: 10);
     // final imgBase64Str = await kIsWeb
     //     ? networkImageToBase64(image.path)
     //     : mobileb64(File(image.path));
@@ -230,8 +232,8 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
           ),
           EntradaTexto(
             valorInicial: userModel.second_lastname,
-            estilo: inputPrimarystyle(
-                context, Icons.lock_outline, 'Segundo apellido', null),
+            estilo: inputPrimarystyle(context, Icons.lock_outline,
+                'Segundo apellido (opcional)', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'opcional',
@@ -245,14 +247,27 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
           EntradaTextoTest(
             longMaxima: 50,
             valorInicial: userModel.mail.toString(),
-            estilo: inputPrimarystyle(
-                context, Icons.person_outline, 'Correo *', null),
+            estilo:
+                inputPrimarystyle(context, Icons.mail_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.none,
             tipo: 'correo',
             onChanged: (value) {
               setState(() {
                 mail = value;
+              });
+            },
+          ),
+          EntradaTexto(
+            valorInicial: userModel.phone,
+            estilo: inputPrimarystyle(
+                context, Icons.phone_outlined, 'Teléfono', null),
+            tipoEntrada: TextInputType.phone,
+            textCapitalization: TextCapitalization.none,
+            tipo: 'telefono',
+            onChanged: (value) {
+              setState(() {
+                phone = value.toString();
               });
             },
           ),
@@ -272,6 +287,7 @@ class _MiCuentaVendedorState extends State<MiCuentaVendedor> {
                   "second_lastname": second_lastname,
                   "password": null,
                   "phone": phone,
+                  "mail": mail,
                   "base64": base64Image == null ? null : base64Image
                 },
                 contenido: Text(

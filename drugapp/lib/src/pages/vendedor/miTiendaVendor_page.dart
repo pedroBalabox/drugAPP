@@ -331,21 +331,107 @@ class _MiTiendaPageState extends State<MiTiendaPage>
         title: widget.jsonData['title'],
         body: loadmiTienda
             ? bodyLoad(context)
-            : miTienda['estatus'] == 'approved'
-                ? load
-                    ? bodyLoad(context)
-                    : error
-                        ? errorWidget(errorStr, context)
-                        : bodyCategoria()
-                : Container(
+            : miTienda == null
+                ? Container(
                     padding: EdgeInsets.symmetric(
                         horizontal:
                             size.width > 700 ? size.width / 3 : medPadding * .5,
                         vertical: medPadding * 1.5),
                     color: bgGrey,
                     width: size.width,
-                    child: statusTienda(),
-                  ));
+                    child: tiendaFalse())
+                : miTienda['estatus'] == 'draft'
+                    ? Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: size.width > 700
+                                ? size.width / 3
+                                : medPadding * .5,
+                            vertical: medPadding * 1.5),
+                        color: bgGrey,
+                        width: size.width,
+                        child: tiendaFalse())
+                    : miTienda['estatus'] == 'approved'
+                        ? load
+                            ? bodyLoad(context)
+                            : error
+                                ? errorWidget(errorStr, context)
+                                : bodyCategoria()
+                        : Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: size.width > 700
+                                    ? size.width / 3
+                                    : medPadding * .5,
+                                vertical: medPadding * 1.5),
+                            color: bgGrey,
+                            width: size.width,
+                            child: statusTienda(),
+                          ));
+  }
+
+  tiendaFalse() {
+    var size = MediaQuery.of(context).size;
+
+    return Container(
+      padding: EdgeInsets.all(smallPadding * 2),
+      width: size.width,
+      // height: size.height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.1),
+            blurRadius: 5.0, // soften the shadow
+            spreadRadius: 1.0, //extend the shadow
+            offset: Offset(
+              0.0, // Move to right 10  horizontally
+              3.0, // Move to bottom 10 Vertically
+            ),
+          )
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Flexible(
+            child: Text(
+              'Registra tu farmacia',
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontSize: 17,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(
+            height: medPadding / 2.5,
+          ),
+          Text(
+            'Acutalmente no cuentas con una farmacia registrada',
+            maxLines: 3,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: medPadding / 2,
+          ),
+          BotonSimple(
+            contenido: Text('Link a panel web',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+            estilo: estiloBotonPrimary,
+            action: () =>
+                launchURL('https://app.drugsiteonline.com/farmacia/login'),
+          )
+        ],
+      ),
+    );
   }
 
   statusTienda() {
@@ -384,10 +470,10 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
                   backgroundImage:
-                      widget.jsonData.jsonData['tienda']['image_name'] == null
+                      miTienda['image_name'] == null
                           ? AssetImage('images/logoDrug.png')
                           : NetworkImage(
-                              widget.jsonData.jsonData['tienda']['image_name']),
+                             miTienda['image_name']),
                 ),
               ),
               SizedBox(
@@ -575,10 +661,10 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
                   backgroundImage:
-                      widget.jsonData.jsonData['tienda']['image_name'] == null
+                     miTienda['image_name'] == null
                           ? AssetImage('images/logoDrug.png')
                           : NetworkImage(
-                              widget.jsonData.jsonData['tienda']['image_name']),
+                             miTienda['image_name']),
                 ),
               ),
               SizedBox(
@@ -673,10 +759,10 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     borderRadius: BorderRadius.circular(100)),
                 child: CircleAvatar(
                   backgroundImage:
-                      widget.jsonData.jsonData['tienda']['image_name'] == null
+                     miTienda['image_name'] == null
                           ? AssetImage('images/logoDrug.png')
                           : NetworkImage(
-                              widget.jsonData.jsonData['tienda']['image_name']),
+                             miTienda['image_name']),
                 ),
               ),
               SizedBox(

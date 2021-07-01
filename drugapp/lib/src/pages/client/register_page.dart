@@ -224,11 +224,12 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
           EntradaTexto(
-            estilo: inputPrimarystyle(
-                context, Icons.lock_outline, 'Segundo apellido', null),
+            estilo: inputPrimarystyle(context, Icons.lock_outline,
+                'Segundo apellido (opcional)', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'opcional',
+            requerido: false,
             onChanged: (value) {
               setState(() {
                 second_lastname = value;
@@ -262,8 +263,8 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           SizedBox(height: medPadding),
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RegisterPage())),
+            onTap: () =>
+                Navigator.pushNamed(context, '/aviso-de-privacidad/client/'),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
@@ -374,7 +375,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/aviso-de-privacidad/client/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -384,7 +386,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/terminos-y-condiciones/client/'),
                       ),
                     ),
                   ],

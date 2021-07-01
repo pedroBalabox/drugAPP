@@ -28,17 +28,17 @@ class _LobbyClientState extends State<LobbyClient> {
   void initState() {
     super.initState();
     if (widget.ruta.contains('farmacia')) {
-      validateVendorToken(context).then((value) {
+      validateVendorToken().then((value) {
         if (value == 'null') {
           redirigirRuta(false);
         } else {
-          validateVendor(context, value).then((value) {
+          validateVendor(value).then((value) {
             redirigirRuta(value);
           });
         }
       });
     } else {
-      validateClientToken(context).then((value) {
+      validateClientToken().then((value) {
         if (value == 'null') {
           redirigirRuta(false);
         } else {

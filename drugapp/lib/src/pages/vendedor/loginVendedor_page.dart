@@ -2,16 +2,14 @@ import 'dart:convert';
 
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/model/user_model.dart';
-import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
+import 'package:drugapp/src/pages/Lobby/validate_page.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/navigation_handler.dart';
-import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
-import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginVendedor extends StatefulWidget {
@@ -32,7 +30,20 @@ class _LoginVendedorState extends State<LoginVendedor> {
   @override
   void initState() {
     sharedPrefs.init();
+    validateFarmaciaToken();
     super.initState();
+  }
+
+  validateFarmaciaToken() async {
+    await validateVendorToken().then((value) {
+      validateVendorToken().then((value) {
+        if (value) {
+          Navigator.pushNamedAndRemoveUntil(
+                  context, '/farmacia/miCuenta/', (route) => false)
+              .then((value) => setState(() {}));
+        }
+      });
+    });
   }
 
   @override
@@ -191,13 +202,17 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         : SizedBox(height: medPadding),
                     widget.miTienda
                         ? Container()
-                        : Text(
-                            '¿Olvidaste tu contraseña?',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey),
+                        : InkWell(
+                            onTap: () => Navigator.pushNamed(
+                                context, '/vendor/restablecer-contrasena/'),
+                            child: Text(
+                              '¿Olvidaste tu contraseña?',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey),
+                            ),
                           ),
                     widget.miTienda
                         ? Container()
@@ -264,7 +279,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                   gcolor: gradientWhite,
                                   mainText: 'Aviso de privacidad',
                                   textWhite: false,
-                                  pressed: () => print('ok'),
+                                  pressed: () => Navigator.pushNamed(
+                                      context, '/aviso-de-privacidad/vendor/'),
                                 ),
                               ),
                               Flexible(
@@ -275,7 +291,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                   gcolor: gradientBlueLight,
                                   mainText: 'Condiciones de uso',
                                   textWhite: true,
-                                  pressed: () => print('ok'),
+                                  pressed: () => Navigator.pushNamed(context,
+                                      '/terminos-y-condiciones/vendor/'),
                                 ),
                               ),
                             ],
@@ -413,7 +430,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/aviso-de-privacidad/vendor/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -423,7 +441,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/terminos-y-condiciones/vendor/'),
                       ),
                     ),
                   ],
@@ -445,12 +464,14 @@ class _LoginVendedorState extends State<LoginVendedor> {
         userModel = UserModel.fromJson(jsonUser[1]);
         savePartnerModel(userModel).then((value) {
           if (widget.miTienda) {
-            CJNavigator.navigator.push(context, '/miTienda', true);
-            //Navigator.pushNamedAndRemoveUntil(context, '/miTienda', (route) => false);
+            // CJNavigator.navigator.push(context, '/miTienda', true);
+            // Navigator.pushNamedAndRemoveUntil(context, '/miTienda', ModalRoute.withName('/'));
+            Navigator.pushNamed(context, '/miTienda')
+                .then((value) => Navigator.pop(context));
           } else {
             /* Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/miCuenta', (route) => false); */
-            CJNavigator.navigator.push(context, '/farmacia/miCuenta', true);
+            CJNavigator.navigator.push(context, '/farmacia/miCuenta/', true);
             /* Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/miCuenta', (route) => false); */
           }

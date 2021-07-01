@@ -31,7 +31,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     sharedPrefs.init();
-    print('okk client');
     super.initState();
   }
 
@@ -175,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: smallPadding),
                     Text(
-                      'Igresa con el correo y contraseña que usaste para crear tu cuenta',
+                      'Ingresa con el correo y contraseña que usaste para crear tu cuenta',
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.w300),
@@ -183,13 +182,17 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: medPadding),
                     _formLogin(),
                     SizedBox(height: medPadding),
-                    Text(
-                      '¿Olvidaste tu contraseña?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey),
+                    InkWell(
+                      onTap: () => Navigator.pushNamed(
+                          context, '/client/restablecer-contrasena/'),
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey),
+                      ),
                     ),
                     SizedBox(height: smallPadding * 1.25),
                     InkWell(
@@ -247,7 +250,8 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientWhite,
                                   mainText: 'Aviso de privacidad',
                                   textWhite: false,
-                                  pressed: () => print('ok'),
+                                  pressed: () => Navigator.pushNamed(
+                                      context, '/aviso-de-privacidad/client/'),
                                 ),
                               ),
                               Flexible(
@@ -258,7 +262,8 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientBlueLight,
                                   mainText: 'Condiciones de uso',
                                   textWhite: true,
-                                  pressed: () => print('ok'),
+                                  pressed: () => Navigator.pushNamed(context,
+                                      '/terminos-y-condiciones/client/'),
                                 ),
                               ),
                             ],
@@ -413,7 +418,8 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/aviso-de-privacidad/client/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -423,7 +429,8 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/terminos-y-condiciones/client/'),
                       ),
                     ),
                   ],

@@ -140,7 +140,7 @@ class _TiendasPageState extends State<TiendasPage> {
       //     '/productos')
       //     .then((value) => setState(() {})),
       onTap: () => Navigator.pushNamed(
-              context, '/farmacia' + '/' + tiendas['farmacia_id'] + '/productos')
+              context, '/productos-tienda' + '/' + tiendas['farmacia_id'] + '/')
           .then((value) => setState(() {})),
       child: Container(
         margin: EdgeInsets.symmetric(

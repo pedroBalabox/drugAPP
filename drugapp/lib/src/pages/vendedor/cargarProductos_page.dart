@@ -64,7 +64,7 @@ class _CargarProductosState extends State<CargarProductos> {
     try {
       FilePickerResult result = await FilePicker.platform
           .pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
-      if (result.files.single.size <= 10000) {
+      if (result.files.single.size <= 10000000) {
         var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
         setState(() {
           docName = result.files.single.name;
@@ -227,7 +227,7 @@ class _CargarProductosState extends State<CargarProductos> {
                 BotonSimple(
                     action: () {
                       launchURL(
-                          "https://sandbox.app.drugsiteonline.com/app/uploads/archivogtsOW2tQB7yv.png");
+                          "https://app.drugsiteonline.com/descargas/plantilla_productos_drug.csv");
                     },
                     estilo: estiloBotonPrimary,
                     contenido: Text(

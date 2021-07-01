@@ -113,8 +113,8 @@ class _HomeInfoCardState extends State<HomeInfoCard> {
               //     : MediaQuery.of(context).size.width / 3.5,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      colorFilter: new ColorFilter.mode(
-                          Colors.black.withOpacity(0.3), BlendMode.colorBurn),
+                      // colorFilter: new ColorFilter.mode(
+                      //     Colors.black.withOpacity(0.3), BlendMode.colorBurn),
                       fit: BoxFit.cover,
                       image: AssetImage('images/${widget.image}'))),
               child: Align(

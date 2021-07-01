@@ -6,7 +6,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// var apiUrl = 'https://api.production.drugsiteonline.com';
 var apiUrl = 'https://sandbox.app.drugsiteonline.com';
+
 messageToUser(key, String message) {
   final snackBar = SnackBar(content: Text(message));
   key.currentState.showSnackBar(snackBar);

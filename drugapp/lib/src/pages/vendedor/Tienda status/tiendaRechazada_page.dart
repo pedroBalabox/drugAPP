@@ -52,6 +52,8 @@ class _TabRechazadaState extends State<TabRechazada> {
 
   var jsonDetalles;
 
+  bool errorSize = false;
+
   @override
   void initState() {
     super.initState();
@@ -120,6 +122,18 @@ class _TabRechazadaState extends State<TabRechazada> {
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
+        errorSize
+            ? Padding(
+                padding: EdgeInsets.only(top: smallPadding),
+                child: Text(
+                  'Adjunta un documento de máximo 10 MB.',
+                  style: TextStyle(
+                    color: Colors.red[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            : Container(),
         SizedBox(
           height: smallPadding,
         ),
@@ -242,7 +256,7 @@ class _TabRechazadaState extends State<TabRechazada> {
             height: smallPadding,
           ),
           Text(
-            'Revisa tu correo electrónico para ver mas detalles del status de tu tienda.',
+            'Revisa tu correo electrónico para ver mas detalles del estatus de tu tienda.',
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -389,7 +403,10 @@ class _TabRechazadaState extends State<TabRechazada> {
                     padding: EdgeInsets.only(left: 7),
                     child: Row(
                       children: [
-                        Icon(Icons.store_outlined),
+                        Icon(
+                          Icons.person_outline,
+                          color: Theme.of(context).primaryColor,
+                        ),
                         SizedBox(
                           width: 7,
                         ),
@@ -434,7 +451,10 @@ class _TabRechazadaState extends State<TabRechazada> {
                     padding: EdgeInsets.only(left: 7),
                     child: Row(
                       children: [
-                        Icon(Icons.store_outlined),
+                        Icon(
+                          Icons.store_outlined,
+                          color: Theme.of(context).primaryColor,
+                        ),
                         SizedBox(
                           width: 7,
                         ),
@@ -498,7 +518,10 @@ class _TabRechazadaState extends State<TabRechazada> {
           await FilePicker.platform.pickFiles(withData: true);
 
       if (result != null) {
-        if (result.files.single.size <= 10000) {
+        if (result.files.single.size <= 10000000) {
+          setState(() {
+            errorSize = false;
+          });
           // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
           // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
 
@@ -538,7 +561,9 @@ class _TabRechazadaState extends State<TabRechazada> {
             default:
           }
         } else {
-          // User canceled the picker
+          setState(() {
+            errorSize = true;
+          });
         }
       }
     } catch (e) {}

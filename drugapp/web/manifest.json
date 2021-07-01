@@ -1,11 +1,11 @@
 {
-    "name": "drugapp",
-    "short_name": "drugapp",
+    "name": "Drug Site",
+    "short_name": "Drug Site",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Productos para la salud en un solo lugar.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

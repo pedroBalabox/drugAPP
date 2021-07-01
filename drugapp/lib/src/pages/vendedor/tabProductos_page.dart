@@ -591,7 +591,9 @@ class _TabProductosState extends State<TabProductos> {
                               )
                             ],
                           ),
-                          MultiSelectDialogField<Category>(
+                          IgnorePointer(
+                            ignoring: _itemsCat == null ? true : false,
+                            child: MultiSelectDialogField<Category>(
                             chipDisplay: MultiSelectChipDisplay(
                                 icon: Icon(Icons.close),
                                 items: _itemsCat,
@@ -639,7 +641,10 @@ class _TabProductosState extends State<TabProductos> {
                             },
                             // maxChildSize: 0.8,
                           ),
-                          MultiSelectDialogField<Category>(
+                          ),
+                          IgnorePointer(
+                            ignoring: _itemsLabel == null ? true : false,
+                            child: MultiSelectDialogField<Category>(
                             chipDisplay: MultiSelectChipDisplay(
                                 icon: Icon(Icons.close),
                                 items: _itemsCat,
@@ -685,6 +690,7 @@ class _TabProductosState extends State<TabProductos> {
                               });
                             },
                             // maxChildSize: 0.8,
+                          ),
                           ),
                           /* SizedBox(height: smallPadding),
                           MultiSelectBottomSheetField(
@@ -932,7 +938,7 @@ class _TabProductosState extends State<TabProductos> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text(
-                      prod['nombre'],
+                      prod['nombre'].toString(),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                       textAlign: TextAlign.center,

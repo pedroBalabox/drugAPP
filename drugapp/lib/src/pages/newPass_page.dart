@@ -1,83 +1,116 @@
+import 'dart:convert';
+
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
+import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/drawerVendedor_widget.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 
-class ChangePass extends StatefulWidget {
-  final bool cliente;
+class NewPass extends StatefulWidget {
+  final String correo;
+  final String token;
 
-  ChangePass({Key key, @required this.cliente}) : super(key: key);
+  NewPass({Key key, @required this.correo, @required this.token})
+      : super(key: key);
 
   @override
-  _ChangePassState createState() => _ChangePassState();
+  _NewPassState createState() => _NewPassState();
 }
 
-class _ChangePassState extends State<ChangePass> {
+class _NewPassState extends State<NewPass> {
   String oldPass;
   String newPass;
   String confirmnewPass;
+  RestFun rest = RestFun();
+  var jsonResp;
+
+  bool load = true;
+
+  bool error = false;
+
+  bool exito = false;
+
+  String errorStr;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    // sharedPrefs.init();
+    getRestore();
     super.initState();
+  }
+
+  getRestore() async {
+    await rest
+        .restService(
+            '',
+            '${urlApi}restore-password?mail=${widget.correo}&token=${widget.token}',
+            widget.token,
+            'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        setState(() {
+          jsonResp = jsonDecode(value['response']);
+          load = false;
+        });
+      } else {
+        setState(() {
+          load = false;
+          error = true;
+          errorStr = value['message'];
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
 
-    return widget.cliente
-        ? ResponsiveAppBar(
-            screenWidht: MediaQuery.of(context).size.width,
-            body: Container(
-              color: bgGrey,
-              child: ListView(children: [
-                SizedBox(
-                  height: medPadding,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal:
-                          size.width > 700 ? size.width / 3 : medPadding * .5,
-                      vertical: medPadding * 1.5),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Theme.of(context).accentColor,
+        title: Text('Recuperar contraseña'),
+        actions: [
+          Container(
+            padding: EdgeInsets.all(5),
+            height: 50,
+            width: 55,
+            child: getAsset('logoDrug.png', 0.0),
+          )
+        ],
+      ),
+      body: load
+          ? bodyLoad(context)
+          : error
+              ? Text(errorStr)
+              : Container(
                   color: bgGrey,
-                  width: size.width,
-                  child: bodyPassword(),
+                  child: ListView(children: [
+                    SizedBox(
+                      height: medPadding,
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: size.width > 700
+                              ? size.width / 3
+                              : medPadding * .5,
+                          vertical: medPadding * 1.5),
+                      color: bgGrey,
+                      width: size.width,
+                      child: bodyPassword(),
+                    ),
+                    // footer(context),
+                  ]),
                 ),
-                // footer(context),
-              ]),
-            ),
-            title: "Cambiar contraseña")
-        : ResponsiveAppBarVendedor(
-            screenWidht: MediaQuery.of(context).size.width,
-            body: Container(
-              color: bgGrey,
-              child: ListView(children: [
-                SizedBox(
-                  height: medPadding,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal:
-                          size.width > 700 ? size.width / 3 : medPadding * .5,
-                      vertical: medPadding * 1.5),
-                  color: bgGrey,
-                  width: size.width,
-                  child: bodyPassword(),
-                ),
-                // footer(context),
-              ]),
-            ),
-            title: "Cambiar contraseña");
+    );
   }
 
   bodyPassword() {
@@ -86,7 +119,7 @@ class _ChangePassState extends State<ChangePass> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Cambiar mi contraseña',
+          'Recuperar contreseña',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 20),
         ),
@@ -94,7 +127,7 @@ class _ChangePassState extends State<ChangePass> {
           height: smallPadding,
         ),
         Text(
-          'Introduce tu contraseña anterior y confirma tu nueva contraseña.',
+          'Introduce y confirma tu nueva contraseña.',
           textAlign: TextAlign.center,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
@@ -159,19 +192,6 @@ class _ChangePassState extends State<ChangePass> {
                   });
                 },
               ),
-              EntradaTexto(
-                valorInicial: '',
-                estilo: inputPrimarystyle(
-                    context, Icons.lock, 'Contraseña anterior', null),
-                tipoEntrada: TextInputType.visiblePassword,
-                textCapitalization: TextCapitalization.words,
-                tipo: 'password',
-                onChanged: (value) {
-                  setState(() {
-                    oldPass = value;
-                  });
-                },
-              ),
               SizedBox(height: medPadding),
               newPass == null || newPass == ''
                   ? botonRestPAss(false, false)
@@ -202,35 +222,43 @@ class _ChangePassState extends State<ChangePass> {
             : SizedBox(
                 height: smallPadding,
               ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
-          child: BotonRestTest(
-              habilitado: habilitado,
-              showSuccess: true,
-              token: widget.cliente
-                  ? sharedPrefs.clientToken
-                  : sharedPrefs.partnerUserToken,
-              url: '$apiUrl/cambiar/clave',
-              method: 'post',
-              formkey: formKey,
-              arrayData: {"old_password": oldPass, "password": newPass},
-              contenido: Text(
-                'Cambiar contraseña',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              action: (value) {},
-              errorStyle: TextStyle(
-                color: Colors.red[700],
-                fontWeight: FontWeight.w600,
-              ),
-              estilo: estiloBotonPrimary),
-        )
+        !exito
+            ? Container()
+            : Padding(
+                padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
+                child: BotonRestTest(
+                    habilitado: habilitado,
+                    showSuccess: true,
+                    token: widget.token,
+                    url: '$apiUrl/restore-password',
+                    method: 'post',
+                    formkey: formKey,
+                    arrayData: {
+                      "token": widget.token,
+                      "user_id": jsonResp[1]['user_id'].toString(),
+                      "password": newPass
+                    },
+                    contenido: Text(
+                      'Cambiar contraseña',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    action: (value) {
+                      setState(() {
+                        exito = true;
+                      });
+                    },
+                    errorStyle: TextStyle(
+                      color: Colors.red[700],
+                      fontWeight: FontWeight.w600,
+                    ),
+                    estilo: estiloBotonPrimary),
+              )
       ],
     );
   }

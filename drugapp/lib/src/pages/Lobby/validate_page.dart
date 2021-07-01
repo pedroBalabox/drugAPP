@@ -25,7 +25,7 @@ Future<bool> validateClient(context, token) async {
   return userModel.user_id == null ? false : true;
 }
 
-Future<bool> validateClientToken(context) async {
+Future<bool> validateClientToken() async {
   RestFun rest = RestFun();
   UserModel userModel = UserModel();
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -58,7 +58,40 @@ Future<bool> validateClientToken(context) async {
   // return tokenValid;
 }
 
-Future<bool> validateVendor(context, token) async {
+Future<bool> validateVendorToken() async {
+  RestFun rest = RestFun();
+  UserModel userModel = UserModel();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  var clientToken = prefs.getString("partner_token");
+  bool tokenValid;
+
+  if (clientToken == null) {
+    tokenValid = false;
+    return tokenValid;
+    // return clientToken.toString();
+  } else {
+  await  rest
+        .restService('', '${urlApi}perfil/usuario', clientToken, 'get')
+        .then((value) {
+      print(value);
+      if (value['status'] == 'server_true') {
+        var jsonUser = jsonDecode(value['response']);
+        userModel = UserModel.fromJson(jsonUser[1]);
+        saveUserModel(userModel);
+        tokenValid = true;
+        // return clientToken.toString();
+      } else {
+        tokenValid = false;
+      }
+      // return null.toString();
+    });
+    return userModel.user_id == null ? false : true;
+  }
+  // return tokenValid;
+}
+
+Future<bool> validateVendor(token) async {
   VendorModel vendorModel = VendorModel();
   RestFun rest = RestFun();
 
@@ -72,14 +105,14 @@ Future<bool> validateVendor(context, token) async {
   return vendorModel == null ? false : true;
 }
 
-Future<String> validateVendorToken(context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+// Future<String> validateVendorToken(context) async {
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  var vendorToken = prefs.getString("partner_token");
+  // var vendorToken = prefs.getString("partner_token");
 
-  if (vendorToken != null) {
-    return vendorToken.toString();
-  } else {
-    return vendorToken.toString();
-  }
-}
+  // if (vendorToken != null) {
+  //   return vendorToken.toString();
+  // } else {
+  //   return vendorToken.toString();
+  // }
+// }

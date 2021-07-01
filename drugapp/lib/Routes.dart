@@ -12,6 +12,8 @@ import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
 import 'package:drugapp/src/pages/client/register_page.dart';
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
 import 'package:drugapp/src/pages/client/tiendas_page.dart';
+import 'package:drugapp/src/pages/newPass_page.dart';
+import 'package:drugapp/src/pages/recoverPass_page.dart';
 import 'package:drugapp/src/pages/tycVendedor_page.dart';
 import 'package:drugapp/src/pages/vendedor/cargarProductos_page.dart';
 import 'package:drugapp/src/pages/vendedor/editarProducto_page.dart';
@@ -140,6 +142,22 @@ class Flurorouter {
             }),
           ));
 
+  static Handler _productosSearchHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          ProductView(
+            jsonData: ProductosDetallesArguments({
+              "farmacia_id": null,
+              "userQuery": params['search'][0],
+              "favoritos": null,
+              "availability": null,
+              "stock": "available",
+              "priceFilter": null,
+              "myLabels": [],
+              "myCats": [],
+              "title": null
+            }),
+          ));
+
   static Handler _productosHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView());
@@ -235,6 +253,22 @@ class Flurorouter {
             "myCats": [],
             "title": "Mi Farmacia"
           }));
+  static Handler _resPasswordVendorHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          RecoverPass(
+            tipoUser: 'vendor',
+          ));
+  static Handler _resPasswordClientHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          RecoverPass(
+            tipoUser: 'client',
+          ));
+  static Handler _recoverPassHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          NewPass(
+            correo: params['correo'][0],
+            token: params['token'][0],
+          ));
 
   static void setupRouter() {
     router.define('/',
@@ -257,7 +291,6 @@ class Flurorouter {
         handler: _favHandler,
         transitionType: TransitionType.fadeIn,
         transitionDuration: Duration(milliseconds: 300));
-
     router.define('/productos',
         handler: _allProductsHandler,
         transitionType: TransitionType.fadeIn,
@@ -282,10 +315,16 @@ class Flurorouter {
         handler: _miCategoriaHandler,
         transitionType: TransitionType.fadeIn,
         transitionDuration: Duration(milliseconds: 300));
-    router.define('/farmacia/:tienda/productos',
+    router.define('/productos-tienda/:tienda/',
         handler: _productosTiendaHandler,
         transitionType: TransitionType.fadeIn,
         transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/productos-query/:search/',
+        handler: _productosSearchHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
     router.define('/productos',
         handler: _productosHandler,
         transitionType: TransitionType.fadeIn,
@@ -357,6 +396,41 @@ class Flurorouter {
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/miTienda/mobile',
         handler: _farmaciaMobile_miTienda,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/vendor/restablecer-contrasena/',
+        handler: _resPasswordVendorHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/client/restablecer-contrasena/',
+        handler: _resPasswordClientHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/RecuperarClave/:correo/:token',
+        handler: _recoverPassHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/terminos-y-condiciones/vendor/',
+        handler: _farmacia_terminos_y_condicionesHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/terminos-y-condiciones/client/',
+        handler: _farmacia_terminos_y_condicionesHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/aviso-de-privacidad/vendor/',
+        handler: _farmacia_terminos_y_condicionesHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/aviso-de-privacidad/client/',
+        handler: _farmacia_terminos_y_condicionesHandler,
         transitionType: TransitionType.fadeIn,
         transitionDuration: Duration(milliseconds: 300));
   }

@@ -463,7 +463,7 @@ class _EditarProductoState extends State<EditarProducto> {
   pickImage() async {
     final _picker = ImagePicker();
     PickedFile image =
-        await _picker.getImage(source: ImageSource.gallery, imageQuality: 30);
+        await _picker.getImage(source: ImageSource.gallery, imageQuality: 10);
     // final imgBase64Str = await kIsWeb
     //     ? networkImageToBase64(image.path)
     //     : mobileb64(File(image.path));
@@ -830,33 +830,36 @@ class _EditarProductoState extends State<EditarProducto> {
             ? Container()
             : Column(
                 children: [
-                  MultiSelectDialogField<Category>(
-                    searchHint: 'Buscar',
-                    buttonText: Text(
-                      'Etiquetas',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                          fontSize: 15),
+                  IgnorePointer(
+                    ignoring: _itemsLabel == null ? true : false,
+                    child: MultiSelectDialogField<Category>(
+                      searchHint: 'Buscar',
+                      buttonText: Text(
+                        'Etiquetas',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                            fontSize: 15),
+                      ),
+                      buttonIcon: Icon(Icons.arrow_drop_down),
+                      title: Text(
+                        'Etiquetas',
+                      ),
+                      cancelText: Text('CANCELAR'),
+                      searchable: true,
+                      listType: MultiSelectListType.CHIP,
+                      items: _itemsLabel,
+                      initialValue: _myLabels,
+                      onConfirm: (values) {
+                        setState(() {
+                          myLabels = [];
+                          for (int j = 0; j <= values.length - 1; j++) {
+                            myLabels.add(values[j].id);
+                          }
+                        });
+                      },
+                      // maxChildSize: 0.8,
                     ),
-                    buttonIcon: Icon(Icons.arrow_drop_down),
-                    title: Text(
-                      'Etiquetas',
-                    ),
-                    cancelText: Text('CANCELAR'),
-                    searchable: true,
-                    listType: MultiSelectListType.CHIP,
-                    items: _itemsLabel,
-                    initialValue: _myLabels,
-                    onConfirm: (values) {
-                      setState(() {
-                        myLabels = [];
-                        for (int j = 0; j <= values.length - 1; j++) {
-                          myLabels.add(values[j].id);
-                        }
-                      });
-                    },
-                    // maxChildSize: 0.8,
                   ),
                   labelsWidget(),
                 ],
@@ -889,40 +892,43 @@ class _EditarProductoState extends State<EditarProducto> {
               )
             : Column(
                 children: [
-                  MultiSelectDialogField<Category>(
-                    searchHint: 'Buscar',
-                    buttonText: Text(
-                      'Categoría',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                          fontSize: 15),
+                  IgnorePointer(
+                    ignoring: _itemsCat == null ? true : false,
+                    child: MultiSelectDialogField<Category>(
+                      searchHint: 'Buscar',
+                      buttonText: Text(
+                        'Categoría',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                            fontSize: 15),
+                      ),
+                      buttonIcon: Icon(Icons.arrow_drop_down),
+                      title: Text(
+                        'Categorias',
+                      ),
+                      cancelText: Text('CANCELAR'),
+                      searchable: true,
+                      listType: MultiSelectListType.CHIP,
+                      items: _itemsCat,
+                      // chipDisplay: MultiSelectChipDisplay(
+                      //   icon: Icon(Icons.close),
+                      //   items: _itemsCat,
+                      //   // onTap: (value) => setState(() {
+                      //   //   _myCat = value;
+                      //   // }),
+                      // ),
+                      initialValue: _myCat,
+                      onConfirm: (values) {
+                        setState(() {
+                          myCats = [];
+                          for (int j = 0; j <= values.length - 1; j++) {
+                            myCats.add(values[j].id);
+                          }
+                        });
+                      },
+                      // maxChildSize: 0.8,
                     ),
-                    buttonIcon: Icon(Icons.arrow_drop_down),
-                    title: Text(
-                      'Categorias',
-                    ),
-                    cancelText: Text('CANCELAR'),
-                    searchable: true,
-                    listType: MultiSelectListType.CHIP,
-                    items: _itemsCat,
-                    // chipDisplay: MultiSelectChipDisplay(
-                    //   icon: Icon(Icons.close),
-                    //   items: _itemsCat,
-                    //   // onTap: (value) => setState(() {
-                    //   //   _myCat = value;
-                    //   // }),
-                    // ),
-                    initialValue: _myCat,
-                    onConfirm: (values) {
-                      setState(() {
-                        myCats = [];
-                        for (int j = 0; j <= values.length - 1; j++) {
-                          myCats.add(values[j].id);
-                        }
-                      });
-                    },
-                    // maxChildSize: 0.8,
                   ),
                   // MultiSelectDialogField<Category>(
                   //   searchHint: 'Buscar',

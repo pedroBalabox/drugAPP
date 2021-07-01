@@ -225,8 +225,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
             },
           ),
           EntradaTexto(
-            estilo: inputPrimarystyle(
-                context, Icons.lock_outline, 'Segundo apellido', null),
+            estilo: inputPrimarystyle(context, Icons.lock_outline,
+                'Segundo apellido (opcional)', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'opcional',
@@ -265,8 +265,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
           ),
           SizedBox(height: medPadding),
           InkWell(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RegisterVendedor())),
+            onTap: () =>
+                Navigator.pushNamed(context, '/aviso-de-privacidad/vendor/'),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
@@ -378,7 +378,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/aviso-de-privacidad/vendor/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -388,7 +389,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => print('ok'),
+                        pressed: () => Navigator.pushNamed(
+                            context, '/terminos-y-condiciones/vendor/'),
                       ),
                     ),
                   ],

@@ -45,6 +45,8 @@ class _TabFalseState extends State<TabFalse> {
   var ine;
   var cedula;
 
+  bool errorSize = false;
+
   @override
   void initState() {
     super.initState();
@@ -82,6 +84,18 @@ class _TabFalseState extends State<TabFalse> {
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
+        errorSize
+            ? Padding(
+                padding: EdgeInsets.only(top: smallPadding),
+                child: Text(
+                  'Adjunta un documento de máximo 10 MB.',
+                  style: TextStyle(
+                    color: Colors.red[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            : Container(),
         SizedBox(
           height: smallPadding,
         ),
@@ -91,6 +105,17 @@ class _TabFalseState extends State<TabFalse> {
         SizedBox(
           height: medPadding,
         ),
+        aviso == null
+            ? textDocs()
+            : acta == null
+                ? textDocs()
+                : comprobante == null
+                    ? textDocs()
+                    : ine == null
+                        ? textDocs()
+                        : cedula == null
+                            ? textDocs()
+                            : Container(),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
           child: BotonRestTest(
@@ -98,6 +123,17 @@ class _TabFalseState extends State<TabFalse> {
               url: '$apiUrl/registro/farmacia',
               method: 'post',
               formkey: formKey,
+              habilitado: aviso == null
+                  ? false
+                  : acta == null
+                      ? false
+                      : comprobante == null
+                          ? false
+                          : ine == null
+                              ? false
+                              : cedula == null
+                                  ? false
+                                  : true,
               arrayData: {
                 "nombre": farmaciaModel.nombre,
                 "nombre_propietario": farmaciaModel.nombrePropietario,
@@ -124,6 +160,23 @@ class _TabFalseState extends State<TabFalse> {
               ),
               estilo: estiloBotonPrimary),
         ),
+      ],
+    );
+  }
+
+  textDocs() {
+    return Column(
+      children: [
+        Text(
+          'Adjunta todos los documentos.',
+          style: TextStyle(
+            color: Colors.red[700],
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(
+          height: smallPadding,
+        )
       ],
     );
   }
@@ -269,7 +322,10 @@ class _TabFalseState extends State<TabFalse> {
                     padding: EdgeInsets.only(left: 7),
                     child: Row(
                       children: [
-                        Icon(Icons.store_outlined),
+                        Icon(
+                          Icons.person_outline,
+                          color: Theme.of(context).primaryColor,
+                        ),
                         SizedBox(
                           width: 7,
                         ),
@@ -301,15 +357,36 @@ class _TabFalseState extends State<TabFalse> {
               });
             },
           ),
-          EntradaTexto(
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Giro del negocio', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onChanged: (value) {
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Giro del negocio"),
+            value: farmaciaModel.giro,
+            items: giroFarmacia.map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.store_outlined,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Giro del negocio: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
               setState(() {
-                farmaciaModel.giro = value;
+                farmaciaModel.giro = val;
               });
             },
           ),
@@ -399,7 +476,10 @@ class _TabFalseState extends State<TabFalse> {
       FilePickerResult result = await FilePicker.platform.pickFiles();
 
       if (result != null) {
-        if (result.files.single.size <= 10000) {
+        if (result.files.single.size <= 10000000) {
+          setState(() {
+            errorSize = false;
+          });
           var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
           switch (docType) {
             case 'Aviso de funcionamiento':
@@ -435,7 +515,9 @@ class _TabFalseState extends State<TabFalse> {
             default:
           }
         } else {
-          // User canceled the picker
+          setState(() {
+            errorSize = true;
+          });
         }
       }
     } catch (e) {}

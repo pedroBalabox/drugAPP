@@ -61,6 +61,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: appTheme(),
+      title: 'Drug Site',
       initialRoute: '/',
       onGenerateRoute: Flurorouter.router.generator,
     );

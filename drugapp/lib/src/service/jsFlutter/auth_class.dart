@@ -13,4 +13,6 @@ abstract class AuthManager {
   }
 
   Future<String> funTest();
+
+  Future<String> homeFunction();
 }

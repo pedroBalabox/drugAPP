@@ -62,17 +62,25 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
         .restService(arrayData, '$apiUrl/obtener/producto',
             sharedPrefs.clientToken, 'post')
         .then((value) {
+      print(value);
       if (value['status'] == 'server_true') {
         var dataResp = value['response'];
         dataResp = jsonDecode(dataResp);
         setState(() {
           prod = dataResp;
-          productModel = ProductoModel.fromJson(dataResp[1][0]);
-          fav = productModel.favorito;
-          load = false;
-          if (productModel.rating != null) {
-            calificacion = double.parse(
-                double.parse(productModel.rating).toStringAsFixed(1));
+          print('*****' + prod[1].length.toString());
+          if (prod[1].length == 0) {
+            load = false;
+            error = true;
+            errorStr = 'No se encontro el producto';
+          } else {
+            productModel = ProductoModel.fromJson(dataResp[1][0]);
+            fav = productModel.favorito;
+            load = false;
+            if (productModel.rating != null) {
+              calificacion = double.parse(
+                  double.parse(productModel.rating).toStringAsFixed(1));
+            }
           }
         });
         // labelEtiquetatoList();
@@ -116,7 +124,11 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                       ? errorWidget(errorStr, context)
                       : bodyProdcuto(snapshot.data);
             }),
-        title: load ? '' : "${productModel.nombre}");
+        title: load
+            ? ''
+            : productModel.nombre == null
+                ? 'Producto no encontrado'
+                : "${productModel.nombre}");
   }
 
   bodyProdcuto(snapshot) {
@@ -569,7 +581,8 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                   ],
                 ),
               ),
-
+        SizedBox(
+            height: productModel.requiereReceta == 'SI' ? smallPadding / 2 : 0),
         productModel.requiereReceta == 'SI'
             ? Row(children: [
                 Icon(Icons.medical_services_outlined, color: Colors.red[600]),
@@ -582,6 +595,22 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                 )
               ])
             : Container(),
+        SizedBox(height: smallPadding / 2),
+        Row(
+          children: [
+            Icon(
+              Icons.local_shipping_outlined,
+              color: Theme.of(context).primaryColor,
+            ),
+            SizedBox(width: smallPadding / 2),
+            Flexible(
+              child: Text(
+                'Recibe de 3 a 2 días hábiles a partir de tu compra',
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
+            )
+          ],
+        ),
         SizedBox(height: smallPadding / 2),
         Row(
           children: [
@@ -623,15 +652,12 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                   recognizer: new TapGestureRecognizer()
                     ..onTap = () {
                       Navigator.pushNamed(
-                        context,
-                        ProductView.routeName,
-                        arguments: ProductoDetallesArguments({
-                          "farmacia_id": productModel.farmaciaId,
-                          "priceFilter": null,
-                          "inStock": true,
-                          "favorite": false
-                        }),
-                      ).then((value) => setState(() {}));
+                              context,
+                              '/productos-tienda' +
+                                  '/' +
+                                  productModel.farmaciaId.toString() +
+                                  '/')
+                          .then((value) => setState(() {}));
                     },
                   style: TextStyle(
                       color: Colors.blue,
@@ -1106,7 +1132,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                               Container(
                                 child: Flexible(
                                   child: Text(
-                                    '¡Ve ${producto.nombre} en Drug! www.app.drugsiteonline.com/farmacia/${producto.nombre}/productos',
+                                    '¡Ve ${producto.nombre} en Drug! https://app.drugsiteonline.com/detalles/producto/${producto.idDeProducto}',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                   ),
@@ -1116,7 +1142,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                   action: () {
                                     Clipboard.setData(ClipboardData(
                                         text:
-                                            "¡Ve ${producto.nombre} en Drug! www.app.drugsiteonline.com/farmacia/${producto.nombre}/productos"));
+                                            "¡Ve ${producto.nombre} en Drug! https://app.drugsiteonline.com/detalles/producto/${producto.idDeProducto}"));
                                   },
                                   contenido: Text(
                                     'Copiar',

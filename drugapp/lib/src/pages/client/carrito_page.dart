@@ -63,6 +63,8 @@ class _CarritoPageState extends State<CarritoPage> {
   bool errorSession = true;
   var _deviceSessionId;
 
+  bool errorSize = false;
+
   @override
   void initState() {
     super.initState();
@@ -167,7 +169,8 @@ class _CarritoPageState extends State<CarritoPage> {
               child: SimpleButtom(
                 mainText: 'Ver productos',
                 gcolor: gradientBlueDark,
-                pressed: () => Navigator.pushNamed(context, '/home'),
+                pressed: () => Navigator.pushNamed(context, '/productos')
+                    .then((value) => setState(() {})),
               ),
             )
           ]),
@@ -264,6 +267,18 @@ class _CarritoPageState extends State<CarritoPage> {
                     fontWeight: FontWeight.w700,
                     fontSize: 18),
               ),
+        errorSize
+            ? Padding(
+                padding: EdgeInsets.only(top: smallPadding),
+                child: Text(
+                  'Adjunta un documento de máximo 10 MB.',
+                  style: TextStyle(
+                    color: Colors.red[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            : Container(),
         !receta
             ? Container()
             : SizedBox(
@@ -456,12 +471,16 @@ class _CarritoPageState extends State<CarritoPage> {
       if (result != null) {
         // var mimType = lookupMimeType(result.files.first.name, headerBytes: result.files.first.bytes);
         // var uri = Uri.dataFromBytes(result.files.first.bytes, mimeType: mimType).toString();
-        if (result.files.single.size <= 10000) {
+        if (result.files.single.size <= 10000000) {
+          setState(() {
+            errorSize = true;
+          });
           var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
           setState(() {
             docName = result.files.single.name;
             docBase64 = uri;
             recetaMedica = true;
+            errorSize = false;
           });
         }
       }
@@ -659,7 +678,7 @@ class _CarritoPageState extends State<CarritoPage> {
                   fontSize: 17),
             ),
             Text(
-              '\$250 MXN',
+              '\$300 MXN',
               style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
@@ -681,7 +700,7 @@ class _CarritoPageState extends State<CarritoPage> {
             Text(
               totalPrice >= 2500
                   ? '\$$totalPrice MXN'
-                  : '\$${totalPrice + 250} MXN',
+                  : '\$${totalPrice + 300} MXN',
               style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w900,
