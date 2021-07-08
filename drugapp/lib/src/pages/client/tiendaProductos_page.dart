@@ -22,8 +22,11 @@ class ProductView extends StatefulWidget {
   static const routeName = '/productosDetalles';
   final bool myStore;
   final dynamic jsonData;
+  final bool showAppBar;
 
-  ProductView({Key key, this.jsonData, this.myStore = false}) : super(key: key);
+  ProductView(
+      {Key key, this.jsonData, this.myStore = false, this.showAppBar = true})
+      : super(key: key);
 
   @override
   _ProductViewState createState() => _ProductViewState();
@@ -74,6 +77,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   List<Category> _categories = [];
   List<Category> _labels = [];
 
+  int prodLon = 0;
+
   var _itemsCat;
 
   var _itemCat;
@@ -95,7 +100,10 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   var listProd = [];
   var myList = [];
 
+  int numPaination;
+
   bool storeExist = true;
+  bool finalList = false;
 
   ScrollController _scrollController = ScrollController();
 
@@ -107,6 +115,9 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+
+    numPaination = 30;
+
     myStore = widget.myStore;
     if (myStore != null && myStore) {
       // print("Call checkIfAllowed();");
@@ -124,23 +135,18 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   }
 
   createProdList() {
-    var x = prod.length;
+    var x = prod.length - prodLon;
 
-    var j = 0;
-
-    for (int i = 0; i < x; i++) {
-      print(x);
-      if (x >= 25) {
-        myList.add(prod.sublist(j, j + 25));
-        print('add');
-        x = x - 25;
-        j = j + 25;
-      } else {
-        myList.add(prod.sublist(j, x));
-      }
-      listProd.add(myList);
+    if (x >= numPaination) {
+      setState(() {
+        prodLon = prodLon + numPaination;
+      });
+    } else {
+      setState(() {
+        prodLon = prodLon + x;
+        finalList = true;
+      });
     }
-    print(listProd.length);
   }
 
   @override
@@ -314,6 +320,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   }
 
   getProductos() async {
+    finalList = false;
     var arrayData = {
       "farmacia_id": famaciaID,
       "userQuery": userQuery,
@@ -336,8 +343,14 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           prod = dataResp;
           // orden = dataResp.values.toList();
           loadProd = false;
+          if (prod.length >= numPaination) {
+            prodLon = numPaination;
+          } else {
+            prodLon = prod.length;
+            finalList = true;
+          }
         });
-        createProdList();
+        // createProdList();
       } else {
         setState(() {
           loadProd = false;
@@ -409,9 +422,53 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return ResponsiveAppBar(
-        screenWidht: MediaQuery.of(context).size.width,
-        body: StreamBuilder<List<ProductoModel>>(
+    return widget.showAppBar
+        ? ResponsiveAppBar(
+            screenWidht: MediaQuery.of(context).size.width,
+            body: StreamBuilder<List<ProductoModel>>(
+                initialData: [],
+                stream: _catalogBloc.catalogStream,
+                builder: (context, snapshot) {
+                  return widget.jsonData.jsonData['farmacia_id'] == null
+                      ? load
+                          ? bodyLoad(context)
+                          : error
+                              ? errorWidget(errorStr, context)
+                              : !storeExist
+                                  ? Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: size.width > 700
+                                              ? size.width / 3
+                                              : medPadding * .5,
+                                          vertical: medPadding * 1.5),
+                                      color: bgGrey,
+                                      width: size.width,
+                                      child: noTienda())
+                                  : bodyCategoria(snapshot)
+                      : loadmiTienda
+                          ? bodyLoad(context)
+                          : miTienda['estatus'] == 'approved'
+                              ? load
+                                  ? bodyLoad(context)
+                                  : error
+                                      ? errorWidget(errorStr, context)
+                                      : bodyCategoria(snapshot)
+                              : Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: size.width > 700
+                                          ? size.width / 3
+                                          : medPadding * .5,
+                                      vertical: medPadding * 1.5),
+                                  color: bgGrey,
+                                  width: size.width,
+                                  child: statusTienda(),
+                                );
+                }),
+            // : bodyTienda(),
+            title: widget.jsonData.jsonData['title'] == null
+                ? 'Productos'
+                : widget.jsonData.jsonData['title'])
+        : StreamBuilder<List<ProductoModel>>(
             initialData: [],
             stream: _catalogBloc.catalogStream,
             builder: (context, snapshot) {
@@ -449,11 +506,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               width: size.width,
                               child: statusTienda(),
                             );
-            }),
-        // : bodyTienda(),
-        title: widget.jsonData.jsonData['title'] == null
-            ? 'Productos'
-            : widget.jsonData.jsonData['title']);
+            });
   }
 
   noTienda() {
@@ -949,21 +1002,23 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
       color: bgGrey,
       child: Column(
         children: [
-          MediaQuery.of(context).size.width > 900
-              ? Container()
-              : Container(
-                  padding: EdgeInsets.only(
-                      right: medPadding,
-                      left: medPadding,
-                      top: smallPadding * 2,
-                      bottom: smallPadding),
-                  color: Theme.of(context).accentColor,
-                  child: Row(children: [
-                    Expanded(
-                      child: search(),
-                    ),
-                  ]),
-                ),
+          widget.showAppBar
+              ? MediaQuery.of(context).size.width > 900
+                  ? Container()
+                  : Container(
+                      padding: EdgeInsets.only(
+                          right: medPadding,
+                          left: medPadding,
+                          top: smallPadding * 2,
+                          bottom: smallPadding),
+                      color: Theme.of(context).accentColor,
+                      child: Row(children: [
+                        Expanded(
+                          child: search(),
+                        ),
+                      ]),
+                    )
+              : Container(),
           MediaQuery.of(context).size.width > 900
               ? Container()
               : Container(
@@ -1131,7 +1186,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     child: Container(
                       width: MediaQuery.of(context).size.width,
                       padding: EdgeInsets.symmetric(
-                          vertical: smallPadding, horizontal: smallPadding * 2),
+                          vertical: smallPadding, horizontal: smallPadding),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         boxShadow: [
@@ -1176,13 +1231,14 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               SizedBox(height: smallPadding),
                               DropdownButton<String>(
                                 hint: Text("Elige una opción",
+                                    style: TextStyle(fontSize: 15),
                                     overflow: TextOverflow.ellipsis),
                                 value: chosenFilter,
                                 items: _fieldList.map((value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Container(
-                                      width: 180,
+                                      width: 100,
                                       child: new Text(value.toString()),
                                       // height: 5.0,
                                     ),
@@ -1383,7 +1439,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
 
   cardTienda() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 2),
+      margin: EdgeInsets.symmetric(vertical: 1),
       padding: EdgeInsets.symmetric(
           vertical: smallPadding,
           horizontal: MediaQuery.of(context).size.width > 900
@@ -1694,11 +1750,15 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   }
 
   listProducts(snapshot) {
-    _scrollController
-      ..addListener(() {
-        if (_scrollController.position.pixels ==
-            _scrollController.position.maxScrollExtent) {}
-      });
+    if (!finalList) {
+      _scrollController
+        ..addListener(() {
+          if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent) {
+            createProdList();
+          }
+        });
+    }
 
     return prod.length == 0
         ? Center(
@@ -1710,27 +1770,46 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
         : ListView(
             // shrinkWrap: true,
             // physics: NeverScrollableScrollPhysics(),
-            controller: _scrollController,
+            controller: finalList ? null : _scrollController,
             padding: EdgeInsets.all(smallPadding),
             children: [
               Container(
-                  child: GridView.count(
-                shrinkWrap: true,
-                childAspectRatio: (250 / 350),
-                primary: false,
-                // Create a grid with 2 columns. If you change the scrollDirection to
-                // horizontal, this produces 2 rows.
-                crossAxisCount: MediaQuery.of(context).size.width < 1150
-                    ? MediaQuery.of(context).size.width < 700
-                        ? 2
-                        : 4
-                    : 5,
-                // Generate 100 widgets that display their index in the List.
-                children: List.generate(prod.length, (index) {
-                  return productFav(true,
-                      _isSearching ? searchList[index] : prod[index], snapshot);
-                }),
-              ))
+                child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        childAspectRatio: (250 / 350),
+                        crossAxisSpacing: 0,
+                        mainAxisSpacing: 0),
+                    itemCount: prodLon,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return productFav(
+                          true,
+                          _isSearching ? searchList[index] : prod[index],
+                          snapshot);
+                    }),
+              ),
+              // Container(
+              //     child: GridView.count(
+              //   shrinkWrap: true,
+              //   childAspectRatio: (250 / 350),
+              //   primary: false,
+              //   // Create a grid with 2 columns. If you change the scrollDirection to
+              //   // horizontal, this produces 2 rows.
+              //   crossAxisCount: MediaQuery.of(context).size.width < 1150
+              //       ? MediaQuery.of(context).size.width < 700
+              //           ? MediaQuery.of(context).size.width < 500
+              //               ? 2
+              //               : 3
+              //           : 4
+              //       : 5,
+              //   // Generate 100 widgets that display their index in the List.
+              //   children: List.generate(prod.length, (index) {
+              // return productFav(true,
+              //     _isSearching ? searchList[index] : prod[index], snapshot);
+              //   }),
+              // ))
             ],
           );
   }

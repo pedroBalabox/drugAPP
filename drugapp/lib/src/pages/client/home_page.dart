@@ -4,18 +4,26 @@ import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
 import 'package:drugapp/src/pages/Lobby/validate_page.dart';
+import 'package:drugapp/src/pages/client/carrito_page.dart';
+import 'package:drugapp/src/pages/client/miCuenta_page.dart';
+import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
+import 'package:drugapp/src/pages/client/tiendas_page.dart';
 import 'package:drugapp/src/service/jsFlutter/auth_class.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
+import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/card_widget.dart';
 import 'package:drugapp/src/widget/drawer_widget.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+
+import 'categorie_page.dart';
 
 class HomeClient extends StatefulWidget {
   HomeClient({Key key}) : super(key: key);
@@ -33,8 +41,6 @@ class _HomeClientState extends State<HomeClient> {
 
   @override
   void initState() {
-    cat = jsonDecode(dummyCat);
-
     AuthManager.instance.homeFunction().then((value) {
       if (value != 'load') {
         try {
@@ -115,18 +121,141 @@ class _HomeClientState extends State<HomeClient> {
 
   @override
   Widget build(BuildContext context) {
-    return load ? Scaffold(body: bodyLoad(context)) : BodyHome(cat: cat);
+    return load
+        ? Scaffold(body: bodyLoad(context))
+        : MediaQuery.of(context).size.width > 1000
+            ? BodyHome()
+            : BodyHomeMobile(
+                tabIndex: 0,
+              );
   }
 }
 
-final List<String> imgList = [
-  'cover1.png',
-  'cover2.png',
-];
+class BodyHomeMobile extends StatefulWidget {
+  final dynamic tabIndex;
+
+  BodyHomeMobile({Key key, this.tabIndex}) : super(key: key);
+
+  @override
+  _BodyHomeMobileState createState() => _BodyHomeMobileState();
+}
+
+class _BodyHomeMobileState extends State<BodyHomeMobile>
+    with SingleTickerProviderStateMixin {
+  TabController _tabController;
+  CatalogBloc _catalogBloc = CatalogBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    _catalogBloc.sendEvent.add(GetCatalogEvent());
+    _tabController = new TabController(vsync: this, length: 4);
+    _tabController.addListener(_handleTabSelection);
+    _tabController.index = widget.tabIndex == null ? 0 : widget.tabIndex;
+  }
+
+  @override
+  void dispose() {
+    _catalogBloc.dispose();
+    super.dispose();
+  }
+
+  void _handleTabSelection() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveAppBar(
+        screenWidht: MediaQuery.of(context).size.width,
+        drawerMenu: true,
+        bottomNavigationBar: Container(
+          child: SafeArea(
+            child: Container(
+              color: bgGrey,
+              child: TabBar(
+                indicatorWeight: 4,
+                labelStyle: TextStyle(fontSize: 12),
+                controller: _tabController,
+                indicatorColor: Theme.of(context).primaryColor,
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.grey,
+                tabs: [
+                  Tab(
+                      text: 'Inicio',
+                      icon: Icon(
+                        Icons.home_outlined,
+                        color: _tabController.index == 0
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                        size: 30,
+                      )),
+                  Tab(
+                      text: 'Favoritos',
+                      icon: Icon(
+                        Icons.favorite_outline,
+                        size: 30,
+                        color: _tabController.index == 1
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                      )),
+                  Tab(
+                      text: 'Categorias',
+                      icon: Icon(
+                        Icons.category_outlined,
+                        size: 27,
+                        color: _tabController.index == 2
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                      )),
+                  Tab(
+                      text: 'Compras',
+                      icon: Icon(
+                        Icons.shopping_bag_outlined,
+                        color: _tabController.index == 3
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey,
+                      )),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: _tabController,
+          children: [
+            BodyHome(
+              showAppBar: false,
+            ),
+            ProductView(
+              showAppBar: false,
+              jsonData: ProductosDetallesArguments({
+                "farmacia_id": null,
+                "userQuery": null,
+                "favoritos": true,
+                "availability": null,
+                "stock": "available",
+                "priceFilter": null,
+                "myLabels": [],
+                "myCats": [],
+                "title": "Productos favoritos"
+              }),
+            ),
+            CategoriaPage(
+              showAppBar: false,
+            ),
+            TabCompras(),
+          ],
+        ),
+        title: null);
+  }
+}
 
 class BodyHome extends StatefulWidget {
-  final dynamic cat;
-  BodyHome({Key key, this.cat}) : super(key: key);
+  final bool showAppBar;
+
+  BodyHome({Key key, this.showAppBar = true}) : super(key: key);
 
   @override
   _BodyHomeState createState() => _BodyHomeState();
@@ -230,11 +359,13 @@ class _BodyHomeState extends State<BodyHome> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveAppBar(
-        screenWidht: MediaQuery.of(context).size.width,
-        drawerMenu: true,
-        body: bodyHome(),
-        title: null);
+    return widget.showAppBar
+        ? ResponsiveAppBar(
+            screenWidht: MediaQuery.of(context).size.width,
+            drawerMenu: true,
+            body: bodyHome(),
+            title: null)
+        : bodyHome();
   }
 
   bodyHome() {
@@ -259,30 +390,34 @@ class _BodyHomeState extends State<BodyHome> {
                     width: MediaQuery.of(context).size.width,
                     child: loadBanner
                         ? bodyLoad(context)
-                        : banner.length == 0 ?  getAsset('bannerPH.png', constraints.maxWidth) :Swiper(
-                            itemCount: banner.length,
-                            itemBuilder: (BuildContext context, int index) =>
-                                // Image.asset("images/${imgList[index]}", fit: BoxFit.cover),
-                                InkWell(
-                              // onTap: () => launchURL(banner[index]['link_externo']),
-                              child: getNetworkImage(constraints.maxWidth > 1000
-                                  ? banner[index]['imagen_escritorio']
-                                  : banner[index]['imagen_movil'] == null
+                        : banner.length == 0
+                            ? getAsset('bannerPH.png', constraints.maxWidth)
+                            : Swiper(
+                                itemCount: banner.length,
+                                itemBuilder: (BuildContext context,
+                                        int index) =>
+                                    // Image.asset("images/${imgList[index]}", fit: BoxFit.cover),
+                                    InkWell(
+                                  // onTap: () => launchURL(banner[index]['link_externo']),
+                                  child: getNetworkImage(constraints.maxWidth >
+                                          1000
                                       ? banner[index]['imagen_escritorio']
-                                      : banner[index]['imagen_movil']),
-                            ),
-                            autoplay: true,
-                            autoplayDelay: 5000,
-                            scrollDirection: Axis.horizontal,
-                            pagination: new SwiperPagination(
-                                builder: new DotSwiperPaginationBuilder(
-                                    color: Colors.white.withOpacity(0.5),
-                                    activeColor:
-                                        Theme.of(context).primaryColor),
-                                margin: new EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 10),
-                                alignment: Alignment.bottomCenter),
-                          ),
+                                      : banner[index]['imagen_movil'] == null
+                                          ? banner[index]['imagen_escritorio']
+                                          : banner[index]['imagen_movil']),
+                                ),
+                                autoplay: true,
+                                autoplayDelay: 5000,
+                                scrollDirection: Axis.horizontal,
+                                pagination: new SwiperPagination(
+                                    builder: new DotSwiperPaginationBuilder(
+                                        color: Colors.white.withOpacity(0.5),
+                                        activeColor:
+                                            Theme.of(context).primaryColor),
+                                    margin: new EdgeInsets.symmetric(
+                                        horizontal: 20.0, vertical: 10),
+                                    alignment: Alignment.bottomCenter),
+                              ),
                   ),
                   // SizedBox(
                   //   height: smallPadding / 1.5,
@@ -413,8 +548,8 @@ class _BodyHomeState extends State<BodyHome> {
                                             .size
                                             .width <
                                         1150
-                                    ? MediaQuery.of(context).size.width < 700
-                                        ? 2
+                                    ? MediaQuery.of(context).size.width < 600
+                                        ? MediaQuery.of(context).size.width < 500 ? 2 : 3
                                         : 4
                                     : 6,
                                 // Generate 100 widgets that display their index in the List.
@@ -720,12 +855,14 @@ class _BodyHomeState extends State<BodyHome> {
                                             _catalogBloc.sendEvent.add(
                                                 EditCatalogItemEvent(
                                                     productoModel));
+                                            setState(() {});
                                           } else {
                                             productoModel.cantidad =
                                                 snapshot[index].cantidad;
                                             _catalogBloc.sendEvent.add(
                                                 RemoveCatalogItemEvent(
                                                     productoModel));
+                                            setState(() {});
                                           }
                                         }
                                       });

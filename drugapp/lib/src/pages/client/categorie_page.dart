@@ -11,7 +11,9 @@ import 'package:drugapp/src/widget/drawer_widget.dart';
 import 'package:flutter/material.dart';
 
 class CategoriaPage extends StatefulWidget {
-  CategoriaPage({Key key}) : super(key: key);
+  final bool showAppBar;
+
+  CategoriaPage({Key key, this.showAppBar = true}) : super(key: key);
 
   @override
   _CategoriaPageState createState() => _CategoriaPageState();
@@ -58,14 +60,20 @@ class _CategoriaPageState extends State<CategoriaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveAppBar(
-        screenWidht: MediaQuery.of(context).size.width,
-        body: load
+    return widget.showAppBar
+        ? ResponsiveAppBar(
+            screenWidht: MediaQuery.of(context).size.width,
+            body: load
+                ? bodyLoad(context)
+                : error
+                    ? errorWidget(errorStr, context)
+                    : bodyCategoria(),
+            title: "Categorías")
+        : load
             ? bodyLoad(context)
             : error
                 ? errorWidget(errorStr, context)
-                : bodyCategoria(),
-        title: "Categorías");
+                : bodyCategoria();
   }
 
   bodyCategoria() {
@@ -73,28 +81,32 @@ class _CategoriaPageState extends State<CategoriaPage> {
       color: bgGrey,
       child: Column(
         children: [
-          Container(
-              padding: EdgeInsets.only(
-                  right: medPadding, left: medPadding, bottom: smallPadding),
-              color: Theme.of(context).accentColor,
-              child: MediaQuery.of(context).size.width > 700
-                  ? Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: Container(),
-                        ),
-                        Flexible(
-                          flex: 3,
-                          child: search(),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: Container(),
-                        ),
-                      ],
-                    )
-                  : search()),
+          widget.showAppBar
+              ? Container(
+                  padding: EdgeInsets.only(
+                      right: medPadding,
+                      left: medPadding,
+                      bottom: smallPadding),
+                  color: Theme.of(context).accentColor,
+                  child: MediaQuery.of(context).size.width > 700
+                      ? Row(
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Container(),
+                            ),
+                            Flexible(
+                              flex: 3,
+                              child: search(),
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Container(),
+                            ),
+                          ],
+                        )
+                      : search())
+              : Container(),
           Expanded(child: listCategorias())
         ],
       ),
@@ -129,8 +141,8 @@ class _CategoriaPageState extends State<CategoriaPage> {
 
   categorieCard(cat) {
     return InkWell(
-      onTap: () => Navigator.pushNamed(
-              context, '/productos/' + cat['categoria_id'] + '/' + cat['nombre'])
+      onTap: () => Navigator.pushNamed(context,
+              '/productos/' + cat['categoria_id'] + '/' + cat['nombre'])
           .then((value) => setState(() {})),
       child: Container(
         width: 200,

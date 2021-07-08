@@ -27,6 +27,7 @@ class ResponsiveAppBar extends StatefulWidget {
   final String title;
   final bool drawerMenu;
   final UserModel userModel;
+  final dynamic bottomNavigationBar;
 
   ResponsiveAppBar(
       {Key key,
@@ -34,7 +35,8 @@ class ResponsiveAppBar extends StatefulWidget {
       this.body,
       this.title,
       this.drawerMenu = false,
-      this.userModel})
+      this.userModel,
+      this.bottomNavigationBar})
       : super(key: key);
 
   @override
@@ -468,7 +470,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
             : widget.drawerMenu
                 ? DrawerUser()
                 : null,
-        body: widget.body);
+        body: widget.body,
+        bottomNavigationBar: widget.bottomNavigationBar);
   }
 }
 
