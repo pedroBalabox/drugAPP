@@ -1624,7 +1624,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(0)),
                   hintStyle: TextStyle(),
-                  hintText: 'Búscar...',
+                  hintText: 'Buscar...',
                   fillColor: MediaQuery.of(context).size.width > 900
                       ? bgGrey
                       : Colors.white,
@@ -1979,7 +1979,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     Text(
                       productoModel.nombre,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
+                      maxLines: 2,
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
@@ -2124,7 +2124,23 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               ),
                               Flexible(flex: 1, child: Container()),
                             ],
-                          )
+                          ),
+                    InkWell(
+                        onTap: () {
+                          setState(() {
+                            inCart
+                                ? productoModel.cantidad =
+                                    snapshot[index].cantidad + 1
+                                : productoModel.cantidad = 1;
+                            _catalogBloc.sendEvent
+                                .add(EditCatalogItemEvent(productoModel));
+                          });
+                        },
+                        child: Text('Agregar al carrito',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                                decoration: TextDecoration.underline))),
                   ],
                 ),
               ),

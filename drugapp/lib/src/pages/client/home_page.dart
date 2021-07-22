@@ -282,7 +282,55 @@ class _BodyHomeState extends State<BodyHome> {
   bool errorProd = false;
   String errorStrProd;
 
-  var cat = [];
+  bool loadCat = true;
+
+  bool errorCat = false;
+  String errorStrCat;
+
+  var cat;
+
+  List marcasList = [
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Image.asset('images/pisa.png'),
+        Image.asset('images/pfizer.png'),
+        Image.asset('images/novo.png'),
+      ],
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Image.asset('images/novartis.png'),
+        Image.asset('images/msd.png'),
+        Image.asset('images/merck.png'),
+      ],
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Image.asset('images/lilly.png'),
+        Image.asset('images/fresenius.png'),
+        Image.asset('images/baxter.png'),
+      ],
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Image.asset('images/astra.png'),
+        Image.asset('images/abb.png'),
+        Image.asset('images/3m.png'),
+      ],
+    ),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Image.asset('images/sophia.png'),
+        Image.asset('images/roche.png'),
+        // Image.asset('images/ 3m.png'),
+      ],
+    )
+  ];
 
   @override
   void initState() {
@@ -319,12 +367,15 @@ class _BodyHomeState extends State<BodyHome> {
           loadBanner = false;
         });
         getProductos();
+        getCat();
       } else {
         setState(() {
           loadBanner = false;
           errorBanner = true;
           errorBannerStr = value['message'];
         });
+        getProductos();
+        getCat();
       }
     });
   }
@@ -357,10 +408,33 @@ class _BodyHomeState extends State<BodyHome> {
     });
   }
 
+  getCat() async {
+    await rest
+        .restService(
+            null, '${urlApi}obtener/categorias', sharedPrefs.clientToken, 'get')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp);
+        setState(() {
+          cat = dataResp[1]['categories'];
+          loadCat = false;
+        });
+      } else {
+        setState(() {
+          loadCat = false;
+          errorCat = true;
+          errorStrCat = value['message'];
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return widget.showAppBar
         ? ResponsiveAppBar(
+            extendedBar: true,
             screenWidht: MediaQuery.of(context).size.width,
             drawerMenu: true,
             body: bodyHome(),
@@ -523,12 +597,12 @@ class _BodyHomeState extends State<BodyHome> {
                       horizontal: medPadding / 2 + smallPadding,
                     ),
                     child: Text(
-                      'Agregado recientemente',
+                      'AGREGADOS RECIENTEMENTE',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w600,
-                          fontSize: 27),
+                          fontSize: 20),
                     ),
                   ),
                   loadProd
@@ -540,6 +614,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   horizontal: medPadding / 2),
                               child: GridView.count(
                                 shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
                                 childAspectRatio: (250 / 350),
                                 primary: false,
                                 // Create a grid with 2 columns. If you change the scrollDirection to
@@ -549,7 +624,10 @@ class _BodyHomeState extends State<BodyHome> {
                                             .width <
                                         1150
                                     ? MediaQuery.of(context).size.width < 600
-                                        ? MediaQuery.of(context).size.width < 500 ? 2 : 3
+                                        ? MediaQuery.of(context).size.width <
+                                                500
+                                            ? 2
+                                            : 3
                                         : 4
                                     : 6,
                                 // Generate 100 widgets that display their index in the List.
@@ -565,6 +643,166 @@ class _BodyHomeState extends State<BodyHome> {
                                       true, prod[index], snapshot.data);
                                 }),
                               )),
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: medPadding / 2 + smallPadding,
+                    ),
+                    child: Text(
+                      'CATEGORÍAS DE SALUD',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20),
+                    ),
+                  ),
+                  // loadCat
+                  //     ? bodyLoad(context)
+                  //     : errorCat
+                  //         ? Text(errorStrCat, style: estiloErrorStr)
+                  //         : Container(
+                  //             padding: EdgeInsets.symmetric(
+                  //                 horizontal: medPadding / 2),
+                  //             child: GridView.count(
+                  //               shrinkWrap: true,
+                  //               childAspectRatio: (250 / 350),
+                  //               primary: false,
+                  //               // Create a grid with 2 columns. If you change the scrollDirection to
+                  //               // horizontal, this produces 2 rows.
+                  //               crossAxisCount: MediaQuery.of(context)
+                  //                           .size
+                  //                           .width <
+                  //                       1150
+                  //                   ? MediaQuery.of(context).size.width < 600
+                  //                       ? MediaQuery.of(context).size.width <
+                  //                               500
+                  //                           ? 2
+                  //                           : 3
+                  //                       : 4
+                  //                   : 5,
+                  //               // Generate 100 widgets that display their index in the List.
+                  //               children: List.generate(
+                  //                   constraints.maxWidth > 1000
+                  //                       ? cat.length > 5
+                  //                           ? 5
+                  //                           : cat.length
+                  //                       : cat.length > 4
+                  //                           ? 4
+                  //                           : cat.length, (index) {
+                  //                 return categorieCard(cat[index]);
+                  //               }),
+                  //             )),
+                  // : Container(
+                  //     height: 350,
+                  //     padding: EdgeInsets.symmetric(
+                  //         horizontal: medPadding / 2),
+                  //     child: ListView.builder(
+                  //       scrollDirection: Axis.horizontal,
+                  //       // physics: NeverScrollableScrollPhysics(),
+                  //       shrinkWrap: true,
+                  //       itemCount: cat.length,
+                  //       itemBuilder: (BuildContext context, int index) {
+                  //         return categorieCard(cat[index]);
+                  //       },
+                  //     ),
+                  //   ),
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: medPadding / 2 + smallPadding,
+                    ),
+                    child: Text(
+                      'MÉTODOS DE PAGO',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: medPadding / 2 + smallPadding,
+                    ),
+                    child: Text(
+                      'NUESTROS ENVIOS',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    height: medPadding,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: medPadding / 2 + smallPadding,
+                    ),
+                    child: Text(
+                      'TODAS TUS MARCAS DE CONFIANZA',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 27),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: medPadding / 2 + smallPadding,
+                    ),
+                    child: Text(
+                      'Trabajamos con los laboratorios y las marcas más importnantes a nivel mundial.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.black45,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 20),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: medPadding / 2 + smallPadding,
+                    ),
+                    child: Text(
+                      'Más de 300 empresas con los más altos estándares de calidad mundial, avalados por la COFEPRIS',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 20),
+                    ),
+                  ),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(
+                  //       vertical: smallPadding,
+                  //       horizontal: MediaQuery.of(context).size.width > 1000
+                  //           ? medPadding * 3
+                  //           : smallPadding),
+                  //   // color: bgGrey,
+                  //   height: MediaQuery.of(context).size.width * 0.25,
+                  //   width: MediaQuery.of(context).size.width,
+                  //   child: Swiper(
+                  //     autoplay: true,
+                  //     autoplayDelay: 5000,
+                  //     itemCount: marcasList.length,
+                  //     itemBuilder: (BuildContext context, int index) =>
+                  //         marcasList[index],
+                  //     // Image.asset("images/logoDrug.png", fit: BoxFit.cover),
+                  //     scrollDirection: Axis.horizontal,
+                  //     pagination: new SwiperControl(padding: EdgeInsets.all(0)),
+                  //   ),
+                  // ),
                   SizedBox(height: medPadding),
                   Container(
                     padding: EdgeInsets.all(medPadding),
@@ -617,31 +855,103 @@ class _BodyHomeState extends State<BodyHome> {
                             ],
                           ),
                   ),
-                  Container(
-                    padding: EdgeInsets.all(medPadding / 2),
-                    width: MediaQuery.of(context).size.width,
-                    color: Color(0xffefefef),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: 'Drug Farmacéutica. ',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: 'Todos los derechos reservados 2021.',
-                              style: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w400))
-                        ],
-                      ),
-                    ),
-                  )
+                  // Container(
+                  //   padding: EdgeInsets.all(medPadding / 2),
+                  //   width: MediaQuery.of(context).size.width,
+                  //   color: Color(0xffefefef),
+                  //   child: RichText(
+                  //     textAlign: TextAlign.center,
+                  //     text: TextSpan(
+                  //       text: 'Drug Farmacéutica. ',
+                  //       style: TextStyle(
+                  //           fontSize: 16,
+                  //           fontWeight: FontWeight.w700,
+                  //           color: Colors.grey),
+                  //       children: <TextSpan>[
+                  //         TextSpan(
+                  //             text: 'Todos los derechos reservados 2021.',
+                  //             style: TextStyle(
+                  //                 color: Colors.grey,
+                  //                 fontWeight: FontWeight.w400))
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  footterWidget(context)
                 ]);
               }));
     });
+  }
+
+  categorieCard(cat) {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context,
+              '/productos/' + cat['categoria_id'] + '/' + cat['nombre'])
+          .then((value) => setState(() {})),
+      child: Container(
+        width: 250,
+        height: 350,
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              blurRadius: 4, // soften the shadow
+              spreadRadius: 1.0, //extend the shadow
+              offset: Offset(
+                0.0, // Move to right 10  horizontally
+                3.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ],
+        ),
+        // image: DecorationImage(
+        //     image: getNetworkImage(cat['imagen']), fit: BoxFit.cover)
+        //     ),
+        margin: EdgeInsets.symmetric(
+            horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
+        // child: Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: Container(
+        //       padding: EdgeInsets.all(smallPadding / 2),
+        //       width: double.infinity,
+        //       decoration: BoxDecoration(
+        //         color: Theme.of(context).primaryColor.withOpacity(0.7),
+        //       ),
+        //       child: Text(
+        //         cat['nombre'],
+        //         maxLines: 1,
+        //         overflow: TextOverflow.ellipsis,
+        //         style: TextStyle(
+        //             color: Colors.white,
+        //             fontWeight: FontWeight.w500,
+        //             fontSize: 17),
+        //       )),
+        child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.expand,
+          children: [
+            getNetworkImage(
+              cat['imagen'],
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 3.0),
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    cat['nombre'],
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 17),
+                  )),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   productFav(fav, prod, snapshot) {
@@ -792,7 +1102,7 @@ class _BodyHomeState extends State<BodyHome> {
                     Text(
                       productoModel.nombre,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
+                      maxLines: 2,
                       textAlign: TextAlign.center,
                       style:
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
@@ -939,7 +1249,23 @@ class _BodyHomeState extends State<BodyHome> {
                               ),
                               Flexible(flex: 1, child: Container()),
                             ],
-                          )
+                          ),
+                    InkWell(
+                        onTap: () {
+                          setState(() {
+                            inCart
+                                ? productoModel.cantidad =
+                                    snapshot[index].cantidad + 1
+                                : productoModel.cantidad = 1;
+                            _catalogBloc.sendEvent
+                                .add(EditCatalogItemEvent(productoModel));
+                          });
+                        },
+                        child: Text('Agregar al carrito',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor,
+                                decoration: TextDecoration.underline)))
                   ],
                 ),
               ),
@@ -991,4 +1317,143 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
 
     return Column(children: []);
   }
+}
+
+Widget footterWidget(context) {
+  return Expanded(
+    child: Container(
+      // padding: EdgeInsets.all(medPadding),
+      color: Colors.grey[400],
+      width: MediaQuery.of(context).size.width,
+      child: Column(children: [
+        Container(
+          padding: EdgeInsets.all(medPadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              sobreDrug(),
+              ayudaSoporte(),
+              alianza(),
+              atencion(),
+              druginfo()
+            ],
+          ),
+        ),
+        Container(
+            padding: EdgeInsets.symmetric(vertical: medPadding),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '¡Síguenos!',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  Text('Descarga la app',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15))
+                ])),
+        Container(
+          padding: EdgeInsets.all(smallPadding),
+          width: MediaQuery.of(context).size.width,
+          color: Colors.black,
+          child: Text(
+            'DRUG INTERNATIONAL CORP. TODOS LOS DERECHOS RESERVADOS 2021',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w100,
+              fontSize: 13,
+            ),
+          ),
+        )
+      ]),
+    ),
+  );
+}
+
+Widget sobreDrug() {
+  return miInfoFootter(
+      'Sobre Drug',
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [Text('Conócenos'), Text('Info Salud'), Text('Drug News')],
+      ));
+}
+
+Widget ayudaSoporte() {
+  return miInfoFootter(
+      'Ayuda & Soporte',
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Pedidos'),
+          Text('Localizar un Producto'),
+          Text('Devoluciones'),
+          Text('Información general')
+        ],
+      ));
+}
+
+Widget alianza() {
+  return miInfoFootter(
+      'Alianzas',
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Vender en Drug'),
+          Text('Laboratorios y Marcas'),
+          Text('Colaboraciones'),
+          Text('Promociones')
+        ],
+      ));
+}
+
+Widget atencion() {
+  return miInfoFootter(
+      'Atenciṕon global',
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Centros de Envíos Drug'),
+          Text('Proguntas Frecuentes'),
+          Text('Términos y Condiciones'),
+          Text('Aviso de Provacidad')
+        ],
+      ));
+}
+
+druginfo() {
+  return miInfoFootter(
+      null,
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Empresa, Productos y Alianzas Reguladas'),
+          Text('Por la COFEPRIS en México'),
+          Text('CONTACTO'.toUpperCase(),
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('info@drugsiteonline.com'),
+          Text('+52 55333993829')
+        ],
+      ));
+}
+
+Widget miInfoFootter(String title, Widget info) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      title == null
+          ? Container()
+          : Text(title.toUpperCase(),
+              style: TextStyle(fontWeight: FontWeight.bold)),
+      info
+    ],
+  );
 }

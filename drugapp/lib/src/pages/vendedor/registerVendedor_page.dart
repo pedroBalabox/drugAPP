@@ -87,7 +87,8 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                                         ],
                                       ),
                                     ),
-                                    Text('Sí, medicina on demand.',
+                                    Text(
+                                        'Productos para la Salud, en un solo lugar.',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                             fontSize: constraints.maxWidth < 700
@@ -349,7 +350,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
             ),
           ),
           Flexible(
-            child: Text('Sí, medicina on demand.',
+            child: Text('Productos para la Salud, en un solo lugar.',
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     fontSize: constraints.maxWidth < 700 ? 22 : 47,

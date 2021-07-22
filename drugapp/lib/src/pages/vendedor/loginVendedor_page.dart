@@ -109,7 +109,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                         ],
                                       ),
                                     ),
-                                    Text('Sí, medicina on demand.',
+                                    Text(
+                                        'Productos para la Salud, en un solo lugar.',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                             fontSize: constraints.maxWidth < 700
@@ -401,7 +402,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
             ),
           ),
           Flexible(
-            child: Text('Sí, medicina on demand.',
+            child: Text('Productos para la Salud, en un solo lugar.',
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     fontSize: constraints.maxWidth < 700 ? 22 : 47,
@@ -411,7 +412,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
           constraints.maxWidth < 700
               ? Container()
               : Flexible(
-                  child: Text('Somos una empresa comprometida contigo.',
+                  child: Text('Todas tus marcas de Confianza.',
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           fontSize: constraints.maxWidth < 700 ? 17 : 32,

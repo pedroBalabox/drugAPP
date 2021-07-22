@@ -20,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String second_lastname;
   String mail;
   String password;
+  String perfilCliente;
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +88,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                         ],
                                       ),
                                     ),
-                                    Text('Sí, medicina on demand.',
+                                    Text('Todas tus marcas de confianza.',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                             fontSize: constraints.maxWidth < 700
                                                 ? 22
                                                 : 47,
-                                            fontWeight: FontWeight.w400,
+                                            fontWeight: FontWeight.bold,
                                             color: Colors.white))
                                   ],
                                 ),
@@ -248,6 +249,57 @@ class _RegisterPageState extends State<RegisterPage> {
               });
             },
           ),
+
+          /* Drop down  */
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Perfil Cliente"),
+            decoration: InputDecoration(
+              icon: Icon(Icons.store_outlined, color: Color(0xFF3F9FB1)),
+            ),
+            value: perfilCliente,
+            items: <String>[
+              'Paciente',
+              'Público en general',
+              'Médico General',
+              'Médico Especialista',
+              'Profesional de la Salud',
+              'Farmacia General',
+              'Farmacia Especializada',
+              'Clínica',
+              'Hospital',
+              'Empresa Sector Salud',
+              'Distribuidor Farmacéutico',
+              'Mayorista Farmacéutico',
+              'Minorista Farmacéutico',
+              'Importadora',
+              'Comercializadora'
+            ].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        /* Icon(Icons.store_outlined), */
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Perfil cliente: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
+              setState(() {
+                // tipoPersona = val;
+                perfilCliente = val;
+              });
+            },
+          ),
           EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.lock_outline, 'Contraseña', null),
@@ -295,7 +347,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   'second_lastname': second_lastname,
                   'mail': '$mail',
                   'password': '$password',
-                  'type': 'client'
+
+                  /* 'type': 'client', */
+                  /* "perfil": 'perfilCliente', */
                 },
                 contenido: Text(
                   'Crear cuenta',
@@ -321,7 +375,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
   _infoContainer(constraints) {
     return Padding(
-      padding: EdgeInsets.all(constraints.maxWidth < 700 ? 30 : 55.0),
+      padding: EdgeInsets.symmetric(
+          horizontal: constraints.maxWidth < 800 ? 30 : 55.0,
+          vertical: constraints.maxWidth < 700
+              ? 30
+              : MediaQuery.of(context).size.width / 8),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,8 +390,8 @@ class _RegisterPageState extends State<RegisterPage> {
               text: TextSpan(
                 text: 'Somos ',
                 style: TextStyle(
-                    fontSize: constraints.maxWidth < 700 ? 22 : 47,
-                    fontWeight: FontWeight.w400,
+                    fontSize: constraints.maxWidth < 700 ? 20 : 47,
+                    fontWeight: FontWeight.w100,
                     color: Colors.white),
                 children: <TextSpan>[
                   TextSpan(
@@ -346,21 +404,21 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
           Flexible(
-            child: Text('Sí, medicina on demand.',
+            child: Text('Productos para la Salud, en un solo lugar.',
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontSize: constraints.maxWidth < 700 ? 22 : 47,
-                    fontWeight: FontWeight.w400,
+                    fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                    fontWeight: FontWeight.w100,
                     color: Colors.white)),
           ),
           constraints.maxWidth < 700
               ? Container()
               : Flexible(
-                  child: Text('Somos una empresa comprometida contigo.',
+                  child: Text('Todas tus marcas de confianza.',
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: constraints.maxWidth < 700 ? 17 : 32,
-                          fontWeight: FontWeight.w400,
+                          fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white)),
                 ),
           SizedBox(height: smallPadding),
@@ -397,3 +455,58 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+
+/* drop down perfil cliente */
+/* 
+class clientDropdownWidget extends StatefulWidget {
+  const clientDropdownWidget({Key key}) : super(key: key);
+
+  @override
+  State<clientDropdownWidget> createState() => _clientDropdownWidget();
+}
+
+class _clientDropdownWidget extends State<clientDropdownWidget> {
+  String filterValue = 'Paciente';
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: filterValue,
+      icon: const Icon(Icons.arrow_drop_down),
+      iconSize: 16,
+      elevation: 16,
+      style: const TextStyle(color: Colors.black87),
+      underline: Container(
+        height: 2,
+        color: Color(0xFF3F9FB1),
+      ),
+      onChanged: (String newValue) {
+        setState(() {
+          filterValue = newValue;
+        });
+      },
+      items: <String>[
+        'Paciente',
+        'Público en general',
+        'Médico General',
+        'Médico Especialista',
+        'Profesional de la Salud',
+        'Farmacia General',
+        'Farmacia Especializada',
+        'Clínica',
+        'Hospital',
+        'Empresa Sector Salud',
+        'Distribuidor Farmacéutico',
+        'Mayorista Farmacéutico',
+        'Minorista Farmacéutico',
+        'Importadora',
+        'Comercializadora'
+      ].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+}
+ */

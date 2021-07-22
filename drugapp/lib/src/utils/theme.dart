@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 
 ThemeData appTheme() {
   return ThemeData(
-    // Font
-    fontFamily: 'OpenSans',
-    // Colors
-    primaryColor: Color(0xff2895A8),
-    accentColor: const Color(0xff00C5D5),
-    scaffoldBackgroundColor: Colors.white,
-    unselectedWidgetColor: Colors.white,
-    dividerColor: Colors.transparent,
-
-    // textSelectionColor: Colors.grey[700]
-  );
+      // Font
+      fontFamily: 'OpenSans',
+      appBarTheme: AppBarTheme(
+        iconTheme: IconThemeData(color: Colors.grey), // 1
+      ),
+      // Colors
+      primaryColor: Color(0xff2895A8),
+      accentColor: const Color(0xff00C5D5),
+      scaffoldBackgroundColor: Colors.white,
+      unselectedWidgetColor: Colors.black,
+      dividerColor: Colors.transparent,
+      iconTheme: IconThemeData(color: Colors.black)
+      // textSelectionColor: Colors.grey[700]
+      );
 }
 
 var bgGrey = Color(0xfff7f7f7);

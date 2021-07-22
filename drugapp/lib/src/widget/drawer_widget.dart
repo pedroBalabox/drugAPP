@@ -16,10 +16,20 @@ import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// var itemsMenu =
+//     '[{"icon": 61703, "title": "Inicio", "action": "/"}, {"icon": 62466, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+
 var itemsMenu =
-    '[{"icon": 61703, "title": "Inicio", "action": "/"}, {"icon": 62466, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+    '[{"icon": 61703, "title": "Categorias", "action": "/categorias"}, {"icon": 62466, "title": "Producutos", "action": "/productos"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+
+var itemsBottomMenu =
+    '[{"icon": 61703, "title": "Ofertas", "action": "/productos"}, {"icon": 62466, "title": "Pedidos especiales", "action": "/productos"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas"}, {"icon": 62445, "title": "Pregunstas frecuentes", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+
+var itemsMenuMobile =
+    '[{"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 61828, "title": "Ofertas", "action": "/productos"}, {"icon": 62466, "title": "Pedidos especiales", "action": "/miCuenta"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas"}, {"icon": 58173, "title": "Preguntas frecuentes", "action": "/preguntasFrecuentes"}, {"icon": 61821, "title": "Atención pacientes", "action": "/carrito"}, {"icon": 61821, "title": "Soporte pedidos", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
 
 class ResponsiveAppBar extends StatefulWidget {
   final screenWidht;
@@ -28,6 +38,7 @@ class ResponsiveAppBar extends StatefulWidget {
   final bool drawerMenu;
   final UserModel userModel;
   final dynamic bottomNavigationBar;
+  final bool extendedBar;
 
   ResponsiveAppBar(
       {Key key,
@@ -36,7 +47,8 @@ class ResponsiveAppBar extends StatefulWidget {
       this.title,
       this.drawerMenu = false,
       this.userModel,
-      this.bottomNavigationBar})
+      this.bottomNavigationBar,
+      this.extendedBar = false})
       : super(key: key);
 
   @override
@@ -54,7 +66,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
   void initState() {
     super.initState();
     _catalogBloc.sendEvent.add(GetCatalogEvent());
-    var jsonMenu = jsonDecode(itemsMenu.toString());
+    jsonMenu = jsonDecode(itemsMenu.toString());
     validateToken();
     //  validateClientToken(context).then((value) {
     //   if (value == 'null') {
@@ -86,154 +98,235 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
     return Scaffold(
         appBar: widget.screenWidht > 1000
             ? AppBar(
-                elevation: 0,
-                backgroundColor: Theme.of(context).accentColor,
-                title: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(0),
-                      height: 40,
-                      width: 40,
-                      child: getAsset('logoDrug.png', 0.0),
-                    ),
-                    SizedBox(
-                      width: 7,
-                    ),
-                    widget.title != null
-                        ? Flexible(
-                            child: Text(widget.title,
-                                overflow: TextOverflow.ellipsis))
-                        // : Container(),
-                        : Expanded(
+                // shadowColor: Colors.transparent,
+                bottom: widget.extendedBar
+                    ? PreferredSize(
+                        child: Container(
+                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            color: Colors.white,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Flexible(
-                                  flex: 4,
+                                InkWell(
+                                  onTap: () =>
+                                      Navigator.pushNamed(context, '/productos')
+                                          .then((value) => setState(() {})),
                                   child: Container(
-                                    height: 35,
-                                    child: TextField(
-                                      onChanged: (value) {
-                                        if (value != null ||
-                                            value != '' ||
-                                            value != ' ') {
-                                          query = value;
-                                        }
-                                      },
-                                      textInputAction: TextInputAction.search,
-                                      textAlignVertical:
-                                          TextAlignVertical.bottom,
-                                      decoration: InputDecoration(
-                                          prefixIcon: Icon(Icons.search),
-                                          focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                              borderRadius:
-                                                  BorderRadius.circular(0)),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                              borderRadius:
-                                                  BorderRadius.circular(0)),
-                                          hintStyle: TextStyle(),
-                                          hintText:
-                                              'Búsca una medicina, sítnoma o farmacia...',
-                                          fillColor: Colors.white,
-                                          filled: true),
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Ofertas'.toString().toUpperCase(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 13),
                                     ),
                                   ),
                                 ),
-                                Flexible(
-                                    flex: 1,
-                                    child: BotonSimple(
-                                        contenido: Text('Buscar',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            )),
-                                        action: () {
-                                          Navigator.pushNamed(context,
-                                              '/productos-query/$query/');
-                                        },
-                                        estilo: estiloBotonPrimary)),
-                                Flexible(
-                                  flex: 1,
-                                  child: Container(),
-                                )
+                                InkWell(
+                                  onTap: () =>
+                                      Navigator.pushNamed(context, '/miCuenta')
+                                          .then((value) => setState(() {})),
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Pedidos especiales'
+                                          .toString()
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 13),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () =>
+                                      Navigator.pushNamed(context, '/tiendas')
+                                          .then((value) => setState(() {})),
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Tiendas'.toString().toUpperCase(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 13),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () =>
+                                      Navigator.pushNamed(context, '/miCuenta')
+                                          .then((value) => setState(() {})),
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Preguntas frecuentes'
+                                          .toString()
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 13),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () =>
+                                      Navigator.pushNamed(context, '/miCuenta')
+                                          .then((value) => setState(() {})),
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Atención pacientes'
+                                          .toString()
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 13),
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () =>
+                                      Navigator.pushNamed(context, '/miCuenta')
+                                          .then((value) => setState(() {})),
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      'Soporte pedidos'
+                                          .toString()
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 13),
+                                    ),
+                                  ),
+                                ),
                               ],
+                            )),
+                        preferredSize: Size.fromHeight(20.0))
+                    : null,
+                elevation: 5,
+                toolbarHeight: widget.extendedBar ? 130 : 80,
+                backgroundColor: bgGrey,
+                // flexibleSpace: Row(
+                //   children: [
+                //     Flexible(
+                //         flex: 4,
+                //         child: Row(
+                //           children: [
+                //             Container(
+                //               padding: EdgeInsets.all(0),
+                //               height: 70,
+                //               width: 70,
+                //               child: getAsset('logoDrug.png', 0.0),
+                //             ),
+                //           ],
+                //         )),
+                //     Flexible(
+                //       flex: 3,
+                //       child: Text('hola'),
+                //     )
+                //   ],
+                // )
+                title: Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(0),
+                        height: 70,
+                        width: 70,
+                        child: getAsset('logoDrug.png', 0.0),
+                      ),
+                      SizedBox(
+                        width: 7,
+                      ),
+                      widget.title != null
+                          ? Flexible(
+                              child: Text(widget.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: Colors.black)))
+                          // : Container(),
+                          : Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Flexible(
+                                  //   flex: 1,
+                                  //   child: Container(),
+                                  // ),
+                                  Flexible(
+                                    flex: 10,
+                                    child: Container(
+                                      height: 35,
+                                      child: TextField(
+                                        onChanged: (value) {
+                                          if (value != null ||
+                                              value != '' ||
+                                              value != ' ') {
+                                            query = value;
+                                          }
+                                        },
+                                        textInputAction: TextInputAction.search,
+                                        textAlignVertical:
+                                            TextAlignVertical.bottom,
+                                        decoration: InputDecoration(
+                                            // prefixIcon: Icon(Icons.search),
+                                            focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(0)),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(0)),
+                                            hintStyle: TextStyle(),
+                                            hintText:
+                                                'Búsca por nombre, sintomas y más...',
+                                            fillColor: Colors.white,
+                                            hoverColor: Colors.white,
+                                            filled: true),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                      flex: 1,
+                                      child: BotonSimple(
+                                          contenido: Icon(
+                                            CupertinoIcons.search,
+                                            color: Colors.white,
+                                          ),
+                                          action: () {
+                                            Navigator.pushNamed(context,
+                                                    '/productos-query/$query/')
+                                                .then(
+                                                    (value) => setState(() {}));
+                                          },
+                                          estilo: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Color.fromRGBO(
+                                                      0, 0, 0, 0.1),
+                                                  blurRadius:
+                                                      5.0, // soften the shadow
+                                                  spreadRadius:
+                                                      1.0, //extend the shadow
+                                                  offset: Offset(
+                                                    0.0, // Move to right 10  horizontally
+                                                    3.0, // Move to bottom 10 Vertically867
+                                                  ),
+                                                )
+                                              ],
+                                              color: Theme.of(context)
+                                                  .primaryColor))),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Container(),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                    // Flexible(flex: 1, child: Container())
-                  ],
+                      // Flexible(flex: 1, child: Container())
+                    ],
+                  ),
                 ),
                 actions: [
-                  /* Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      /* ListView.builder(
-                        itemCount: jsonMenu.length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 7.0),
-                            child: InkWell(
-                                onTap: () {
-                                  if (Uri.base.path !=
-                                      jsonMenu[index]['action']) {
-                                    Navigator.pushNamed(
-                                            context, jsonMenu[index]['action'])
-                                        .then((value) => setState(() {}));
-                                  }
-                                },
-                                child: Text('Mi cuenta')),
-                          );
-                        },
-                      ), */
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                        child: InkWell(
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    '/farmacia/miCuenta',
-                                    (route) => false)
-                                .then((value) => setState(() {})),
-                            child: Text('Mi cuenta')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                        child: InkWell(
-                            onTap: () {
-                              if (Uri.base.path != '/farmacia/miTienda/') {
-                                Navigator.pushNamed(
-                                        context, '/farmacia/miTienda/')
-                                    .then((value) => setState(() {}));
-                              }
-                            },
-                            child: Text('Mi tienda')),
-                      ),
-                      // Padding(
-                      //     padding: EdgeInsets.symmetric(
-                      //         horizontal: smallPadding * 2),
-                      //     child: Row(
-                      //       children: [
-                      //         InkWell(
-                      //             onTap: () =>
-                      //                 Navigator.pushNamed(context, '/miCuenta'),
-                      //             child: Text('Hola, ${userModel.nombre}')),
-                      //         SizedBox(width: smallPadding),
-                      //         CircleAvatar(
-                      //           backgroundImage: userModel.imgUrl == null
-                      //               ? AssetImage('images/logoDrug.png')
-                      //               : getNetworkImage(userModel.imgUrl),
-                      //         )
-                      //       ],
-                      //     )),
-                    ],
-                  ) */
                   Container(
-                    width: 570,
+                    width: 670,
                     alignment: Alignment.bottomCenter,
                     child: ListView.builder(
                       itemCount: jsonMenu.length,
@@ -316,7 +409,9 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                     }
                                   });
                                 } else if (jsonMenu[index]['action'] == '/') {
-                                  CJNavigator.navigator.push(context, '/');
+                                  CJNavigator.navigator
+                                      .push(context, '/')
+                                      .then((value) => setState(() {}));
                                 } else {
                                   if (Uri.base.path !=
                                       jsonMenu[index]['action']) {
@@ -332,7 +427,14 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                         Padding(
                                           padding: EdgeInsets.only(
                                               top: 10, bottom: 10, left: 10),
-                                          child: Text(jsonMenu[index]['title']),
+                                          child: Text(
+                                            jsonMenu[index]['title']
+                                                .toString()
+                                                .toUpperCase(),
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 13),
+                                          ),
                                         ),
                                         SizedBox(
                                           width: 2,
@@ -366,7 +468,13 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                     )
                                   : Padding(
                                       padding: EdgeInsets.all(10),
-                                      child: Text(jsonMenu[index]['title']),
+                                      child: Text(
+                                        jsonMenu[index]['title']
+                                            .toString()
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 13),
+                                      ),
                                     )),
                         );
                       },
@@ -375,16 +483,17 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                 ],
               )
             : AppBar(
-                elevation: 0,
-                backgroundColor: Theme.of(context).accentColor,
+                elevation: 15,
+                // backgroundColor: Theme.of(context).accentColor,
+                backgroundColor: bgGrey,
                 title: widget.title != null
-                    ? Text(widget.title)
+                    ? Text(widget.title, style: TextStyle(color: Colors.black))
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Flexible(
-                            flex: 4,
+                            flex: 6,
                             child: Container(
                               height: 35,
                               child: TextField(
@@ -398,7 +507,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                 textInputAction: TextInputAction.search,
                                 textAlignVertical: TextAlignVertical.bottom,
                                 decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.search),
+                                    // prefixIcon: Icon(Icons.search),
                                     focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                         borderRadius: BorderRadius.circular(0)),
@@ -407,7 +516,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                         borderRadius: BorderRadius.circular(0)),
                                     hintStyle: TextStyle(),
                                     hintText:
-                                        'Búsca una medicina, sítnoma o farmacia...',
+                                        'Búsca por nombre sintomas y más...',
+                                    hoverColor: Colors.white,
                                     fillColor: Colors.white,
                                     filled: true),
                               ),
@@ -416,12 +526,26 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                           Flexible(
                               flex: 1,
                               child: BotonSimple(
-                                  contenido: Icon(Icons.search),
+                                  contenido: Icon(
+                                    CupertinoIcons.search,
+                                    color: Colors.white,
+                                  ),
                                   action: () {
                                     Navigator.pushNamed(
-                                        context, '/productos-query/$query/');
+                                            context, '/productos-query/$query/')
+                                        .then((value) => setState(() {}));
                                   },
-                                  estilo: estiloBotonPrimary)),
+                                  estilo: BoxDecoration(boxShadow: [
+                                    BoxShadow(
+                                      color: Color.fromRGBO(0, 0, 0, 0.1),
+                                      blurRadius: 5.0, // soften the shadow
+                                      spreadRadius: 1.0, //extend the shadow
+                                      offset: Offset(
+                                        0.0, // Move to right 10  horizontally
+                                        3.0, // Move to bottom 10 Vertically867
+                                      ),
+                                    )
+                                  ], color: Theme.of(context).primaryColor))),
                           Container()
                         ],
                       ),
@@ -510,136 +634,166 @@ class _DrawerUserState extends State<DrawerUser> {
 
   @override
   Widget build(BuildContext context) {
-    var jsonMenu = jsonDecode(itemsMenu.toString());
+    var jsonMenu = jsonDecode(itemsMenuMobile.toString());
     MediaQueryData queryData = MediaQuery.of(context);
 
     return Drawer(
         child: Container(
-      decoration: BoxDecoration(
-          // color: Colors.teal
-          // image: DecorationImage(
-          //     image: AssetImage('images/menuCover.png'), fit: BoxFit.cover),
-          ),
-      child: ListView(padding: EdgeInsets.zero, children: <Widget>[
-        // SizedBox(
-        //   height: queryData.size.height * 0.1,
-        // ),
-        Container(
-          padding: EdgeInsets.all(50),
-          decoration: BoxDecoration(gradient: gradientAppBar),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/miCuenta');
-                    },
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      // margin: EdgeInsets.only(top: 0, bottom: 10),
-                      decoration: new BoxDecoration(
-                        color: Colors.grey.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(width: 1, color: Colors.white),
-                        image: DecorationImage(
-                          image: userModel.imgUrl == null
-                              ? AssetImage('images/logoDrug.png')
-                              : NetworkImage(userModel.imgUrl),
-                          fit: BoxFit.cover,
-                        ),
+            decoration: BoxDecoration(
+                // color: Colors.teal
+                // image: DecorationImage(
+                //     image: AssetImage('images/menuCover.png'), fit: BoxFit.cover),
+                ),
+            child: Column(
+              children: [
+                Flexible(
+                  flex: 3,
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: smallPadding),
+                    decoration: BoxDecoration(gradient: gradientAppBar),
+                    child: SafeArea(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/miCuenta');
+                            },
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              // margin: EdgeInsets.only(top: 0, bottom: 10),
+                              decoration: new BoxDecoration(
+                                color: Colors.grey.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(100),
+                                border:
+                                    Border.all(width: 1, color: Colors.white),
+                                image: DecorationImage(
+                                  image: userModel.imgUrl == null
+                                      ? AssetImage('images/logoDrug.png')
+                                      : NetworkImage(userModel.imgUrl),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // SizedBox(
+                          //   height: 15,
+                          // ),
+                          Text(
+                            "Hola, ${userModel.name}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w300),
+                          ),
+                          // SizedBox(height: 10,),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                "Hola, ${userModel.name}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w300),
-              ),
-              // SizedBox(height: 10,),
-            ],
-          ),
-        ),
-        ListView.builder(
-          itemCount: jsonMenu.length,
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemBuilder: (BuildContext context, int index) {
-            IconData menuIcon;
+                ),
+                Flexible(
+                  flex: 7,
+                  child: ListView.builder(
+                    itemCount: jsonMenu.length,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    // shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      IconData menuIcon;
 
-            switch (jsonMenu[index]['title']) {
-              case 'Inicio':
-                menuIcon = (Icons.home_outlined);
-                break;
-              case 'Mi cuenta':
-                menuIcon = (Icons.person_outline);
-                break;
-              case 'Favoritos':
-                menuIcon = (Icons.favorite_outline);
-                break;
-              case 'Mi tienda':
-                menuIcon = (Icons.store_outlined);
-                break;
+                      switch (jsonMenu[index]['title']) {
+                        case 'Inicio':
+                          menuIcon = (Icons.home_outlined);
+                          break;
+                        case 'Mi cuenta':
+                          menuIcon = (Icons.person_outline);
+                          break;
+                        case 'Favoritos':
+                          menuIcon = (Icons.favorite_outline);
+                          break;
+                        case 'Mi tienda':
+                          menuIcon = (Icons.store_outlined);
+                          break;
+                        case 'Ofertas':
+                          menuIcon = (Icons.local_offer_outlined);
+                          break;
+                        case 'Pedidos especiales':
+                          menuIcon = (Icons.star_outline);
+                          break;
+                        case 'Tiendas':
+                          menuIcon = (Icons.store_outlined);
+                          break;
+                        case 'Preguntas frecuentes':
+                          menuIcon = (Icons.info_outline);
+                          break;
+                        case 'Atención a pacientes':
+                          menuIcon = (Icons.personal_injury_outlined);
+                          break;
+                        case 'Soporte pedidos':
+                          menuIcon = (Icons.medical_services_outlined);
+                          break;
+                        case 'Cerrar sesión':
+                          menuIcon = (Icons.logout_outlined);
+                          break;
+                        default:
+                          menuIcon = (Icons.medication_outlined);
+                      }
 
-              case 'Cerrar sesión':
-                menuIcon = (Icons.logout_outlined);
-                break;
-              default:
-                menuIcon = (Icons.medication_outlined);
-            }
-
-            return jsonMenu[index]['title'] == 'Carrito'
-                ? ListTile(
-                    leading: Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        Icon(Icons.shopping_cart_outlined, color: Colors.grey),
-                        CircleAvatar(
-                            radius: 7,
-                            child: StreamBuilder<List<ProductoModel>>(
-                                initialData: [],
-                                stream: _catalogBloc.catalogStream,
-                                builder: (context, snapshot) {
-                                  int sum = snapshot.data
-                                      .map((expense) => expense.cantidad)
-                                      .fold(0, (prev, amount) => prev + amount);
-                                  return Text(
-                                    sum.toString(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 7.0,
-                                    ),
-                                  );
-                                }))
-                      ],
-                    ),
-                    title: Text(
-                      'Carrito',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    onTap: () => Navigator.pushNamed(context, '/carrito')
-                        .then((value) => setState(() {})),
-                  )
-                : listMenu(context, (menuIcon), Colors.grey,
-                    jsonMenu[index]['title'], jsonMenu[index]['action']);
-          },
-        ),
-      ]),
-    ));
+                      return jsonMenu[index]['title'] == 'Carrito'
+                          ? ListTile(
+                              leading: Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Icon(Icons.shopping_cart_outlined,
+                                      color: Colors.grey),
+                                  CircleAvatar(
+                                      radius: 7,
+                                      child: StreamBuilder<List<ProductoModel>>(
+                                          initialData: [],
+                                          stream: _catalogBloc.catalogStream,
+                                          builder: (context, snapshot) {
+                                            int sum = snapshot.data
+                                                .map((expense) =>
+                                                    expense.cantidad)
+                                                .fold(
+                                                    0,
+                                                    (prev, amount) =>
+                                                        prev + amount);
+                                            return Text(
+                                              sum.toString(),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 7.0,
+                                              ),
+                                            );
+                                          }))
+                                ],
+                              ),
+                              title: Text(
+                                'Carrito',
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
+                              onTap: () =>
+                                  Navigator.pushNamed(context, '/carrito')
+                                      .then((value) => setState(() {})),
+                            )
+                          : listMenu(
+                              context,
+                              (menuIcon),
+                              Colors.grey,
+                              jsonMenu[index]['title'],
+                              jsonMenu[index]['action']);
+                    },
+                  ),
+                ),
+              ],
+            )));
   }
 
   Widget listMenu(BuildContext context, IconData iconMenu, Color colorIcon,

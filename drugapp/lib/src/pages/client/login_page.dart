@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                                             fontSize: constraints.maxWidth < 700
                                                 ? 22
                                                 : 47,
-                                            fontWeight: FontWeight.w400,
+                                            fontWeight: FontWeight.w100,
                                             color: Colors.white),
                                         children: <TextSpan>[
                                           TextSpan(
@@ -93,13 +93,13 @@ class _LoginPageState extends State<LoginPage> {
                                         ],
                                       ),
                                     ),
-                                    Text('Sí, medicina on demand.',
+                                    Text('Todas tus marcas de confianza.',
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                             fontSize: constraints.maxWidth < 700
                                                 ? 22
                                                 : 47,
-                                            fontWeight: FontWeight.w400,
+                                            fontWeight: FontWeight.bold,
                                             color: Colors.white))
                                   ],
                                 ),
@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Flexible(
                     fit: FlexFit.loose,
-                    flex: 6,
+                    flex: 5,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
                         'images/coverMed.png',
@@ -361,12 +361,12 @@ class _LoginPageState extends State<LoginPage> {
   _infoContainer(constraints) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth < 700 ? 30 : 55.0,
+          horizontal: constraints.maxWidth < 800 ? 30 : 55.0,
           vertical: constraints.maxWidth < 700
               ? 30
               : MediaQuery.of(context).size.width / 8),
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
@@ -375,8 +375,8 @@ class _LoginPageState extends State<LoginPage> {
               text: TextSpan(
                 text: 'Somos ',
                 style: TextStyle(
-                    fontSize: constraints.maxWidth < 700 ? 22 : 47,
-                    fontWeight: FontWeight.w400,
+                    fontSize: constraints.maxWidth < 700 ? 20 : 47,
+                    fontWeight: FontWeight.w100,
                     color: Colors.white),
                 children: <TextSpan>[
                   TextSpan(
@@ -389,21 +389,21 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           Flexible(
-            child: Text('Sí, medicina on demand.',
+            child: Text('Productos para la Salud, en un solo lugar.',
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontSize: constraints.maxWidth < 700 ? 22 : 47,
-                    fontWeight: FontWeight.w400,
+                    fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                    fontWeight: FontWeight.w100,
                     color: Colors.white)),
           ),
           constraints.maxWidth < 700
               ? Container()
               : Flexible(
-                  child: Text('Somos una empresa comprometida contigo.',
+                  child: Text('Todas tus marcas de confianza.',
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: constraints.maxWidth < 700 ? 17 : 32,
-                          fontWeight: FontWeight.w400,
+                          fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white)),
                 ),
           SizedBox(height: smallPadding),

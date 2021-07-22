@@ -74,8 +74,8 @@ class _TiendasPageState extends State<TiendasPage> {
       child: Column(
         children: [
           Container(
-              padding: EdgeInsets.only(
-                  right: medPadding, left: medPadding, bottom: smallPadding),
+              // padding: EdgeInsets.only(
+              //     right: medPadding, left: medPadding, bottom: smallPadding),
               color: Theme.of(context).accentColor,
               child: MediaQuery.of(context).size.width > 700
                   ? Row(
@@ -94,7 +94,19 @@ class _TiendasPageState extends State<TiendasPage> {
                         ),
                       ],
                     )
-                  : search()),
+                  : Container(
+                      padding: EdgeInsets.only(
+                          right: medPadding,
+                          left: medPadding,
+                          top: smallPadding * 2,
+                          bottom: smallPadding),
+                      color: Theme.of(context).accentColor,
+                      child: Row(children: [
+                        Expanded(
+                          child: search(),
+                        ),
+                      ]),
+                    )),
           Expanded(child: listTiendas())
         ],
       ),
