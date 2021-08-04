@@ -27,6 +27,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
   String password;
   UserModel userModel = UserModel();
 
+  bool loadPage = true;
+
   @override
   void initState() {
     sharedPrefs.init();
@@ -38,9 +40,20 @@ class _LoginVendedorState extends State<LoginVendedor> {
     await validateVendorToken().then((value) {
       validateVendorToken().then((value) {
         if (value) {
-          Navigator.pushNamedAndRemoveUntil(
-                  context, '/farmacia/miCuenta/', (route) => false)
-              .then((value) => setState(() {}));
+          if (widget.miTienda) {
+            setState(() {});
+            Navigator.pushNamed(context, '/miTienda')
+                .then((value) => Navigator.pop(context))
+                .then((value) => setState(() {}));
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+                    context, '/farmacia/miCuenta/', (route) => false)
+                .then((value) => setState(() {}));
+          }
+        } else {
+          setState(() {
+            loadPage = false;
+          });
         }
       });
     });
@@ -48,117 +61,127 @@ class _LoginVendedorState extends State<LoginVendedor> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar:
-          MediaQuery.of(context).size.width < 700 ? false : true,
-      appBar: widget.miTienda
-          ? AppBar(
-              shadowColor: Colors.transparent,
-              backgroundColor: MediaQuery.of(context).size.width < 700
-                  ? Theme.of(context).accentColor
-                  : Colors.white.withOpacity(0.3),
-            )
-          : null,
-      key: _scaffoldKey,
-      body: LayoutBuilder(builder: (context, constraints) {
-        return constraints.maxWidth < 700
-            ? CustomScrollView(
-                slivers: <Widget>[
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => Column(
-                        children: [
-                          Container(
-                            height: 150,
-                            child: Stack(children: [
-                              Image.asset(
-                                'images/coverDrug.png',
-                                fit: BoxFit.cover,
-                                width: double.maxFinite,
-                                height: 400,
-                              ),
-                              Opacity(
-                                  opacity: 0.6,
-                                  child: Image.asset('images/coverColor.png',
+    return loadPage
+        ? Scaffold(
+            body: bodyLoad(context),
+          )
+        : Scaffold(
+            extendBodyBehindAppBar:
+                MediaQuery.of(context).size.width < 700 ? false : true,
+            appBar: widget.miTienda
+                ? AppBar(
+                    shadowColor: Colors.transparent,
+                    backgroundColor: MediaQuery.of(context).size.width < 700
+                        ? Theme.of(context).accentColor
+                        : Colors.white.withOpacity(0.3),
+                  )
+                : null,
+            key: _scaffoldKey,
+            body: LayoutBuilder(builder: (context, constraints) {
+              return constraints.maxWidth < 700
+                  ? CustomScrollView(
+                      slivers: <Widget>[
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => Column(
+                              children: [
+                                Container(
+                                  height: 150,
+                                  child: Stack(children: [
+                                    Image.asset(
+                                      'images/coverDrug.png',
+                                      fit: BoxFit.cover,
                                       width: double.maxFinite,
                                       height: 400,
-                                      fit: BoxFit.cover)),
-                              Padding(
-                                padding: const EdgeInsets.all(30.0),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 5),
-                                    RichText(
-                                      textAlign: TextAlign.start,
-                                      text: TextSpan(
-                                        text: 'Somos ',
-                                        style: TextStyle(
-                                            fontSize: constraints.maxWidth < 700
-                                                ? 22
-                                                : 47,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: 'Drug.',
+                                    ),
+                                    Opacity(
+                                        opacity: 0.6,
+                                        child: Image.asset(
+                                            'images/coverColor.png',
+                                            width: double.maxFinite,
+                                            height: 400,
+                                            fit: BoxFit.cover)),
+                                    Padding(
+                                      padding: const EdgeInsets.all(30.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 5),
+                                          RichText(
+                                            textAlign: TextAlign.start,
+                                            text: TextSpan(
+                                              text: 'Somos ',
                                               style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              )),
+                                                  fontSize:
+                                                      constraints.maxWidth < 700
+                                                          ? 22
+                                                          : 47,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Colors.white),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                    text: 'Drug.',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    )),
+                                              ],
+                                            ),
+                                          ),
+                                          Text(
+                                              'Productos para la Salud, en un solo lugar.',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      constraints.maxWidth < 700
+                                                          ? 22
+                                                          : 47,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Colors.white))
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                        'Productos para la Salud, en un solo lugar.',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                            fontSize: constraints.maxWidth < 700
-                                                ? 22
-                                                : 47,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.white))
-                                  ],
+                                  ]),
                                 ),
-                              ),
-                            ]),
+                                _formContainer(constraints)
+                              ],
+                            ),
+                            childCount: 1,
                           ),
-                          _formContainer(constraints)
-                        ],
-                      ),
-                      childCount: 1,
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    fit: FlexFit.loose,
-                    flex: 6,
-                    child: Stack(fit: StackFit.expand, children: [
-                      Image.asset(
-                        'images/coverDrug.png',
-                        fit: BoxFit.cover,
-                        width: double.maxFinite,
-                        height: 400,
-                      ),
-                      Opacity(
-                          opacity: 0.6,
-                          child: Image.asset('images/coverColor.png',
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          fit: FlexFit.loose,
+                          flex: 6,
+                          child: Stack(fit: StackFit.expand, children: [
+                            Image.asset(
+                              'images/coverDrug.png',
+                              fit: BoxFit.cover,
                               width: double.maxFinite,
                               height: 400,
-                              fit: BoxFit.cover)),
-                      _infoContainer(constraints)
-                    ]),
-                  ),
-                  Flexible(flex: 4, child: _formContainer(constraints)),
-                ],
-              );
-      }),
-    );
+                            ),
+                            Opacity(
+                                opacity: 0.6,
+                                child: Image.asset('images/coverColor.png',
+                                    width: double.maxFinite,
+                                    height: 400,
+                                    fit: BoxFit.cover)),
+                            _infoContainer(constraints)
+                          ]),
+                        ),
+                        Flexible(flex: 4, child: _formContainer(constraints)),
+                      ],
+                    );
+            }),
+          );
   }
 
   _formContainer(constraints) {

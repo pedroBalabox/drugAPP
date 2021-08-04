@@ -115,6 +115,14 @@ class _TabVentasState extends State<TabVentas> {
                             width: MediaQuery.of(context).size.width / 6,
                             child: misVentas(),
                           ),
+                          Container(
+                            padding: EdgeInsets.all(size.width > 850
+                                ? medPadding * .75
+                                : medPadding * .5),
+                            color: bgGrey,
+                            width: MediaQuery.of(context).size.width / 6,
+                            child: showResumenFinanciero(),
+                          ),
                           footerVendedor(context),
                         ]),
                       ),
@@ -195,6 +203,75 @@ class _TabVentasState extends State<TabVentas> {
             hintText: 'Buscar venta por folio ó producto...',
             fillColor: bgGrey,
             filled: true),
+      ),
+    );
+  }
+
+  showResumenFinanciero() {
+    return Container(
+      height: 100,
+      color: Colors.white,
+      width: MediaQuery.of(context).size.width / 6,
+      child: Column(
+        children: [
+          Text(
+            'Resumen financiero',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          SizedBox(
+            height: 0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'Total ventas',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  Text(
+                    'Total por recibir',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  Text(
+                    'Retenciones',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                  Text(
+                    'Total pagado a tienda',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Column(
+                children: [
+                  Text(
+                    '\$30,000.00 ',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    '\$ ',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    '\$ ',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    '\$ ',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -297,7 +374,7 @@ class DataSource extends DataTableSource {
           DataCell(Text('${_user['costo_unitario']}')),
           DataCell(Text('${_user['costo_total']}')),
           DataCell(Text('${_user['aplica_mayoreo']}')),
-          DataCell(Text("\$"+_user['costo_final'])),
+          DataCell(Text("\$" + _user['costo_final'])),
           DataCell(Text('${_user['status']}')),
           DataCell(Text('${_user['fecha_de_creacion']}')),
         ]);

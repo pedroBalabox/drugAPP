@@ -99,15 +99,18 @@ class _HomeInfoCardState extends State<HomeInfoCard> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: smallPadding, vertical: smallPadding),
+          horizontal: smallPadding/2, vertical: smallPadding/2),
       child: InkWell(
         onTap: widget.nav,
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.width < 1000
-                  ? MediaQuery.of(context).size.width / 2.5
-                  : MediaQuery.of(context).size.width / 7,
+              // height: MediaQuery.of(context).size.width < 1000
+              //     ? MediaQuery.of(context).size.width / 3
+              //     : MediaQuery.of(context).size.width / 7,
+              height: MediaQuery.of(context).size.width / 5,
+              width: double.infinity,
+              // width: MediaQuery.of(context).size.width / 4,
               // width: MediaQuery.of(context).size.width < 1000
               //     ? MediaQuery.of(context).size.width
               //     : MediaQuery.of(context).size.width / 3.5,
@@ -123,15 +126,15 @@ class _HomeInfoCardState extends State<HomeInfoCard> {
                   padding: EdgeInsets.only(
                       top: smallPadding,
                       bottom: smallPadding,
-                      left: smallPadding,
-                      right: medPadding * 4),
+                      left: smallPadding),
                   child: Text(
                     widget.title,
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
-                        fontSize: 27),
+                        fontSize:
+                            MediaQuery.of(context).size.width > 700 ? 25 : 20),
                   ),
                 ),
               ),
@@ -166,7 +169,7 @@ cardInfoDrug(context, icon, title, desc) {
                 ),
                 borderRadius: BorderRadius.circular(100)),
             child: Icon(
-             icon,
+              icon,
               color: Colors.blue,
               size: 55,
             )),

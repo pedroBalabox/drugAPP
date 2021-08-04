@@ -7,6 +7,7 @@ import 'package:drugapp/src/pages/client/detallesCompra_page.dart';
 import 'package:drugapp/src/pages/client/home_page.dart';
 import 'package:drugapp/src/pages/client/login_page.dart';
 import 'package:drugapp/src/pages/client/miCuenta_page.dart';
+import 'package:drugapp/src/pages/client/preguntasFrecuentes.dart';
 import 'package:drugapp/src/pages/client/productGeneric_page.dart';
 import 'package:drugapp/src/pages/client/productoDetalle_pade.dart';
 import 'package:drugapp/src/pages/client/register_page.dart';
@@ -44,6 +45,16 @@ class Flurorouter {
   static Handler _miCuentaHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           MiCuentaClient());
+
+  static Handler _miCuentaComprasHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          MiCuentaClient(
+            index: 3,
+          ));
+
+  static Handler _faqHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          PreguntasFrec());
 
   static Handler _favHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
@@ -287,6 +298,10 @@ class Flurorouter {
         handler: _miCuentaHandler,
         transitionType: TransitionType.fadeIn,
         transitionDuration: Duration(milliseconds: 300));
+    router.define('/miCuenta/misCompras/',
+        handler: _miCuentaComprasHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
     router.define('/favoritos',
         handler: _favHandler,
         transitionType: TransitionType.fadeIn,
@@ -360,6 +375,10 @@ class Flurorouter {
         transitionDuration: Duration(milliseconds: 300));
     router.define('/ofertas',
         handler: _ofertasHandler,
+        transitionType: TransitionType.fadeIn,
+        transitionDuration: Duration(milliseconds: 300));
+    router.define('/preguntas-frecuentes',
+        handler: _faqHandler,
         transitionType: TransitionType.fadeIn,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/login/',

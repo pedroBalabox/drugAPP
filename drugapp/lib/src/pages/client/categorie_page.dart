@@ -89,23 +89,42 @@ class _CategoriaPageState extends State<CategoriaPage> {
                       bottom: smallPadding),
                   color: Theme.of(context).accentColor,
                   child: MediaQuery.of(context).size.width > 700
-                      ? Row(
-                          children: [
-                            Flexible(
-                              flex: 1,
-                              child: Container(),
-                            ),
-                            Flexible(
-                              flex: 3,
+                      ? Padding(
+                          padding: EdgeInsets.only(
+                              right: medPadding,
+                              left: medPadding,
+                              top: smallPadding * 2,
+                              bottom: smallPadding),
+                          child: Row(
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: Container(),
+                              ),
+                              Flexible(
+                                flex: 3,
+                                child: search(),
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: Container(),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          padding: EdgeInsets.only(
+                              right: medPadding,
+                              left: medPadding,
+                              top: smallPadding * 2,
+                              bottom: smallPadding),
+                          color: Theme.of(context).accentColor,
+                          child: Row(children: [
+                            Expanded(
                               child: search(),
                             ),
-                            Flexible(
-                              flex: 1,
-                              child: Container(),
-                            ),
-                          ],
-                        )
-                      : search())
+                          ]),
+                        ))
               : Container(),
           Expanded(child: listCategorias())
         ],
@@ -229,7 +248,7 @@ class _CategoriaPageState extends State<CategoriaPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Búscar categoría...',
+            hintText: 'Buscar categoría...',
             fillColor: Colors.white,
             filled: true),
       ),

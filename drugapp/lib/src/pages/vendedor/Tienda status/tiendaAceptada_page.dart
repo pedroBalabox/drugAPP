@@ -148,10 +148,10 @@ class _TabAceptadaState extends State<TabAceptada> {
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
                 child: InkWell(
-                  // onTap: () async {
-                  //   await pickImage();
-                  //   setState(() {});
-                  // },
+                  onTap: () async {
+                    await pickImage();
+                    setState(() {});
+                  },
                   child: CircleAvatar(
                     backgroundImage: imagePath != null
                         ? !kIsWeb
@@ -164,11 +164,11 @@ class _TabAceptadaState extends State<TabAceptada> {
                 ),
               ),
             ),
-            // SizedBox(height: smallPadding),
-            // Text(
-            //   'Toca para cambiar el logo de tu tienda',
-            //   style: TextStyle(color: Colors.black54),
-            // ),
+            SizedBox(height: smallPadding),
+            Text(
+              'Toca para cambiar el logo de tu tienda',
+              style: TextStyle(color: Colors.black54),
+            ),
             SizedBox(height: smallPadding),
             formNuevaTienda(),
           ],
@@ -278,7 +278,7 @@ class _TabAceptadaState extends State<TabAceptada> {
                   'farmacia_id': farmaciaModel.farmacia_id,
                   "nombre": farmaciaModel.nombre,
                   "correo": farmaciaModel.correo,
-                  // "base64": base64Image == null ? null : base64Image
+                  "base64": base64Image == null ? null : base64Image
                 },
                 contenido: Text(
                   'Actualizar',

@@ -3,11 +3,8 @@ import 'dart:convert';
 import 'package:drugapp/model/product_model.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/bloc_product.dart';
 import 'package:drugapp/src/bloc/products_bloc.dart/event_product.dart';
-import 'package:drugapp/src/pages/Lobby/validate_page.dart';
-import 'package:drugapp/src/pages/client/carrito_page.dart';
 import 'package:drugapp/src/pages/client/miCuenta_page.dart';
 import 'package:drugapp/src/pages/client/tiendaProductos_page.dart';
-import 'package:drugapp/src/pages/client/tiendas_page.dart';
 import 'package:drugapp/src/service/jsFlutter/auth_class.dart';
 import 'package:drugapp/src/service/restFunction.dart';
 import 'package:drugapp/src/service/sharedPref.dart';
@@ -200,7 +197,7 @@ class _BodyHomeMobileState extends State<BodyHomeMobile>
                             : Colors.grey,
                       )),
                   Tab(
-                      text: 'Categorias',
+                      text: 'Categorías',
                       icon: Icon(
                         Icons.category_outlined,
                         size: 27,
@@ -522,8 +519,37 @@ class _BodyHomeState extends State<BodyHome> {
                   //       ),
                   // SizedBox(height: smallPadding),
                   Container(
-                    padding: EdgeInsets.all(0),
+                    padding: EdgeInsets.symmetric(horizontal: smallPadding),
                     width: MediaQuery.of(context).size.width,
+                    // child: Row(
+                    //   children: [
+                    //     Flexible(
+                    //         child: HomeInfoCard(
+                    //       title: 'Tiendas',
+                    //       image: 'drug1.jpg',
+                    //       nav: () => Navigator.pushNamed(context, '/tiendas')
+                    //           .then((value) => setState(() {}))
+                    //           .then((value) => getProductos()),
+                    //     )),
+                    //     Flexible(
+                    //         child: HomeInfoCard(
+                    //       title: 'Productos',
+                    //       image: 'drug2.jpg',
+                    //       nav: () => Navigator.pushNamed(context, '/productos')
+                    //           .then((value) => setState(() {}))
+                    //           .then((value) => getProductos()),
+                    //     )),
+                    //     Flexible(
+                    //         child: HomeInfoCard(
+                    //       title: 'Categorias',
+                    //       image: 'drug3.jpg',
+                    //       nav: () => Navigator.pushNamed(context, '/categorias')
+                    //           .then((value) => setState(() {}))
+                    //           .then((value) => getProductos()),
+                    //     )),
+                    //   ],
+                    // ),
+
                     child: constraints.maxWidth > 1000
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -562,30 +588,44 @@ class _BodyHomeState extends State<BodyHome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              HomeInfoCard(
-                                title: 'Tiendas',
-                                image: 'drug1.jpg',
-                                nav: () =>
-                                    Navigator.pushNamed(context, '/tiendas')
+                              Row(children: [
+                                Flexible(
+                                  flex: 2,
+                                  child: HomeInfoCard(
+                                    title: 'Tiendas',
+                                    image: 'drug1.jpg',
+                                    nav: () =>
+                                        Navigator.pushNamed(context, '/tiendas')
+                                            .then((value) => setState(() {}))
+                                            .then((value) => getProductos()),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 2,
+                                  child: HomeInfoCard(
+                                    title: 'Productos',
+                                    image: 'drug2.jpg',
+                                    nav: () => Navigator.pushNamed(
+                                            context, '/productos')
                                         .then((value) => setState(() {}))
                                         .then((value) => getProductos()),
-                              ),
-                              HomeInfoCard(
-                                title: 'Productos',
-                                image: 'drug2.jpg',
-                                nav: () =>
-                                    Navigator.pushNamed(context, '/productos')
+                                  ),
+                                ),
+                              ]),
+                              Row(children: [
+                                Flexible(
+                                  flex: 2,
+                                  child: HomeInfoCard(
+                                    title: 'Categorias',
+                                    image: 'drug3.jpg',
+                                    nav: () => Navigator.pushNamed(
+                                            context, '/categorias')
                                         .then((value) => setState(() {}))
                                         .then((value) => getProductos()),
-                              ),
-                              HomeInfoCard(
-                                title: 'Categorias',
-                                image: 'drug3.jpg',
-                                nav: () =>
-                                    Navigator.pushNamed(context, '/categorias')
-                                        .then((value) => setState(() {}))
-                                        .then((value) => getProductos()),
-                              ),
+                                  ),
+                                ),
+                                Flexible(flex: 2, child: Container()),
+                              ]),
                             ],
                           ),
                   ),
@@ -659,42 +699,42 @@ class _BodyHomeState extends State<BodyHome> {
                           fontSize: 20),
                     ),
                   ),
-                  // loadCat
-                  //     ? bodyLoad(context)
-                  //     : errorCat
-                  //         ? Text(errorStrCat, style: estiloErrorStr)
-                  //         : Container(
-                  //             padding: EdgeInsets.symmetric(
-                  //                 horizontal: medPadding / 2),
-                  //             child: GridView.count(
-                  //               shrinkWrap: true,
-                  //               childAspectRatio: (250 / 350),
-                  //               primary: false,
-                  //               // Create a grid with 2 columns. If you change the scrollDirection to
-                  //               // horizontal, this produces 2 rows.
-                  //               crossAxisCount: MediaQuery.of(context)
-                  //                           .size
-                  //                           .width <
-                  //                       1150
-                  //                   ? MediaQuery.of(context).size.width < 600
-                  //                       ? MediaQuery.of(context).size.width <
-                  //                               500
-                  //                           ? 2
-                  //                           : 3
-                  //                       : 4
-                  //                   : 5,
-                  //               // Generate 100 widgets that display their index in the List.
-                  //               children: List.generate(
-                  //                   constraints.maxWidth > 1000
-                  //                       ? cat.length > 5
-                  //                           ? 5
-                  //                           : cat.length
-                  //                       : cat.length > 4
-                  //                           ? 4
-                  //                           : cat.length, (index) {
-                  //                 return categorieCard(cat[index]);
-                  //               }),
-                  //             )),
+                  loadCat
+                      ? bodyLoad(context)
+                      : errorCat
+                          ? Text(errorStrCat, style: estiloErrorStr)
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: medPadding / 2),
+                              child: GridView.count(
+                                shrinkWrap: true,
+                                childAspectRatio: (250 / 350),
+                                primary: false,
+                                // Create a grid with 2 columns. If you change the scrollDirection to
+                                // horizontal, this produces 2 rows.
+                                crossAxisCount: MediaQuery.of(context)
+                                            .size
+                                            .width <
+                                        1150
+                                    ? MediaQuery.of(context).size.width < 600
+                                        ? MediaQuery.of(context).size.width <
+                                                500
+                                            ? 2
+                                            : 3
+                                        : 4
+                                    : 5,
+                                // Generate 100 widgets that display their index in the List.
+                                children: List.generate(
+                                    constraints.maxWidth > 1000
+                                        ? cat.length > 5
+                                            ? 5
+                                            : cat.length
+                                        : cat.length > 4
+                                            ? 4
+                                            : cat.length, (index) {
+                                  return categorieCard(cat[index]);
+                                }),
+                              )),
                   // : Container(
                   //     height: 350,
                   //     padding: EdgeInsets.symmetric(
@@ -709,22 +749,23 @@ class _BodyHomeState extends State<BodyHome> {
                   //       },
                   //     ),
                   //   ),
-                  SizedBox(
-                    height: medPadding,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: medPadding / 2 + smallPadding,
-                    ),
-                    child: Text(
-                      'MÉTODOS DE PAGO',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: medPadding,
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(
+                  //     horizontal: medPadding / 2 + smallPadding,
+                  //   ),
+                  //   child: Text(
+                  //     'MÉTODOS DE PAGO',
+                  //     textAlign: TextAlign.left,
+                  //     style: TextStyle(
+                  //         color: Colors.black,
+                  //         fontWeight: FontWeight.w600,
+                  //         fontSize: 20),
+                  //   ),
+                  // )
+
                   SizedBox(
                     height: medPadding,
                   ),
@@ -741,6 +782,71 @@ class _BodyHomeState extends State<BodyHome> {
                           fontSize: 20),
                     ),
                   ),
+                  SizedBox(height: medPadding / 4),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: medPadding / 2 + smallPadding),
+                    child: Row(
+                      children: [
+                        Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                right: smallPadding / 2,
+                              ),
+                              decoration: BoxDecoration(
+                                  color: bgGrey,
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          'https://drugsiteonline.com/wp-content/uploads/2021/01/Servicio-1.jpeg'),
+                                      fit: BoxFit.cover)),
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.width / 4,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text('RECIBE EL MISMO DÍA',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width >
+                                                    700
+                                                ? 25
+                                                : 15)),
+                              ),
+                            )),
+                        Flexible(
+                            flex: 2,
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                left: smallPadding / 2,
+                              ),
+                              decoration: BoxDecoration(
+                                  color: bgGrey,
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          'https://drugsiteonline.com/wp-content/uploads/2021/01/Servicio-4.jpeg'),
+                                      fit: BoxFit.cover)),
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.width / 4,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text('ENVÍOS A TODO MÉXICO',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width >
+                                                    700
+                                                ? 25
+                                                : 15)),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
                   SizedBox(
                     height: medPadding,
                   ),
@@ -754,7 +860,9 @@ class _BodyHomeState extends State<BodyHome> {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 27),
+                          fontSize: MediaQuery.of(context).size.width > 700
+                              ? 27
+                              : 20),
                     ),
                   ),
                   Padding(
@@ -767,7 +875,9 @@ class _BodyHomeState extends State<BodyHome> {
                       style: TextStyle(
                           color: Colors.black45,
                           fontWeight: FontWeight.normal,
-                          fontSize: 20),
+                          fontSize: MediaQuery.of(context).size.width > 700
+                              ? 20
+                              : 15),
                     ),
                   ),
                   Padding(
@@ -780,29 +890,31 @@ class _BodyHomeState extends State<BodyHome> {
                       style: TextStyle(
                           color: Theme.of(context).accentColor,
                           fontWeight: FontWeight.normal,
-                          fontSize: 20),
+                          fontSize: MediaQuery.of(context).size.width > 700
+                              ? 20
+                              : 15),
                     ),
                   ),
-                  // Container(
-                  //   margin: EdgeInsets.symmetric(
-                  //       vertical: smallPadding,
-                  //       horizontal: MediaQuery.of(context).size.width > 1000
-                  //           ? medPadding * 3
-                  //           : smallPadding),
-                  //   // color: bgGrey,
-                  //   height: MediaQuery.of(context).size.width * 0.25,
-                  //   width: MediaQuery.of(context).size.width,
-                  //   child: Swiper(
-                  //     autoplay: true,
-                  //     autoplayDelay: 5000,
-                  //     itemCount: marcasList.length,
-                  //     itemBuilder: (BuildContext context, int index) =>
-                  //         marcasList[index],
-                  //     // Image.asset("images/logoDrug.png", fit: BoxFit.cover),
-                  //     scrollDirection: Axis.horizontal,
-                  //     pagination: new SwiperControl(padding: EdgeInsets.all(0)),
-                  //   ),
-                  // ),
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                        vertical: smallPadding,
+                        horizontal: MediaQuery.of(context).size.width > 1000
+                            ? medPadding * 3
+                            : smallPadding),
+                    // color: bgGrey,
+                    height: MediaQuery.of(context).size.width * 0.25,
+                    width: MediaQuery.of(context).size.width,
+                    child: Swiper(
+                      autoplay: true,
+                      autoplayDelay: 5000,
+                      itemCount: marcasList.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          marcasList[index],
+                      // Image.asset("images/logoDrug.png", fit: BoxFit.cover),
+                      scrollDirection: Axis.horizontal,
+                      pagination: new SwiperControl(padding: EdgeInsets.all(0)),
+                    ),
+                  ),
                   SizedBox(height: medPadding),
                   Container(
                     padding: EdgeInsets.all(medPadding),
@@ -1320,55 +1432,164 @@ class _CarouselWithIndicatorState extends State<CarouselWithIndicatorDemo> {
 }
 
 Widget footterWidget(context) {
-  return Expanded(
-    child: Container(
-      // padding: EdgeInsets.all(medPadding),
-      color: Colors.grey[400],
-      width: MediaQuery.of(context).size.width,
-      child: Column(children: [
-        Container(
-          padding: EdgeInsets.all(medPadding),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              sobreDrug(),
-              ayudaSoporte(),
-              alianza(),
-              atencion(),
-              druginfo()
-            ],
+  return Container(
+    // padding: EdgeInsets.all(medPadding),
+    color: Colors.grey[400],
+    width: MediaQuery.of(context).size.width,
+    child: Column(children: [
+      Container(
+        padding: EdgeInsets.all(medPadding),
+        child: MediaQuery.of(context).size.width > 900
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  sobreDrug(),
+                  ayudaSoporte(),
+                  alianza(context),
+                  atencion(),
+                  druginfo(false)
+                ],
+              )
+            : MediaQuery.of(context).size.width < 355
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      sobreDrug(),
+                      SizedBox(height: medPadding),
+                      ayudaSoporte(),
+                      SizedBox(height: medPadding),
+                      alianza(context),
+                      SizedBox(height: medPadding),
+                      atencion(),
+                      SizedBox(height: medPadding),
+                      druginfo(true)
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          sobreDrug(),
+                          ayudaSoporte(),
+                        ],
+                      ),
+                      SizedBox(height: medPadding),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          alianza(context),
+                          atencion(),
+                        ],
+                      ),
+                      SizedBox(height: medPadding),
+                      druginfo(true)
+                    ],
+                  ),
+      ),
+      Container(
+          padding: EdgeInsets.symmetric(vertical: medPadding),
+          child: MediaQuery.of(context).size.width > 900
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                      Row(
+                        children: [
+                          Text('¡Síguenos!',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15)),
+                          SizedBox(
+                            width: smallPadding,
+                          ),
+                          InkWell(
+                              onTap: () => launchURL(
+                                  'https://www.facebook.com/DrugFarmaceutica'),
+                              child: getAsset('fbicon.jpg', 35)),
+                          SizedBox(
+                            width: smallPadding,
+                          ),
+                          InkWell(
+                              onTap: () => launchURL(
+                                  'https://www.instagram.com/drugmexico/'),
+                              child: getAsset('instaIcon.jpg', 35)),
+                        ],
+                      ),
+                      !kIsWeb
+                          ? Container()
+                          : Row(
+                              children: [
+                                Text('Descarga la app',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
+                                getAsset('appStore.png', 150),
+                                getAsset('playStore.png', 170)
+                              ],
+                            )
+                    ])
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('¡Síguenos!',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15)),
+                          SizedBox(
+                            width: smallPadding,
+                          ),
+                          InkWell(
+                              onTap: () => launchURL(
+                                  'https://www.facebook.com/DrugFarmaceutica'),
+                              child: getAsset('fbicon.jpg', 35)),
+                          SizedBox(
+                            width: smallPadding,
+                          ),
+                          InkWell(
+                              onTap: () => launchURL(
+                                  'https://www.instagram.com/drugmexico/'),
+                              child: getAsset('instaIcon.jpg', 35))
+                        ],
+                      ),
+                      !kIsWeb ? Container() : SizedBox(height: medPadding),
+                      !kIsWeb
+                          ? Container()
+                          : Column(
+                              children: [
+                                Text('Descarga la app',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
+                                getAsset('appStore.png', 150),
+                                getAsset('playStore.png', 170)
+                              ],
+                            )
+                    ])),
+      Container(
+        padding: EdgeInsets.all(smallPadding),
+        width: MediaQuery.of(context).size.width,
+        color: Colors.black,
+        child: Text(
+          'DRUG INTERNATIONAL CORP. TODOS LOS DERECHOS RESERVADOS 2021',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w100,
+            fontSize: 13,
           ),
         ),
-        Container(
-            padding: EdgeInsets.symmetric(vertical: medPadding),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    '¡Síguenos!',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  Text('Descarga la app',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15))
-                ])),
-        Container(
-          padding: EdgeInsets.all(smallPadding),
-          width: MediaQuery.of(context).size.width,
-          color: Colors.black,
-          child: Text(
-            'DRUG INTERNATIONAL CORP. TODOS LOS DERECHOS RESERVADOS 2021',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w100,
-              fontSize: 13,
-            ),
-          ),
-        )
-      ]),
-    ),
+      )
+    ]),
   );
 }
 
@@ -1378,7 +1599,13 @@ Widget sobreDrug() {
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text('Conócenos'), Text('Info Salud'), Text('Drug News')],
+        children: [
+          textInputActio(
+              () => launchURL('https://drugsiteonline.com/nosotros/'),
+              Text('Conócenos')),
+          textInputActio(() => launchURL(null), Text('Info Salud')),
+          textInputActio(() => launchURL(null), Text('Drug News'))
+        ],
       ));
 }
 
@@ -1389,59 +1616,102 @@ Widget ayudaSoporte() {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Pedidos'),
-          Text('Localizar un Producto'),
-          Text('Devoluciones'),
-          Text('Información general')
+          textInputActio(
+            () => launchURL(
+                'https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido'),
+            Text('Pedidos'),
+          ),
+          textInputActio(
+            () => launchURL(
+                'https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido'),
+            Text('Localizar un Producto'),
+          ),
+          textInputActio(
+            () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
+            Text('Devoluciones'),
+          ),
+          textInputActio(() => launchURL('https://drugsiteonline.com/'),
+              Text('Información general'))
         ],
       ));
 }
 
-Widget alianza() {
+Widget alianza(context) {
   return miInfoFootter(
       'Alianzas',
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Vender en Drug'),
-          Text('Laboratorios y Marcas'),
-          Text('Colaboraciones'),
-          Text('Promociones')
+          textInputActio(
+              () => Navigator.pushNamed(context, '/cliente/farmacia/login'),
+              Text('Vender en Drug')),
+          textInputActio(null, Text('Laboratorios y Marcas')),
+          textInputActio(null, Text('Colaboraciones')),
+          textInputActio(null, Text('Promociones')),
         ],
       ));
 }
 
 Widget atencion() {
   return miInfoFootter(
-      'Atenciṕon global',
+      'Atención global',
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Centros de Envíos Drug'),
-          Text('Proguntas Frecuentes'),
-          Text('Términos y Condiciones'),
-          Text('Aviso de Provacidad')
+          textInputActio(null, Text('Centros de Envíos Drug')),
+          textInputActio(null, Text('Proguntas Frecuentes')),
+          textInputActio(
+              () => launchURL(
+                  'https://drugsiteonline.com/terminos-y-condiciones/'),
+              Text(
+                'Términos y Condiciones',
+                overflow: TextOverflow.ellipsis,
+              )),
+          textInputActio(
+              () =>
+                  launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
+              Text('Aviso de Provacidad'))
         ],
       ));
 }
 
-druginfo() {
-  return miInfoFootter(
-      null,
+druginfo(bool center) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
       Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment:
+            center ? MainAxisAlignment.center : MainAxisAlignment.start,
+        crossAxisAlignment:
+            center ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: [
           Text('Empresa, Productos y Alianzas Reguladas'),
           Text('Por la COFEPRIS en México'),
-          Text('CONTACTO'.toUpperCase(),
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          Text('info@drugsiteonline.com'),
-          Text('+52 55333993829')
+          textInputActio(
+              null,
+              Text('CONTACTO'.toUpperCase(),
+                  style: TextStyle(fontWeight: FontWeight.bold))),
+          textInputActio(() => launchURL("mailto:info@drugsiteonline.com"),
+              Text('info@drugsiteonline.com')),
+          textInputActio(
+              () => launchURL("tel:+34678567876"), Text('+52 55333993829'))
         ],
-      ));
+      )
+    ],
+  );
+}
+
+Widget textInputActio(action, Widget widgetContenido) {
+  return Container(
+    padding: EdgeInsets.only(top: smallPadding),
+    child: InkWell(
+      onTap: action == null ? () => null : action,
+      child: widgetContenido,
+    ),
+  );
 }
 
 Widget miInfoFootter(String title, Widget info) {

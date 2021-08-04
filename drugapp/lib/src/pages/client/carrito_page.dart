@@ -118,30 +118,32 @@ class _CarritoPageState extends State<CarritoPage> {
 
   bodyCuenta() {
     var size = MediaQuery.of(context).size;
-    return ListView(children: [
-      Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: size.width > 700 ? size.width / 3 : medPadding * .5,
-            vertical: medPadding * 1.5),
-        color: bgGrey,
-        width: size.width,
-        child: StreamBuilder<List<ProductoModel>>(
-            initialData: [],
-            stream: _catalogBloc.catalogStream,
-            builder: (context, snapshot) {
-              return snapshot.data.length == 0
-                  ? noCarrito()
-                  : detallesCarrito(snapshot.data);
-            }),
-        // child:  detallesCarrito(),
-      ),
-      footer(context),
-    ]);
+    return Container(
+       color: bgGrey,
+      child: ListView(children: [
+        Container(
+          padding: EdgeInsets.symmetric(
+              horizontal: size.width > 700 ? size.width / 3 : medPadding * .5,
+              vertical: medPadding * 1.5),
+          color: bgGrey,
+          width: size.width,
+          child: StreamBuilder<List<ProductoModel>>(
+              initialData: [],
+              stream: _catalogBloc.catalogStream,
+              builder: (context, snapshot) {
+                return snapshot.data.length == 0
+                    ? noCarrito()
+                    : detallesCarrito(snapshot.data);
+              }),
+          // child:  detallesCarrito(),
+        ),
+        // footer(context),
+      ]),
+    );
   }
 
   noCarrito() {
     return Container(
-      height: MediaQuery.of(context).size.height - 200,
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -405,7 +407,7 @@ class _CarritoPageState extends State<CarritoPage> {
                                     _catalogBloc.sendEvent
                                         .add(RemoveAllCatalogItemEvent());
                                     // compraRealizada = true;
-                                    Navigator.pushNamed(context, '/miCuenta');
+                                    Navigator.pushNamed(context, '/miCuenta/misCompras/');
                                   });
                                 },
                                 errorStyle: TextStyle(

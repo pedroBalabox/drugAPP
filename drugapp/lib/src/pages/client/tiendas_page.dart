@@ -78,21 +78,28 @@ class _TiendasPageState extends State<TiendasPage> {
               //     right: medPadding, left: medPadding, bottom: smallPadding),
               color: Theme.of(context).accentColor,
               child: MediaQuery.of(context).size.width > 700
-                  ? Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: Container(),
-                        ),
-                        Flexible(
-                          flex: 3,
-                          child: search(),
-                        ),
-                        Flexible(
-                          flex: 1,
-                          child: Container(),
-                        ),
-                      ],
+                  ? Padding(
+                      padding: EdgeInsets.only(
+                          right: medPadding,
+                          left: medPadding,
+                          top: smallPadding * 2,
+                          bottom: smallPadding),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Container(),
+                          ),
+                          Flexible(
+                            flex: 3,
+                            child: search(),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Container(),
+                          ),
+                        ],
+                      ),
                     )
                   : Container(
                       padding: EdgeInsets.only(
@@ -141,41 +148,32 @@ class _TiendasPageState extends State<TiendasPage> {
   }
 
   tiendaCard(tiendas) {
-    return InkWell(
-      // onTap: () => CJNavigator.navigator
-      //     .push(
-      //         context,
-      // '/' +
-      //     tiendas['nombre'] +
-      //     '/' +
-      //     tiendas['farmacia_id'] +
-      //     '/productos')
-      //     .then((value) => setState(() {})),
-      onTap: () => Navigator.pushNamed(
-              context, '/productos-tienda' + '/' + tiendas['farmacia_id'] + '/')
-          .then((value) => setState(() {})),
-      child: Container(
-        margin: EdgeInsets.symmetric(
-            horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
-        padding: EdgeInsets.all(smallPadding / 2.5),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              blurRadius: 4, // soften the shadow
-              spreadRadius: 1.0, //extend the shadow
-              offset: Offset(
-                0.0, // Move to right 10  horizontally
-                3.0, // Move to bottom 10 Vertically
-              ),
-            )
-          ],
-          color: Colors.white,
-        ),
+    return Container(
+      margin: EdgeInsets.symmetric(
+          horizontal: smallPadding / 2, vertical: smallPadding * 0.5),
+      padding: EdgeInsets.all(smallPadding / 2.5),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.1),
+            blurRadius: 4, // soften the shadow
+            spreadRadius: 1.0, //extend the shadow
+            offset: Offset(
+              0.0, // Move to right 10  horizontally
+              3.0, // Move to bottom 10 Vertically
+            ),
+          )
+        ],
+        color: Colors.white,
+      ),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context,
+                '/productos-tienda' + '/' + tiendas['farmacia_id'] + '/')
+            .then((value) => setState(() {})),
         child: Column(
           children: [
             Flexible(
-              flex: 2,
+              flex: 3,
               child: getNetworkImage(
                 tiendas['logo'],
               ),
@@ -210,31 +208,38 @@ class _TiendasPageState extends State<TiendasPage> {
             Flexible(
                 flex: 3,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Tooltip(
-                      message: 'Farmacia verificada',
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                              color: Colors.black),
-                          text: '${tiendas['nombre']} ',
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: String.fromCharCode(57689), //<-- charCode
-                              style: TextStyle(
-                                fontFamily: 'MaterialIcons', //<-- fontFamily
-                                fontSize: 13.0,
-                                color: Colors.green,
-                              ),
-                            )
-                          ],
+                    Column(
+                      children: [
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                color: Colors.black),
+                            text: '${tiendas['nombre']} ',
+                            children: <TextSpan>[
+                              // TextSpan(
+                              //   text: String.fromCharCode(57689), //<-- charCode
+                              //   style: TextStyle(
+                              //     fontFamily: 'MaterialIcons', //<-- fontFamily
+                              //     fontSize: 13.0,
+                              //     color: Colors.green,
+                              //   ),
+                              // )
+                            ],
+                          ),
                         ),
-                      ),
+                        tiendas['estatus_verificacion'] == 'not_verified'
+                            ? Container()
+                            : Container(
+                                child: tiendaVerificada(),
+                              ),
+                      ],
                     ),
+
                     // Text(
                     //   '${tiendas['name']} ${Icons.check}',
                     //   textAlign: TextAlign.center,
@@ -315,10 +320,36 @@ class _TiendasPageState extends State<TiendasPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Búscar tienda...',
+            hintText: 'Buscar tienda...',
             fillColor: Colors.white,
             filled: true),
       ),
     );
   }
+}
+
+tiendaVerificada() {
+  return Container(
+    child: RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+          color: Colors.black54,
+        ),
+        text: 'Tienda verificada ',
+        children: <TextSpan>[
+          TextSpan(
+            text: String.fromCharCode(60661), //<-- charCode
+            style: TextStyle(
+              fontFamily: 'MaterialIcons', //<-- fontFamily
+              fontSize: 15.0,
+              color: Colors.orange[400],
+            ),
+          )
+        ],
+      ),
+    ),
+  );
 }

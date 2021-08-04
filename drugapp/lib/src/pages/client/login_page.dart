@@ -214,28 +214,28 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: smallPadding * 1.25),
-                    InkWell(
-                      onTap: () =>
-                          Navigator.pushNamed(context, '/farmacia/login/')
-                              .then((value) => setState(() {})),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: 'Entra como ',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: 'vendedor',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor)),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // SizedBox(height: smallPadding * 1.25),
+                    // InkWell(
+                    //   onTap: () =>
+                    //       Navigator.pushNamed(context, '/farmacia/login/')
+                    //           .then((value) => setState(() {})),
+                    //   child: RichText(
+                    //     textAlign: TextAlign.center,
+                    //     text: TextSpan(
+                    //       text: 'Entra como ',
+                    //       style: TextStyle(
+                    //           fontSize: 16,
+                    //           fontWeight: FontWeight.w500,
+                    //           color: Colors.grey),
+                    //       children: <TextSpan>[
+                    //         TextSpan(
+                    //             text: 'vendedor',
+                    //             style: TextStyle(
+                    //                 color: Theme.of(context).primaryColor)),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     constraints.maxWidth > 700
                         ? Container()
                         : SizedBox(height: medPadding),

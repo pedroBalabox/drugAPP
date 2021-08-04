@@ -1486,28 +1486,36 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Flexible(
-                      child: RichText(
-                        textAlign: TextAlign.start,
-                        text: TextSpan(
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20,
-                              color: Colors.black),
-                          text: miTienda['nombre'] + ' ',
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: String.fromCharCode(57689), //<-- charCode
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RichText(
+                            textAlign: TextAlign.start,
+                            text: TextSpan(
                               style: TextStyle(
-                                fontFamily: 'MaterialIcons', //<-- fontFamily
-                                fontSize: 15.0,
-                                color: Colors.green,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                  color: Colors.black),
+                              text: miTienda['nombre'] + ' ',
+                              children: <TextSpan>[
+                                // TextSpan(
+                                //   text: String.fromCharCode(57689), //<-- charCode
+                                //   style: TextStyle(
+                                //     fontFamily: 'MaterialIcons', //<-- fontFamily
+                                //     fontSize: 15.0,
+                                //     color: Colors.green,
+                                //   ),
+                                // )
+                              ],
+                            ),
+                          ),
+                          miTienda['estatus_verificacion'] == 'not_verified'
+                              ? Container()
+                              : Container(
+                                  child: tiendaVerificada(),
+                                ),
+                        ]),
                     InkWell(
                       onTap: () => _displayDialog(miTienda),
                       // Clipboard.setData(
@@ -2221,4 +2229,30 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           });
         });
   }
+}
+
+tiendaVerificada() {
+  return Container(
+    child: RichText(
+      textAlign: TextAlign.start,
+      text: TextSpan(
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+          color: Colors.black54,
+        ),
+        text: 'Tienda verificada ',
+        children: <TextSpan>[
+          TextSpan(
+            text: String.fromCharCode(60661), //<-- charCode
+            style: TextStyle(
+              fontFamily: 'MaterialIcons', //<-- fontFamily
+              fontSize: 15.0,
+              color: Colors.orange[400],
+            ),
+          )
+        ],
+      ),
+    ),
+  );
 }

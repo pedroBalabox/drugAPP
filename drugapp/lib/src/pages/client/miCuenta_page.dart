@@ -26,7 +26,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 //     if (dart.library.html) 'dart:js' as js;
 
 class MiCuentaClient extends StatefulWidget {
-  MiCuentaClient({Key key}) : super(key: key);
+  final int index;
+  
+  MiCuentaClient({Key key, this.index = 0}) : super(key: key);
 
   @override
   _MiCuentaClientState createState() => _MiCuentaClientState();
@@ -138,6 +140,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
     var size = MediaQuery.of(context).size;
     return DefaultTabController(
       length: 4,
+      initialIndex: widget.index,
       child: Stack(
         children: [
           TabBarView(
@@ -155,7 +158,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                   width: size.width,
                   child: tabMiCuenta(),
                 ),
-                footer(context),
+                // footer(context),
               ]),
               Container(
                 color: bgGrey,
@@ -190,7 +193,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                     width: size.width,
                     child: tabPedidoEspecial(),
                   ),
-                  footer(context),
+                  // footer(context),
                 ]),
               ),
               TabCompras(),

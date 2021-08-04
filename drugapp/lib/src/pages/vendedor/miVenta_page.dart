@@ -5,7 +5,6 @@ import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/drawerVendedor_widget.dart';
 import 'package:flutter/material.dart';
 
-
 class MiVenta extends StatefulWidget {
   static const routeName = '/farmacia/detalles-de-venta';
 
@@ -158,7 +157,6 @@ class _MiVentaState extends State<MiVenta> {
             ),
             Divider(color: Colors.black26),
           ],
-        
         ),
         showCheckboxColumn: false,
         columns: kTableColumns,
@@ -261,7 +259,7 @@ class VentaDataSource extends DataTableSource {
           DataCell(Text('${_user.farmacia}')),
           DataCell(Text('${_user.price}')),
           DataCell(Text('${_user.price}')),
-           DataCell(Text('${_user.precioOferta}')),
+          DataCell(Text('${_user.precioOferta}')),
         ]);
   }
 

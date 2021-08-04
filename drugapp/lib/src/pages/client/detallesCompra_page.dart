@@ -110,7 +110,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
         width: size.width,
         child: statusWidget,
       ),
-      footer(context),
+      // footer(context),
     ]);
   }
 

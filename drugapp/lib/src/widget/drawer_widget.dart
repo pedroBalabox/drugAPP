@@ -18,18 +18,19 @@ import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // var itemsMenu =
 //     '[{"icon": 61703, "title": "Inicio", "action": "/"}, {"icon": 62466, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi tienda", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
 
 var itemsMenu =
-    '[{"icon": 61703, "title": "Categorias", "action": "/categorias"}, {"icon": 62466, "title": "Producutos", "action": "/productos"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+    '[{"icon": 61703, "title": "Categorías", "action": "/categorias"}, {"icon": 62466, "title": "Productos", "action": "/productos"}, {"icon": 57948, "title": "Favoritos", "action": "/favoritos"}, {"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
 
 var itemsBottomMenu =
     '[{"icon": 61703, "title": "Ofertas", "action": "/productos"}, {"icon": 62466, "title": "Pedidos especiales", "action": "/productos"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas"}, {"icon": 62445, "title": "Pregunstas frecuentes", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
 
 var itemsMenuMobile =
-    '[{"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 61828, "title": "Ofertas", "action": "/productos"}, {"icon": 62466, "title": "Pedidos especiales", "action": "/miCuenta"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas"}, {"icon": 58173, "title": "Preguntas frecuentes", "action": "/preguntasFrecuentes"}, {"icon": 61821, "title": "Atención pacientes", "action": "/carrito"}, {"icon": 61821, "title": "Soporte pedidos", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
+    '[{"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta", "url": "false"}, {"icon": 61821, "title": "Carrito", "action": "/carrito", "url": "false"}, {"icon": 61828, "title": "Ofertas", "action": "/productos", "url": "false"}, {"icon": 62466, "title": "Pedidos especiales", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas", "url": "false"}, {"icon": 58173, "title": "Preguntas frecuentes", "action": "/preguntas-frecuentes", "url": "false"}, {"icon": 61821, "title": "Atención pacientes", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 61821, "title": "Soporte pedidos", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout", "url": "false"}]';
 
 class ResponsiveAppBar extends StatefulWidget {
   final screenWidht;
@@ -123,9 +124,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                   ),
                                 ),
                                 InkWell(
-                                  onTap: () =>
-                                      Navigator.pushNamed(context, '/miCuenta')
-                                          .then((value) => setState(() {})),
+                                  onTap: () => launch(
+                                      'https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido'),
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     child: Text(
@@ -151,9 +151,9 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                   ),
                                 ),
                                 InkWell(
-                                  onTap: () =>
-                                      Navigator.pushNamed(context, '/miCuenta')
-                                          .then((value) => setState(() {})),
+                                  onTap: () => Navigator.pushNamed(
+                                          context, '/preguntas-frecuentes')
+                                      .then((value) => setState(() {})),
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     child: Text(
@@ -166,9 +166,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                   ),
                                 ),
                                 InkWell(
-                                  onTap: () =>
-                                      Navigator.pushNamed(context, '/miCuenta')
-                                          .then((value) => setState(() {})),
+                                  onTap: () => launch(
+                                      'https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido'),
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     child: Text(
@@ -181,9 +180,8 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                   ),
                                 ),
                                 InkWell(
-                                  onTap: () =>
-                                      Navigator.pushNamed(context, '/miCuenta')
-                                          .then((value) => setState(() {})),
+                                  onTap: () => launch(
+                                      'https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido'),
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     child: Text(
@@ -225,11 +223,21 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                 title: Container(
                   child: Row(
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(0),
-                        height: 70,
-                        width: 70,
-                        child: getAsset('logoDrug.png', 0.0),
+                      InkWell(
+                        focusColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        overlayColor: MaterialStateColor.resolveWith(
+                            (states) => Colors.transparent),
+                        highlightColor: Colors.transparent,
+                        onTap: () => Navigator.pushNamedAndRemoveUntil(
+                            context, '/', (route) => false),
+                        child: Container(
+                          padding: EdgeInsets.all(0),
+                          height: 70,
+                          width: 70,
+                          child: getAsset('logoDrug.png', 0.0),
+                        ),
                       ),
                       SizedBox(
                         width: 7,
@@ -581,11 +589,21 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                   //     ],
                   //   ),
                   // ),
-                  Container(
-                    padding: EdgeInsets.all(5),
-                    height: 50,
-                    width: 55,
-                    child: getAsset('logoDrug.png', 0.0),
+                  InkWell(
+                    focusColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    overlayColor: MaterialStateColor.resolveWith(
+                        (states) => Colors.transparent),
+                    highlightColor: Colors.transparent,
+                    onTap: () => Navigator.pushNamedAndRemoveUntil(
+                        context, '/', (route) => false),
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      height: 50,
+                      width: 55,
+                      child: getAsset('logoDrug.png', 0.0),
+                    ),
                   )
                 ],
               ),
@@ -788,7 +806,8 @@ class _DrawerUserState extends State<DrawerUser> {
                               (menuIcon),
                               Colors.grey,
                               jsonMenu[index]['title'],
-                              jsonMenu[index]['action']);
+                              jsonMenu[index]['action'],
+                              jsonMenu[index]['url']);
                     },
                   ),
                 ),
@@ -797,7 +816,7 @@ class _DrawerUserState extends State<DrawerUser> {
   }
 
   Widget listMenu(BuildContext context, IconData iconMenu, Color colorIcon,
-      String titleMenu, String action) {
+      String titleMenu, String action, String url) {
     return ListTile(
         leading: Icon(iconMenu, color: colorIcon),
         title: Text(
@@ -825,10 +844,14 @@ class _DrawerUserState extends State<DrawerUser> {
               }),
             ).then((value) => setState(() {}));
           } else {
-            if (Uri.base.path != action) {
-              // print('ok');
-              Navigator.pushNamed(context, action)
-                  .then((value) => setState(() {}));
+            if (url == 'true') {
+              launchURL(action);
+            } else {
+              if (Uri.base.path != action) {
+                // print('ok');
+                Navigator.pushNamed(context, action)
+                    .then((value) => setState(() {}));
+              }
             }
           }
         });
