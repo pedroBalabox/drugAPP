@@ -4,6 +4,7 @@ import 'package:drugapp/src/service/sharedPref.dart';
 import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 ////// Data class.s
 class Vent {
@@ -115,14 +116,14 @@ class _TabVentasState extends State<TabVentas> {
                             width: MediaQuery.of(context).size.width / 6,
                             child: misVentas(),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(size.width > 850
-                                ? medPadding * .75
-                                : medPadding * .5),
-                            color: bgGrey,
-                            width: MediaQuery.of(context).size.width / 6,
-                            child: showResumenFinanciero(),
-                          ),
+                          // Container(
+                          //   padding: EdgeInsets.all(size.width > 850
+                          //       ? medPadding * .75
+                          //       : medPadding * .5),
+                          //   color: bgGrey,
+                          //   width: MediaQuery.of(context).size.width / 6,
+                          //   child: showResumenFinanciero(),
+                          // ),
                           footerVendedor(context),
                         ]),
                       ),
@@ -132,6 +133,11 @@ class _TabVentasState extends State<TabVentas> {
 
   misVentas() {
     return PaginatedDataTable(
+        actions: [
+          IconButton(
+              onPressed: () => _showYearMonthPicker(context),
+              icon: Icon(Icons.download))
+        ],
         // rowsPerPage: 7,
         header: MediaQuery.of(context).size.width > 700
             ? Row(
@@ -175,6 +181,83 @@ class _TabVentasState extends State<TabVentas> {
           });
         }
       }
+    }
+  }
+
+  Future<void> _showYearMonthPicker(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Descargar reporte de ventas',
+            style: TextStyle(color: Colors.black87),
+          ),
+          content: Container(
+            height: 80,
+            child: Column(
+              children: [
+                Container(
+                  child: Text(
+                      "Selecciona un mes y un año para descargar el reporte de ventas"),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                InkWell(
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Text("Seleccionar fecha"),
+                    ))
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: Text(
+                    'Cancelar',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showMonthPicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(DateTime.now().year - 10),
+        lastDate: DateTime(DateTime.now().year + 2));
+    if (picked != null) {
+      setState(() {
+        print(picked.month);
+        print(picked.year);
+        print(sharedPrefs.partnerUserToken);
+        launchURL('https://sandbox.app.drugsiteonline.com/report-store.php?DrJWT=' +
+            sharedPrefs.partnerUserToken+
+            "&farmacia_id=" +
+            jsonTienda[1]['farmacia_id'] +
+            "&year=" +
+            picked.year.toString() +
+            "&month=" +
+            picked.month.toString());
+        //bannerModel.fechaDeExposicion = DateFormat('yyyy-MM-dd').format(picked);
+      });
     }
   }
 

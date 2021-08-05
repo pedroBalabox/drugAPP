@@ -10,6 +10,7 @@ import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginVendedor extends StatefulWidget {
@@ -238,14 +239,17 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                   color: Colors.grey),
                             ),
                           ),
-                    widget.miTienda
-                        ? Container()
-                        : SizedBox(height: smallPadding * 1.25),
-                    widget.miTienda
-                        ? Container()
-                        : InkWell(
-                            onTap: () => Navigator.pushNamed(
-                                context, '/farmacia/registro/'),
+                    // widget.miTienda
+                    //     ? Container()
+                    //     : 
+                        SizedBox(height: smallPadding * 1.25),
+                    // widget.miTienda
+                    //     ? Container()
+                    //     : 
+                        InkWell(
+                            // onTap: () => Navigator.pushNamed(
+                            //     context, '/farmacia/registro/'),
+                            onTap: () => launchURL('https://app.drugsiteonline.com/farmacia/registro/'),
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
@@ -332,7 +336,8 @@ class _LoginVendedorState extends State<LoginVendedor> {
       key: formKey,
       child: Column(
         children: [
-          EntradaTexto(
+          EntradaTextoTest(
+            longMaxima: 100,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,

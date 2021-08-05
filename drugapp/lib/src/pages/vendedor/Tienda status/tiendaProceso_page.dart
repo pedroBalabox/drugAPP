@@ -196,6 +196,8 @@ class _TabProcesoState extends State<TabProceso> {
               ),
             ),
             SizedBox(height: smallPadding),
+            statusReview(),
+            SizedBox(height: smallPadding),
             formNuevaTienda(),
           ],
         ));
@@ -374,4 +376,26 @@ class _TabProcesoState extends State<TabProceso> {
       ),
     );
   }
+}
+
+Widget statusReview() {
+  return Container(
+      width: 170,
+      padding: EdgeInsets.all(smallPadding / 2),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Colors.blue[600].withOpacity(0.7)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.access_time_rounded, color: Colors.white, size: 17),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Esperando revisión',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ));
 }

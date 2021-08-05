@@ -870,7 +870,7 @@ class _TabProductosState extends State<TabProductos> {
         fdtImageURL = gallery[0]["url"];
       } else {
         fdtImageURL =
-            "https://sandbox.app.drugsiteonline.com/app/uploads/archivogtsOW2tQB7yv.png";
+            "https://app.drugsiteonline.com/product-dummy.png";
       }
     }
     /* if (ftdImage != null) {
