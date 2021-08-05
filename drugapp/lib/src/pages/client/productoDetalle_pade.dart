@@ -655,7 +655,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                       ),
                     ),
                     TextSpan(
-                      text: ' ${productModel.cantidadMayoreo} productos',
+                      text: '${productModel.cantidadMayoreo} productos',
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,

@@ -11,7 +11,9 @@ import 'package:drugapp/src/utils/navigation_handler.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -279,12 +281,37 @@ class _LoginPageState extends State<LoginPage> {
       key: formKey,
       child: Column(
         children: [
-          EntradaTexto(
+          // TextFormField(
+          //   decoration: InputDecoration(
+          //     labelText: "Email",
+          //     labelStyle: TextStyle(color: Colors.black),
+          //     // prefixIcon: Icon(
+          //     //   LineIcons.envelope,
+          //     //   color: Colors.black38,
+          //     // ),
+          //     enabledBorder: UnderlineInputBorder(
+          //       borderSide: BorderSide(color: Colors.black38),
+          //     ),
+          //     focusedBorder: UnderlineInputBorder(
+          //       borderSide: BorderSide(color: Colors.orange),
+          //     ),
+          //   ),
+          //   keyboardType: TextInputType.text,
+          //   style: TextStyle(color: Colors.black),
+          //   cursorColor: Colors.black,
+          //   // controller: emailInputController,
+          //   // validator: emailValidator,
+          //   inputFormatters: [
+          //     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]'))
+          //   ],
+          // ),
+          EntradaTextoTest(
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.none,
             tipo: 'correo',
+            longMaxima: 100,
             onChanged: (value) {
               setState(() {
                 correo = value;
@@ -292,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
             },
             onSaved: (value) {
               setState(() {
-                correo = value;
+                correo = value.trim();
               });
             },
           ),

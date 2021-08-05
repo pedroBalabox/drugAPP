@@ -337,6 +337,8 @@ class _TabRechazadaState extends State<TabRechazada> {
               ),
             ),
             SizedBox(height: smallPadding),
+            statusRejected(),
+            SizedBox(height: smallPadding),
             Text(
               'Toca para subir el logo de tu tienda',
               style: TextStyle(color: Colors.black54),
@@ -864,4 +866,26 @@ class _TabRechazadaState extends State<TabRechazada> {
       ],
     );
   }
+}
+
+Widget statusRejected() {
+  return Container(
+      width: 170,
+      padding: EdgeInsets.all(smallPadding / 2),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Colors.orange[600].withOpacity(0.7)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.close, color: Colors.white, size: 17),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Tienda rechazada',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ));
 }

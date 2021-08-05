@@ -38,7 +38,7 @@ class EntradaTextoTest extends StatefulWidget {
       this.tipoEntrada = TextInputType.name,
       this.onEditingComplete,
       this.formkey,
-      this.validacionStr = 'Campo olbigatorio',
+      this.validacionStr = 'Campo obligatorio',
       this.requerido = true,
       this.focusnode})
       : super(key: key);
@@ -100,7 +100,7 @@ class _EntradaTextoTestState extends State<EntradaTextoTest> {
       onFieldSubmitted: widget.onSub,
       decoration: widget.estilo,
       validator: widget.tipo == 'correo'
-          ? (input) => input.isValidEmail() ? null : "Ingresa un correo"
+          ? validateEmail
           : widget.requerido
               ? typeValidator
               : null,
@@ -132,4 +132,16 @@ extension EmailValidator on String {
             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(this);
   }
+}
+
+String validateEmail(String value) {
+  Pattern pattern =
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+      r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+      r"{0,253}[a-zA-Z0-9])?)*$";
+  RegExp regex = new RegExp(pattern);
+  if (!regex.hasMatch(value) || value == null)
+    return 'Ingresa un correo válido';
+  else
+    return null;
 }

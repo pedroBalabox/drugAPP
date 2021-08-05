@@ -3,6 +3,7 @@ import 'package:drugapp/src/utils/globals.dart';
 import 'package:drugapp/src/utils/theme.dart';
 import 'package:drugapp/src/widget/assetImage_widget.dart';
 import 'package:drugapp/src/widget/buttom_widget.dart';
+import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 
@@ -237,7 +238,8 @@ class _RegisterPageState extends State<RegisterPage> {
               });
             },
           ),
-          EntradaTexto(
+          EntradaTextoTest(
+            longMaxima: 100,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,
@@ -347,8 +349,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'second_lastname': second_lastname,
                   'mail': '$mail',
                   'password': '$password',
-
-                  /* 'type': 'client', */
+                  'type': 'client',
                   /* "perfil": 'perfilCliente', */
                 },
                 contenido: Text(

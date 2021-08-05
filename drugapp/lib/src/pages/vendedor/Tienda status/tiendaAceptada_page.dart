@@ -165,6 +165,12 @@ class _TabAceptadaState extends State<TabAceptada> {
               ),
             ),
             SizedBox(height: smallPadding),
+            statusApproved(),
+            SizedBox(height: smallPadding),
+            farmaciaModel.estatus_verificacion == 'not_verified'
+                ? Container()
+                : statusVerficado(),
+            SizedBox(height: smallPadding),
             Text(
               'Toca para cambiar el logo de tu tienda',
               style: TextStyle(color: Colors.black54),
@@ -415,4 +421,48 @@ class _TabAceptadaState extends State<TabAceptada> {
       ),
     );
   }
+}
+
+Widget statusVerficado() {
+  return Container(
+      width: 150,
+      padding: EdgeInsets.all(smallPadding / 2),
+      // decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(50),
+      //     color: Colors.green[600].withOpacity(0.7)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.star, color: Colors.orange[400], size: 17),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Tienda verificada',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ));
+}
+
+Widget statusApproved() {
+  return Container(
+      width: 150,
+      padding: EdgeInsets.all(smallPadding / 2),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Colors.green[600].withOpacity(0.7)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.check, color: Colors.white, size: 17),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Tienda Activa',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ));
 }

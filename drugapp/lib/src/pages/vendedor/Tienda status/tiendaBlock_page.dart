@@ -256,6 +256,8 @@ class _TabBlockState extends State<TabBlock> {
               ),
             ),
             SizedBox(height: smallPadding),
+            statusBlocked(),
+            SizedBox(height: smallPadding),
             formNuevaTienda(),
           ],
         ));
@@ -699,4 +701,26 @@ class _TabBlockState extends State<TabBlock> {
       ],
     );
   }
+}
+
+Widget statusBlocked() {
+  return Container(
+      width: 170,
+      padding: EdgeInsets.all(smallPadding / 2),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Colors.red[600].withOpacity(0.7)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.block_outlined, color: Colors.white, size: 17),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Tienda bloqueada',
+            style: TextStyle(color: Colors.white),
+          ),
+        ],
+      ));
 }
