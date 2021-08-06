@@ -798,7 +798,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   color: bgGrey,
                                   image: DecorationImage(
                                       image: NetworkImage(
-                                          'https://drugsiteonline.com/wp-content/uploads/2021/01/Servicio-1.jpeg'),
+                                          'https://sandbox.app.drugsiteonline.com/app/uploads/servicio2.jpeg'),
                                       fit: BoxFit.cover)),
                               width: double.infinity,
                               height: MediaQuery.of(context).size.width / 4,
@@ -826,7 +826,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   color: bgGrey,
                                   image: DecorationImage(
                                       image: NetworkImage(
-                                          'https://drugsiteonline.com/wp-content/uploads/2021/01/Servicio-4.jpeg'),
+                                          'https://sandbox.app.drugsiteonline.com/app/uploads/servicio2.jpeg'),
                                       fit: BoxFit.cover)),
                               width: double.infinity,
                               height: MediaQuery.of(context).size.width / 4,
