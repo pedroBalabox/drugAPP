@@ -1898,11 +1898,14 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                             fit: BoxFit.contain,
                             image: AssetImage("images/logoDrug.png"),
                           )
-                        : Image(
-                            fit: BoxFit.contain,
-                            image:
-                                NetworkImage(productoModel.galeria[0]['url']),
+                        : getNetworkImage(
+                            productoModel.galeria[0]['url'],
                           ),
+                    // : Image(
+                    //     fit: BoxFit.contain,
+                    //     image:
+                    //         NetworkImage(productoModel.galeria[0]['url']),
+                    //   ),
                     Align(
                         alignment: Alignment.topRight,
                         child: InkWell(

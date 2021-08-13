@@ -683,13 +683,20 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
           children: [
             Icon(
               Icons.local_shipping_outlined,
-              color: Theme.of(context).primaryColor,
+              color: productModel.envio_24_hrs == 'NO'
+                  ? Theme.of(context).primaryColor
+                  : Colors.green[400],
             ),
             SizedBox(width: smallPadding / 2),
             Flexible(
               child: Text(
-                'Recibe de 3 a 2 días hábiles a partir de tu compra',
-                style: TextStyle(color: Theme.of(context).primaryColor),
+                productModel.envio_24_hrs == 'NO'
+                    ? 'Recibe de 2 a 4 días hábiles a partir de tu compra'
+                    : 'Paga antes de las 15 hrs. y recibe en 24 hrs',
+                style: TextStyle(
+                    color: productModel.envio_24_hrs == 'NO'
+                        ? Theme.of(context).primaryColor
+                        : Colors.green[400]),
               ),
             )
           ],
@@ -933,8 +940,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
             itemCount: productModel.galeria.length,
             itemBuilder: (BuildContext context, int index) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3.0),
-              child: Image.network(productModel.galeria[index]['url'],
-                  fit: BoxFit.contain),
+              child: getNetworkImage(productModel.galeria[index]['url'],),
             ),
             autoplay: false,
             autoplayDelay: 5000,
@@ -1085,11 +1091,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                             fit: BoxFit.contain,
                             image: AssetImage("images/logoDrug.png"),
                           )
-                        : Image(
-                            fit: BoxFit.contain,
-                            image:
-                                NetworkImage(productoModel.galeria[0]['url']),
-                          ),
+                        :  getNetworkImage(productoModel.galeria[0]['url'],),
                     Align(
                         alignment: Alignment.topRight,
                         child: InkWell(

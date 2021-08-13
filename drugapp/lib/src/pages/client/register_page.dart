@@ -7,6 +7,13 @@ import 'package:drugapp/src/widget/input_widget.dart';
 import 'package:drugapp/src/widget/testRest.dart';
 import 'package:flutter/material.dart';
 
+class ClientType {
+  const ClientType(this.id, this.name);
+
+  final String name;
+  final String id;
+}
+
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key key}) : super(key: key);
 
@@ -22,6 +29,31 @@ class _RegisterPageState extends State<RegisterPage> {
   String mail;
   String password;
   String perfilCliente;
+
+  ClientType clientType;
+
+  List<ClientType> listaClientType = [];
+
+  @override
+  void initState() {
+    super.initState();
+    listaClientType.add(ClientType('general', 'Público en general'));
+    listaClientType.add(ClientType('general_doctor', 'Médico General'));
+    listaClientType.add(ClientType('specialist_doctor', 'Médico Especialista'));
+    listaClientType.add(ClientType('professional', 'Profesional de la salud'));
+    listaClientType.add(ClientType('general_pharmacy', 'Farmacia General'));
+    listaClientType
+        .add(ClientType('specialized_pharmacy', 'Farmacia especializada'));
+    listaClientType.add(ClientType('clinic', 'Clínica'));
+    listaClientType.add(ClientType('hospital', 'Hospital'));
+    listaClientType.add(ClientType('health_company', 'Empresa Sector Salud'));
+    listaClientType.add(ClientType('distributor', 'Distribuidor Farmacéutico'));
+    listaClientType.add(ClientType('wholesaler', 'Mayorista Farmacéutico'));
+    listaClientType.add(ClientType('retailer', 'Minorista Farmacéutico'));
+    listaClientType.add(ClientType('importer', 'Importadora'));
+    listaClientType.add(ClientType('marketer', 'Comercializadora'));
+    clientType = listaClientType[0];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +232,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Form(
       key: formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           EntradaTexto(
             estilo: inputPrimarystyle(
@@ -251,57 +284,159 @@ class _RegisterPageState extends State<RegisterPage> {
               });
             },
           ),
-
-          /* Drop down  */
-          DropdownButtonFormField<String>(
-            isExpanded: true,
-            hint: Text("Perfil Cliente"),
-            decoration: InputDecoration(
-              icon: Icon(Icons.store_outlined, color: Color(0xFF3F9FB1)),
-            ),
-            value: perfilCliente,
-            items: <String>[
-              'Paciente',
-              'Público en general',
-              'Médico General',
-              'Médico Especialista',
-              'Profesional de la Salud',
-              'Farmacia General',
-              'Farmacia Especializada',
-              'Clínica',
-              'Hospital',
-              'Empresa Sector Salud',
-              'Distribuidor Farmacéutico',
-              'Mayorista Farmacéutico',
-              'Minorista Farmacéutico',
-              'Importadora',
-              'Comercializadora'
-            ].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Container(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 7),
-                    child: Row(
-                      children: [
-                        /* Icon(Icons.store_outlined), */
-                        SizedBox(
-                          width: 7,
-                        ),
-                        Text("Perfil cliente: " + value.toString()),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-            onChanged: (String val) {
-              setState(() {
-                // tipoPersona = val;
-                perfilCliente = val;
-              });
-            },
+          SizedBox(
+            height: smallPadding / 2,
           ),
+          MediaQuery.of(context).size.width > 500
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: smallPadding,
+                    ),
+                    Icon(Icons.store_outlined, color: Color(0xFF3F9FB1)),
+                    SizedBox(
+                      width: smallPadding,
+                    ),
+                    Text(
+                      'Perfil de cliente',
+                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                    ),
+                    SizedBox(
+                      width: smallPadding,
+                    ),
+                    DropdownButton<ClientType>(
+                      value: clientType,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      iconSize: 15,
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.black87),
+                      underline: Container(
+                        height: 1,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onChanged: (ClientType newValue) {
+                        setState(() {
+                          clientType = newValue;
+                        });
+                      },
+                      items: listaClientType.map((ClientType type) {
+                        return new DropdownMenuItem<ClientType>(
+                          value: type,
+                          child: new Text(
+                            type.name,
+                            style: new TextStyle(color: Colors.black),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: smallPadding,
+                    ),
+                    Row(children: [
+                      SizedBox(
+                        width: smallPadding,
+                      ),
+                      Icon(Icons.store_outlined, color: Color(0xFF3F9FB1)),
+                      SizedBox(
+                        width: smallPadding,
+                      ),
+                      Text(
+                        'Perfil de cliente',
+                        style: TextStyle(color: Colors.black54, fontSize: 15),
+                      ),
+                      // SizedBox(
+                      //   width: smallPadding,
+                      // ),
+                    ]),
+                    DropdownButton<ClientType>(
+                      value: clientType,
+                      icon: const Icon(Icons.arrow_drop_down),
+                      iconSize: 15,
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.black87),
+                      underline: Container(
+                        height: 1,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onChanged: (ClientType newValue) {
+                        setState(() {
+                          clientType = newValue;
+                        });
+                      },
+                      items: listaClientType.map((ClientType type) {
+                        return new DropdownMenuItem<ClientType>(
+                          value: type,
+                          child: new Text(
+                            type.name,
+                            style: new TextStyle(color: Colors.black),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+          /* Drop down  */
+
+          // DropdownButtonFormField<String>(
+          //   isExpanded: true,
+          //   iconEnabledColor: Theme.of(context).primaryColor,
+          //   hint: Text(
+          //     "Selecciona una opción",
+          //   ),
+          //   decoration: InputDecoration(
+          //       // icon: Icon(Icons.store_outlined, color: Color(0xFF3F9FB1)),
+          //       ),
+          //   value: perfilCliente,
+          //   items: <String>[
+          //     'Paciente',
+          //     'Público en general',
+          //     'Médico General',
+          //     'Médico Especialista',
+          //     'Profesional de la Salud',
+          //     'Farmacia General',
+          //     'Farmacia Especializada',
+          //     'Clínica',
+          //     'Hospital',
+          //     'Empresa Sector Salud',
+          //     'Distribuidor Farmacéutico',
+          //     'Mayorista Farmacéutico',
+          //     'Minorista Farmacéutico',
+          //     'Importadora',
+          //     'Comercializadora'
+          //   ].map<DropdownMenuItem<String>>((String value) {
+          //     return DropdownMenuItem<String>(
+          //       value: value,
+          //       child: Container(
+          //         child: Padding(
+          //           padding: EdgeInsets.only(left: 7),
+          //           child: Row(
+          //             children: [
+          //               /* Icon(Icons.store_outlined), */
+          //               // SizedBox(
+          //               //   width: 7,
+          //               // ),
+          //               Text(value.toString()),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     );
+          //   }).toList(),
+          //   onChanged: (String val) {
+          //     setState(() {
+          //       // tipoPersona = val;
+          //       perfilCliente = val;
+          //     });
+          //   },
+          // ),
           EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.lock_outline, 'Contraseña', null),
@@ -350,6 +485,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   'mail': '$mail',
                   'password': '$password',
                   'type': 'client',
+                  'client_tag': clientType.id
                   /* "perfil": 'perfilCliente', */
                 },
                 contenido: Text(

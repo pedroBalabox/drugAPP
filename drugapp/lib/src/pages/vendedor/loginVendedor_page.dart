@@ -247,9 +247,9 @@ class _LoginVendedorState extends State<LoginVendedor> {
                     //     ? Container()
                     //     : 
                         InkWell(
-                            // onTap: () => Navigator.pushNamed(
-                            //     context, '/farmacia/registro/'),
-                            onTap: () => launchURL('https://app.drugsiteonline.com/farmacia/registro/'),
+                            onTap: () => Navigator.pushNamed(
+                                context, '/farmacia/registro/'),
+                            // onTap: () => launchURL('https://app.drugsiteonline.com/farmacia/registro/'),
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(

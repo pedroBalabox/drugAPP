@@ -46,7 +46,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Es el Marketplace de Productos para la Salud más grande del Mundo. Dentro de la Tienda Online encontrarás unicamente a las Marcas de Mayor acreditación y confianza en a nivel Global. Productos abastecidos directamente de Distribuidores Autorizados y por los Laboratorios Fabricantes regulados. Gracias a este Modelo digital, permite a los Usuarios comprar a un precio más económico que en Farmacias Comerciales, asi como la venta al Mayoreo para el Sector Salud. Al registrarte accederás a todas las categorías de Salud; Medicamentos genéricos y patentes de libre venta, alta especialidad y sustancias controladas. También a las categorías de Material de curación, Vacunas y Sueros Humanos, Equipo Médico, Instrumental así como insumos en Gral.',
+                'Es la marketplace de Productos para la Salud más grande del Mundo. El cual funciona bajo el modelo de”Safe Market” (Mercado Seguro). Lo cual significa que todas las transacciones realizadas mediante nuestra Tienda, tienen una trazabilidad y vigilancia por tratarse de fármacos y derivados.  Desde el Laboratorio fabricante hasta la entrega al Cliente final. Dentro de la Tienda Online encontrarás únicamente a las Marcas de Mayor acreditación y confianza en  nivel Global. Productos abastecidos directamente de Distribuidores Autorizados y por los Laboratorios Fabricantes regulados. Gracias a este Modelo digital, permite a los Usuarios comprar a un precio más económico que en Farmacias Comerciales, asi como la venta al Mayoreo para el Sector Salud. Al registrarte accederás a  todas las categorías de Salud; Medicamentos genéricos y patentes de libre venta, alta especialidad y sustancias controladas. También a las categorías de Material de Curación, Vacunas y Sueros Humanos, Equipo Médico, Instrumental así como insumos en Gral.',
                 style: TextStyle(fontSize: 15),
               ),
             )),
@@ -63,7 +63,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                       style: TextStyle(fontSize: 15, height: 1.5),
                     ),
                     Text(
-                      '• Encontrarás tu marcas de confianza y Laboratorios de Mayor acreditación a nivel Global',
+                      '• Encontrarás tu marcas de confianza y Laboratorios de Mayor acreditación  a nivel Global',
                       style: TextStyle(fontSize: 15),
                     ),
                     Text(
@@ -81,17 +81,17 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                   ],
                 ))),
         Accordion(
-          '¿Por qué son mas baratos los Productos en la tienda Drug?',
+          '¿Por qué son más baratos los productos en la tienda Drug?',
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Column(
                 children: [
                   Text(
-                    'Nuestra misión es que todo el Mundo pueda acceder a comprar productos para la Salud a precios razonables, sin incrementos desmedidos. Contribuyendo asi, al fortalecimiento de su Salud. ',
+                    'Nuestra misión es que todo el mundo pueda acceder a comprar productos para la Salud a precios razonables, sin incrementos desmedidos. Contribuyendo asi, al fortalecimiento de su salud.',
                     style: TextStyle(fontSize: 15),
                   ),
                   Text(
-                    'Sobre los precios; Los productos dentro de la tienda de Drug, son abastecidos directamente por los laboratorios y fabricantes, sumado a que al tener un modelo Digital podemos minimizar los gastos operativos, reduciendo significativamente con esto el Precio final para nuestros Usuario.',
+                    'Sobre los precios; Los productos dentro de la tienda de Drug, son abastecidos directamente por los laboratorios y fabricantes, sumado a que al tener un modelo Digital podemos minimizar los gastos operativos, reduciendo significativamente  con esto  el Precio final para nuestros Usuario.',
                     style: TextStyle(fontSize: 15),
                   )
                 ],
@@ -102,7 +102,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Actualmente Drug, opera con sucursales denominadas “Centros de Envío”. Sucursales en las cuales podrás recoger tus paquetes. No tenemos sucursales puntos de venta como farmacias.',
+                'Actualmente Drug, opera con sucursales denominadas “Centros de Envío”. Sucursales en las cuales podrás recoger tus paquetes. No tenemos sucursales ni puntos de venta como farmacias.',
                 style: TextStyle(fontSize: 15),
               )),
         ),
@@ -111,12 +111,12 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Recuerda que sin exepción, siempre dejaremos un Regalo para ti en cada Compra!',
+                'Recuerda que sin excepción, siempre dejaremos un Regalo para ti en cada Compra!',
                 style: TextStyle(fontSize: 15),
               )),
         ),
         Accordion(
-          '¿Cómo puedo comprar productos al mayoreo?',
+          '¿Cómo puedo comprar  productos al mayoreo?',
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
@@ -129,7 +129,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'En la tienda Online, podrá encontrar productos. Originales y con registro, en las siguientes categorías; Medicamentos patentes y genéricos, Controlados y de alta especialidad, Vacunas y sueros humanos, Materiales de curación , Estetica y Belleza, suplementos, medicina alternativa, medicina natural, y mucho más!',
+                'En la tienda Online, podrá encontrar productos. Originales y con registro, en las siguientes categorías; Medicamentos patentes y genéricos, Controlados y de alta especialidad, Vacunas y sueros humanos, Materiales de curación , Estética y Belleza, suplementos, medicina alternativa, medicina natural, y mucho más!',
                 style: TextStyle(fontSize: 15),
               )),
         ),
@@ -138,7 +138,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Es un servicio premium, en el cual tienes grandes beneficios, el principal de ellos es que puedes programar tu médicamento para que se te envíe a la puerta de tu casa mes con mes y nunca te quedes sin completar tus tratamientos. Conoce más de los beneficios de este servicio Llamando al 5550150667.',
+                'Es un servicio premium, en el cual tienes grandes beneficios, el principal de ellos es que puedes programar tu medicamento para que se te envíe a la puerta de tu casa mes con mes y nunca te quedes sin completar tus tratamientos. Conoce más de los beneficios de este servicio Llamando al 5550150667.',
                 style: TextStyle(fontSize: 15),
               )),
         ),
@@ -169,7 +169,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Comprar en Drug es muy fácil y seguro, sólo debes:',
+                      'Comprar en Drug es muy fácil y seguro, sólo debes:s',
                       style: TextStyle(fontSize: 15),
                     ),
                     Text(
@@ -181,11 +181,11 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                       style: TextStyle(fontSize: 15),
                     ),
                     Text(
-                      '• Una vez que has elegido los productos que necesitas, finalizas tu compra dando clic en “Comprar Ahora” ',
+                      '• Una vez que has elegido los productos que necesitas, finalizas tu compra dando clic en “Comprar Ahora”',
                       style: TextStyle(fontSize: 15),
                     ),
                     Text(
-                      '• Seleccionas la forma de pago que más te convenga',
+                      '• Seleccione la forma de pago que más te convenga',
                       style: TextStyle(fontSize: 15),
                     ),
                     Text(
@@ -199,20 +199,20 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                   ],
                 ))),
         Accordion(
-          '¿Que es Abasto Express de Drug?',
+          '¿Qué es Abasto Express de Drug?',
           Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: RichText(
                 text: TextSpan(
                   text:
-                      'En Drug somos consientes de la importancia de necesitar un producto para la salud de Urgencia. Es por ello que ponemos a su disposición nuestro servicio de ',
+                      'En Drug somos conscientes de la importancia de necesitar un producto para la salud de Urgencia. Es por ello que ponemos a su disposición nuestro servicio de ',
                   children: const <TextSpan>[
                     TextSpan(
                         text: '”Abasto Express”. ',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     TextSpan(
                         text:
-                            'Es un un equipo de profesionales que se encarga de localizar tu producto con el Laboratorio, Marca fabricante o con las Tiendas afiliadas a Drug. Poniendolo a tu disposición en el menor tiempo posible hasta tu domicilio. Resolviendo en un Plazo no mayor a 30 minutos.'),
+                            'Es un un equipo de profesionales que se encarga de localizar tu producto con el Laboratorio, Marca fabricante o con las Tiendas afiliadas a Drug. Poniéndolo a tu disposición en el menor tiempo posible hasta tu domicilio. Resolviendo en un plazo no mayor a 30 minutos. '),
                   ],
                 ),
               )),
@@ -224,20 +224,20 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
               child: RichText(
                 text: TextSpan(
                   text:
-                      'Drug agrega de manera periódica nuevos productos que salen a la venta, en caso de no tener el producto que estás buscando puedes pedirlo a nuestra área de ',
+                      'Drug agrega de manera periódica nuevos productos que salen a la venta, en caso de no tener el producto que estás buscando puedes pedirlo a nuestra área de ',
                   children: const <TextSpan>[
                     TextSpan(
                         text: 'Abasto Express. ',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     TextSpan(
                         text:
-                            'Nosotros intentaremos conseguirlo directo con el Laboratorio Fabricante, Distribuidores autorizados o tiendas afiliadas en Drug.  Siempre y cuando no sea un producto en desabasto, descontinuado o prohibido y se encuentre aprobado para su distribución en el País de solicitud, si ese es el caso te lo comunicaremos lo antes posible. Resolviendo en un Plazo no mayor a 30 minutos.')
+                            'Nosotros intentaremos conseguirlo directamente con el Laboratorio Fabricante, Distribuidores autorizados o tiendas afiliadas en Drug.  Siempre y cuando no sea un producto en desabasto, descontinuado o prohibido y se encuentre aprobado para su distribución en el País de solicitud, si ese es el caso te lo comunicaremos lo antes posible. Resolviendo en un plazo no mayor a 30 minutos.')
                   ],
                 ),
               )),
         ),
         Accordion(
-            '¿Cuáles son los Horarios de Servicio y Reparto?',
+            '¿Cuáles son los horarios de servicio y reparto?',
             Container(
                 padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 child: Column(
@@ -265,7 +265,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                         children: const <TextSpan>[
                           TextSpan(
                               text:
-                                  'Puedes levantar un pedido Directo a nuestra linea teléfonica Express de lunes a domingo en un horario de 08:00 – 19:00hrs',
+                                  'Puedes levantar un pedido Directo a nuestra línea telefónica Express de lunes a domingo en un horario de 08:00 – 19:00 hrs',
                               style: TextStyle(fontWeight: FontWeight.normal)),
                         ],
                       ),
@@ -278,7 +278,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                         children: const <TextSpan>[
                           TextSpan(
                               text:
-                                  'En Drug contamos con 2 tipos de tiempos de entrega. Recibe en 24hrs realizando tu pago antes de las 16:00hrs. Y entregas de 3-5 días hábiles para los pedidos Programados.',
+                                  'En Drug contamos con 2 tipos de tiempos de entrega. Recibe en 24 hrs realizando tu pago antes de las 16:00hrs. Y entregas de 3-5 días hábiles para los pedidos programados.',
                               style: TextStyle(fontWeight: FontWeight.normal)),
                         ],
                       ),
@@ -290,7 +290,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Sólo debes entrar a tu cuenta con los datos con los que te registraste en Drug, dirigete al detalle de tu compra, ahí podrás visulizar toda la Información sobre tu Envío. O si lo prefieres puedes ponerte en contacto con nosotros mediante un, estro Whatsapp Oficial correo info@drugsiteonline.com o línea de atención a clientes 5550150667 donde con gusto te resolvemos.',
+                'Sólo debes entrar a tu cuenta con los datos con los que te registraste en Drug, dirígete al detalle de tu compra, ahí podrás visualizar toda la Información sobre tu Envío. O si lo prefieres puedes ponerte en contacto con nosotros mediante un, estro Whatsapp Oficial correo info@drugsiteonline.com o línea de atención a clientes 5550150667 donde con gusto te resolvemos.',
                 style: TextStyle(fontSize: 15),
               ),
             )),
@@ -299,7 +299,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Puedes acceder al Precio de Mayoreo, comprando a partir de 10 piezas, cualquier producto. Este lo prodras visualizar al seleccionar cualquier producto.',
+                'Puedes acceder al Precio de Mayoreo, comprando a partir de 10 piezas, cualquier producto. Este lo podrás visualizar al seleccionar cualquier producto.',
                 style: TextStyle(fontSize: 15),
               ),
             )),
@@ -312,7 +312,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Si deseas cancelar tu pedido porfavor comunícate con nosotros mediante chat, correo info@drugsiteonline.com línea de atención a clientes 5550150667, donde con gusto te ayudaremos. En caso de hayas hecho tu pago por medio electrónico no te preocupes, procederemos a hacer tu devolución correspondiente.',
+                      'Si deseas cancelar tu pedido por favor comunícate con nosotros mediante chat, correo info@drugsiteonline.com línea de atención a clientes 5550150667, donde con gusto te ayudaremos. En caso de que hayas hecho tu pago por medio electrónico no te preocupes, procederemos a hacer tu devolución correspondiente.',
                       style: TextStyle(fontSize: 15),
                     ),
                     RichText(
@@ -335,25 +335,25 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                '¡Claro! Es la manera más fácil y rápido de hacerlo, así no tendrás que preocuparte por el efectivo, ten la confianza de que contamos con el mejor sistema de seguridad anti fraudes. Y trabajamos con Bancos Internacionales de Confianza como lo es BBVA, SANTANDER y AFIRME.',
+                ' ¡Claro! Es la manera más fácil y rápida de hacerlo, así no tendrás que preocuparte por el efectivo, ten la confianza de que contamos con el mejor sistema de seguridad anti fraudes. Y trabajamos con Bancos Internacionales de Confianza como lo es BBVA, SANTANDER y AFIRME.',
                 style: TextStyle(fontSize: 15),
               ),
             )),
         Accordion(
-            '¿Ingresé mal mi dirección, que hago?',
+            '¿Ingresé mal mi dirección, qué hago?',
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Contacta INMEDIATAMENTE a nuestro equipo de solución de Servicios al 5550150667donde con gusto te resolver y direccionar tu Paquete.',
+                ' Contacta INMEDIATAMENTE a nuestro equipo de solución de Servicios al 5550150667 donde con gusto te resolver y direccionar tu Paquete.',
                 style: TextStyle(fontSize: 15),
               ),
             )),
         Accordion(
-            '¿Porque me estan pidiendo Fotografía de mi  Identificación Oficial y Receta?',
+            '¿Por qué me estan pidiendo Fotografía de mi Identificación Oficial y Receta?',
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Drug* es una empresa regulada y apegada a las normas de Abasto y dispensación de productos para la Salud de cada País. Es por ello que vigilamos la trazabilidad del producto desde la Fabricación hasta la Información del Cliente. Evitando así cualquier intento de Fraude o Consumos ilegales. Es por eso que a los Usuarios se les Solicita su Receta vigente y su identificación Oficial, las cuales en caso de una Investigación por parte de las Autoridades , estamos obligados a presentar. ',
+                'Drug* es una empresa regulada y apegada a las normas de Abasto y dispensación de productos para la Salud de cada País. Es por ello que vigilamos la trazabilidad del producto desde la fabricación hasta la información del cliente. Evitando así cualquier intento de Fraude o Consumos ilegales. Es por eso que a los Usuarios se les Solicita su Receta vigente y su identificación Oficial, las cuales en caso de una Investigación por parte de las Autoridades , estamos obligados a presentar.',
                 style: TextStyle(fontSize: 15),
               ),
             )),
@@ -367,11 +367,11 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
               ),
             )),
         Accordion(
-            '¿Cómo contacto con un Representante de Drug?',
+            '¿Cómo contactar con un Representante de Drug?',
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Para tu comodidad tenemos múltiples formas de contacto: Línea directa.5550150667. correo infi@drugsiteonline.com. Whatsapp 556702609',
+                'Para tu comodidad tenemos múltiples formas de contacto: Línea directa.5550150667. correo info@drugsiteonline.com. Whatsapp 5567026709',
                 style: TextStyle(fontSize: 15),
               ),
             )),
@@ -380,7 +380,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Con el fin de poder reportar oportunamente eventos adversos con algún medicamento te pedimos des aviso inmediato a nuestra linea de atención 5550150667. O Directamente a la Cofepris en México. 8000335050',
+                'Con el fin de poder reportar oportunamente eventos adversos con algún medicamento te pedimos lo notifiques  inmediatamente a nuestra línea de atención 5550150667. O Directamente a la Cofepris en México. 8000335050',
                 style: TextStyle(fontSize: 15),
               ),
             )),
@@ -389,7 +389,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
             Container(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               child: Text(
-                'Si eres un Laboratorio , Marca o Distribuidor autorizado y regulado. Envia tu solicitud a info@drugsiteonline.com con el asunto. Solicitud de apertura de tienda. Y nuestro Categoty Manager te atenderá.',
+                'Envía tu solicitud a info@drugsiteonline.com con el asunto. Solicitud de apertura de tienda. Y nuestro Category Manager te atenderá.',
                 style: TextStyle(fontSize: 15),
               ),
             )),

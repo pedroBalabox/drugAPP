@@ -197,9 +197,9 @@ class _BodyHomeMobileState extends State<BodyHomeMobile>
                             : Colors.grey,
                       )),
                   Tab(
-                      text: 'Categorías',
+                      text: 'Productos',
                       icon: Icon(
-                        Icons.category_outlined,
+                        Icons.medication_outlined,
                         size: 27,
                         color: _tabController.index == 2
                             ? Theme.of(context).primaryColor
@@ -239,8 +239,19 @@ class _BodyHomeMobileState extends State<BodyHomeMobile>
                 "title": "Productos favoritos"
               }),
             ),
-            CategoriaPage(
+            ProductView(
               showAppBar: false,
+              jsonData: ProductosDetallesArguments({
+                "farmacia_id": null,
+                "userQuery": null,
+                "favoritos": false,
+                "availability": null,
+                "stock": "available",
+                "priceFilter": null,
+                "myLabels": [],
+                "myCats": [],
+                "title": "Productos"
+              }),
             ),
             TabCompras(),
           ],
@@ -624,7 +635,17 @@ class _BodyHomeState extends State<BodyHome> {
                                         .then((value) => getProductos()),
                                   ),
                                 ),
-                                Flexible(flex: 2, child: Container()),
+                                Flexible(
+                                  flex: 2,
+                                  child: HomeInfoCard(
+                                    title: 'Ofertas',
+                                    image: 'drug3.jpg',
+                                    nav: () => Navigator.pushNamed(
+                                            context, '/productos')
+                                        .then((value) => setState(() {}))
+                                        .then((value) => getProductos()),
+                                  ),
+                                ),
                               ]),
                             ],
                           ),
@@ -848,7 +869,7 @@ class _BodyHomeState extends State<BodyHome> {
                     ),
                   ),
                   SizedBox(
-                    height: medPadding,
+                    height: medPadding + smallPadding,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
@@ -1125,11 +1146,7 @@ class _BodyHomeState extends State<BodyHome> {
                             fit: BoxFit.contain,
                             image: AssetImage("images/logoDrug.png"),
                           )
-                        : Image(
-                            fit: BoxFit.contain,
-                            image:
-                                NetworkImage(productoModel.galeria[0]['url']),
-                          ),
+                        : getNetworkImage(productoModel.galeria[0]['url']),
                     Align(
                         alignment: Alignment.topRight,
                         child: InkWell(
@@ -1447,7 +1464,7 @@ Widget footterWidget(context) {
                   sobreDrug(),
                   ayudaSoporte(),
                   alianza(context),
-                  atencion(),
+                  atencion(context),
                   druginfo(false)
                 ],
               )
@@ -1462,7 +1479,7 @@ Widget footterWidget(context) {
                       SizedBox(height: medPadding),
                       alianza(context),
                       SizedBox(height: medPadding),
-                      atencion(),
+                      atencion(context),
                       SizedBox(height: medPadding),
                       druginfo(true)
                     ],
@@ -1485,7 +1502,7 @@ Widget footterWidget(context) {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           alianza(context),
-                          atencion(),
+                          atencion(context),
                         ],
                       ),
                       SizedBox(height: medPadding),
@@ -1653,7 +1670,7 @@ Widget alianza(context) {
       ));
 }
 
-Widget atencion() {
+Widget atencion(context) {
   return miInfoFootter(
       'Atención global',
       Column(
@@ -1661,7 +1678,9 @@ Widget atencion() {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           textInputActio(null, Text('Centros de Envíos Drug')),
-          textInputActio(null, Text('Proguntas Frecuentes')),
+          textInputActio(
+              () => Navigator.pushNamed(context, '/preguntas-frecuentes'),
+              Text('Preguntas Frecuentes')),
           textInputActio(
               () => launchURL(
                   'https://drugsiteonline.com/terminos-y-condiciones/'),
@@ -1697,7 +1716,7 @@ druginfo(bool center) {
           textInputActio(() => launchURL("mailto:info@drugsiteonline.com"),
               Text('info@drugsiteonline.com')),
           textInputActio(
-              () => launchURL("tel:+34678567876"), Text('+52 55333993829'))
+              () => launchURL("tel:+525550150667"), Text('+52 5550150667'))
         ],
       )
     ],

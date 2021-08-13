@@ -30,7 +30,7 @@ var itemsBottomMenu =
     '[{"icon": 61703, "title": "Ofertas", "action": "/productos"}, {"icon": 62466, "title": "Pedidos especiales", "action": "/productos"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas"}, {"icon": 62445, "title": "Pregunstas frecuentes", "action": "/miTienda"}, {"icon": 61821, "title": "Carrito", "action": "/carrito"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout"}]';
 
 var itemsMenuMobile =
-    '[{"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta", "url": "false"}, {"icon": 61821, "title": "Carrito", "action": "/carrito", "url": "false"}, {"icon": 61828, "title": "Ofertas", "action": "/productos", "url": "false"}, {"icon": 62466, "title": "Pedidos especiales", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas", "url": "false"}, {"icon": 58173, "title": "Preguntas frecuentes", "action": "/preguntas-frecuentes", "url": "false"}, {"icon": 61821, "title": "Atención pacientes", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 61821, "title": "Soporte pedidos", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout", "url": "false"}]';
+    '[{"icon": 62445, "title": "Mi cuenta", "action": "/miCuenta", "url": "false"}, {"icon": 61821, "title": "Carrito", "action": "/carrito", "url": "false"}, {"icon": 61828, "title": "Productos", "action": "/productos", "url": "false"}, {"icon": 61828, "title": "Ofertas", "action": "/productos", "url": "false"}, {"icon": 61239, "title": "Categorías", "action": "/categorias", "url": "false"}, {"icon": 62466, "title": "Pedidos especiales", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 57948, "title": "Tiendas", "action": "/tiendas", "url": "false"}, {"icon": 58173, "title": "Preguntas frecuentes", "action": "/preguntas-frecuentes", "url": "false"}, {"icon": 61821, "title": "Atención pacientes", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 61821, "title": "Soporte pedidos", "action": "https://api.whatsapp.com/send?phone=525567026709&text=Quiero%20realizar%20un%20Pedido", "url": "true"}, {"icon": 63627, "title": "Cerrar sesión", "action": "/logout", "url": "false"}]';
 
 class ResponsiveAppBar extends StatefulWidget {
   final screenWidht;
@@ -739,6 +739,9 @@ class _DrawerUserState extends State<DrawerUser> {
                           break;
                         case 'Ofertas':
                           menuIcon = (Icons.local_offer_outlined);
+                          break;
+                        case 'Categorías':
+                          menuIcon = (Icons.category_outlined);
                           break;
                         case 'Pedidos especiales':
                           menuIcon = (Icons.star_outline);
