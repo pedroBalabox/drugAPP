@@ -218,7 +218,7 @@ class _ProductoViewPageState extends State<ProductoViewPage> {
                   productoModel.galeria.length == 0
                       ? Image(
                           fit: BoxFit.contain,
-                          image: AssetImage("images/logoDrug.png"),
+                          image: AssetImage("images/productPH.jpeg"),
                         )
                       : Image(
                           fit: BoxFit.contain,
@@ -645,7 +645,7 @@ class _ProductoViewPageState extends State<ProductoViewPage> {
             Flexible(
               flex: 2,
               child: prodjson.galeria.length == 0
-                  ? getAsset('logoDrug.png', 60)
+                  ? getAsset('images/productPH.jpeg', 60)
                   : Image.network(prodjson.galeria[0]['url']),
             ),
             Flexible(

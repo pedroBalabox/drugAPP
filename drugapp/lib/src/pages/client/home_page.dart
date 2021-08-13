@@ -41,7 +41,12 @@ class _HomeClientState extends State<HomeClient> {
     AuthManager.instance.homeFunction().then((value) {
       if (value != 'load') {
         try {
-          Navigator.pushNamed(context, value).then((value) => setState(() {}));
+          if (value.contains('registro')) {
+            Navigator.pushNamedAndRemoveUntil(context, value, (route) => false);
+          } else {
+            Navigator.pushNamed(context, value)
+                .then((value) => setState(() {}));
+          }
         } catch (e) {
           Navigator.pushNamed(context, '/login')
               .then((value) => setState(() {}));
@@ -639,7 +644,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   flex: 2,
                                   child: HomeInfoCard(
                                     title: 'Ofertas',
-                                    image: 'drug3.jpg',
+                                    image: 'clientbg.png',
                                     nav: () => Navigator.pushNamed(
                                             context, '/productos')
                                         .then((value) => setState(() {}))
@@ -957,7 +962,7 @@ class _BodyHomeState extends State<BodyHome> {
                                       context,
                                       Icons.local_shipping_outlined,
                                       'Envios a todo México',
-                                      'Recibe tu pedido de 2 a 3 días hábiles.')),
+                                      'Recibe tu pedido de 2 a 4 días hábiles.')),
                               Flexible(
                                   child: cardInfoDrug(
                                       context,
@@ -979,7 +984,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   context,
                                   Icons.local_shipping_outlined,
                                   'Envios a todo México',
-                                  'Recibe tu pedido de 2 a 3 días hábiles.'),
+                                  'Recibe tu pedido de 2 a 4 días hábiles.'),
                               cardInfoDrug(
                                   context,
                                   Icons.payment_outlined,
@@ -1144,9 +1149,10 @@ class _BodyHomeState extends State<BodyHome> {
                     productoModel.galeria.length == 0
                         ? Image(
                             fit: BoxFit.contain,
-                            image: AssetImage("images/logoDrug.png"),
+                            image: AssetImage("images/productPH.jpeg"),
                           )
-                        : getNetworkImage(productoModel.galeria[0]['url']),
+                        : getNetworkProductImage(
+                            productoModel.galeria[0]['url']),
                     Align(
                         alignment: Alignment.topRight,
                         child: InkWell(
@@ -1691,7 +1697,7 @@ Widget atencion(context) {
           textInputActio(
               () =>
                   launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
-              Text('Aviso de Provacidad'))
+              Text('Aviso de Privacidad'))
         ],
       ));
 }

@@ -411,31 +411,42 @@ class _AccordionState extends State<Accordion> {
   bool _showContent = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: ListView(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            ListTile(
-              title: Text(
-                widget.title,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              trailing: IconButton(
-                icon: Icon(
-                  _showContent ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                  color: Theme.of(context).primaryColor,
-                ),
-                onPressed: () {
+    return Container(
+      child: Card(
+        margin: EdgeInsets.all(10),
+        child: ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              InkWell(
+                onTap: () {
                   setState(() {
                     _showContent = !_showContent;
                   });
                 },
+                child: ListTile(
+                  title: Text(
+                    widget.title,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(
+                      _showContent
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_drop_down,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showContent = !_showContent;
+                      });
+                    },
+                  ),
+                ),
               ),
-            ),
-            _showContent ? widget.content : Container()
-          ]),
+              _showContent ? widget.content : Container()
+            ]),
+      ),
     );
   }
 }

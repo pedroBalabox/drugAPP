@@ -427,7 +427,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                 )),
             estilo: estiloBotonPrimary,
             action: () =>
-                launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                launchURL(baseFrontUrl+'/farmacia/login'),
           )
         ],
       ),
@@ -528,7 +528,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -623,7 +623,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -721,7 +721,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -817,7 +817,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -1376,7 +1376,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                       )),
                   estilo: estiloBotonPrimary,
                   action: () => launchURL(
-                      'https://app.drugsiteonline.com/farmacia/login'),
+                      baseFrontUrl+'/farmacia/login'),
                 )
                 // Align(
                 //   alignment: Alignment.bottomCenter,

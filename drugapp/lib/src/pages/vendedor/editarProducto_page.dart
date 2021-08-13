@@ -505,7 +505,7 @@ class _EditarProductoState extends State<EditarProducto> {
                 child: jsonGallery[index]['type'] == null
                     // ? Image.network("${jsonGallery[index]['url']}",
                     //     fit: BoxFit.cover)
-                    ? getNetworkImage("${jsonGallery[index]['url']}")
+                    ? getNetworkProductImage("${jsonGallery[index]['url']}")
                     : Image.memory(base64Decode(jsonGallery[index]['path']),
                         fit: BoxFit.cover)),
             InkWell(

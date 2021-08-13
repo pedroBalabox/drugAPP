@@ -66,9 +66,9 @@ class _RegisterPageState extends State<RegisterPage> {
         shadowColor: Colors.transparent,
         backgroundColor: MediaQuery.of(context).size.width < 700
             ? Theme.of(context).primaryColor
-            : Colors.white.withOpacity(0.3),
+            : Colors.white.withOpacity(0.0),
         title: Text(
-          'Registro',
+          '',
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -84,13 +84,13 @@ class _RegisterPageState extends State<RegisterPage> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/coverMed.png',
+                                'images/clientbg.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
                               ),
                               Opacity(
-                                  opacity: 0.3,
+                                  opacity: 0.6,
                                   child: Image.asset('images/coverColor.png',
                                       width: double.maxFinite,
                                       height: 400,
@@ -148,16 +148,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   Flexible(
                     fit: FlexFit.loose,
-                    flex: 6,
+                    flex: 5,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/coverMed.png',
+                        'images/clientbg.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
                       ),
                       Opacity(
-                          opacity: 0.3,
+                          opacity: 0.6,
                           child: Image.asset('images/coverColor.png',
                               width: double.maxFinite,
                               height: 400,
@@ -453,7 +453,7 @@ class _RegisterPageState extends State<RegisterPage> {
           SizedBox(height: medPadding),
           InkWell(
             onTap: () =>
-                Navigator.pushNamed(context, '/aviso-de-privacidad/client/'),
+                launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
@@ -570,8 +570,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/aviso-de-privacidad/client/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -581,8 +580,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/terminos-y-condiciones/client/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
                       ),
                     ),
                   ],

@@ -58,13 +58,13 @@ class _LoginPageState extends State<LoginPage> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/coverMed.png',
+                                'images/clientbg.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
                               ),
                               Opacity(
-                                  opacity: 0.3,
+                                  opacity: 0.6,
                                   child: Image.asset('images/coverColor.png',
                                       width: double.maxFinite,
                                       height: 400,
@@ -125,13 +125,13 @@ class _LoginPageState extends State<LoginPage> {
                     flex: 5,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/coverMed.png',
+                        'images/clientbg.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
                       ),
                       Opacity(
-                          opacity: 0.3,
+                          opacity: 0.6,
                           child: Image.asset('images/coverColor.png',
                               width: double.maxFinite,
                               height: 400,
@@ -252,8 +252,7 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientWhite,
                                   mainText: 'Aviso de privacidad',
                                   textWhite: false,
-                                  pressed: () => Navigator.pushNamed(
-                                      context, '/aviso-de-privacidad/client/'),
+                                  pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
                                 ),
                               ),
                               Flexible(
@@ -264,8 +263,7 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientBlueLight,
                                   mainText: 'Condiciones de uso',
                                   textWhite: true,
-                                  pressed: () => Navigator.pushNamed(context,
-                                      '/terminos-y-condiciones/client/'),
+                                  pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
                                 ),
                               ),
                             ],
@@ -445,8 +443,7 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/aviso-de-privacidad/client/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -456,8 +453,7 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/terminos-y-condiciones/client/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
                       ),
                     ),
                   ],

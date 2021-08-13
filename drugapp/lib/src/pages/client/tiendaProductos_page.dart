@@ -595,7 +595,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 )),
             estilo: estiloBotonPrimary,
             action: () =>
-                launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                launchURL(baseFrontUrl+'/farmacia/login'),
           )
         ],
       ),
@@ -697,7 +697,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -792,7 +792,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -891,7 +891,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -988,7 +988,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     )),
                 estilo: estiloBotonPrimary,
                 action: () =>
-                    launchURL('https://app.drugsiteonline.com/farmacia/login'),
+                    launchURL(baseFrontUrl+'/farmacia/login'),
               )
             ],
           ),
@@ -1571,7 +1571,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                             )),
                         estilo: estiloBotonPrimary,
                         action: () => launchURL(
-                            'https://app.drugsiteonline.com/farmacia/login'),
+                            baseFrontUrl+'/farmacia/login'),
                       )
                 // Align(
                 //   alignment: Alignment.bottomCenter,
@@ -1896,9 +1896,9 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     productoModel.galeria.length == 0
                         ? Image(
                             fit: BoxFit.contain,
-                            image: AssetImage("images/logoDrug.png"),
+                            image: AssetImage("images/productPH.jpeg"),
                           )
-                        : getNetworkImage(
+                        : getNetworkProductImage(
                             productoModel.galeria[0]['url'],
                           ),
                     // : Image(

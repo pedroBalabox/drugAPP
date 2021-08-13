@@ -50,7 +50,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                             height: 150,
                             child: Stack(children: [
                               Image.asset(
-                                'images/coverDrug.png',
+                                'images/storebg.png',
                                 fit: BoxFit.cover,
                                 width: double.maxFinite,
                                 height: 400,
@@ -118,7 +118,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                     flex: 6,
                     child: Stack(fit: StackFit.expand, children: [
                       Image.asset(
-                        'images/coverDrug.png',
+                        'images/storebg.png',
                         fit: BoxFit.cover,
                         width: double.maxFinite,
                         height: 400,
@@ -267,7 +267,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
           SizedBox(height: medPadding),
           InkWell(
             onTap: () =>
-                Navigator.pushNamed(context, '/aviso-de-privacidad/vendor/'),
+                launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
@@ -379,8 +379,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/aviso-de-privacidad/vendor/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -390,8 +389,7 @@ class _RegisterVendedorState extends State<RegisterVendedor> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/terminos-y-condiciones/vendor/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
                       ),
                     ),
                   ],

@@ -639,7 +639,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
             Flexible(
               flex: 2,
               child: prodjson['galeria'].length == 0
-                  ? getAsset('logoDrug.png', 60)
+                  ? getAsset('images/productPH.jpeg', 60)
                   : getNetworkImage(prodjson['galeria'][0]['url']),
             ),
             Flexible(

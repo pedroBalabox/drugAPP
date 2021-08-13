@@ -935,12 +935,14 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
 
   productSwiper() {
     return productModel.galeria.length == 0
-        ? Image.asset('images/logoDrug.png')
+        ? Image.asset('images/productPH.jpeg')
         : Swiper(
             itemCount: productModel.galeria.length,
             itemBuilder: (BuildContext context, int index) => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 3.0),
-              child: getNetworkImage(productModel.galeria[index]['url'],),
+              child: getNetworkProductImage(
+                productModel.galeria[index]['url'],
+              ),
             ),
             autoplay: false,
             autoplayDelay: 5000,
@@ -1089,9 +1091,11 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                     productoModel.galeria.length == 0
                         ? Image(
                             fit: BoxFit.contain,
-                            image: AssetImage("images/logoDrug.png"),
+                            image: AssetImage("images/productPH.jpeg"),
                           )
-                        :  getNetworkImage(productoModel.galeria[0]['url'],),
+                        : getNetworkProductImage(
+                            productoModel.galeria[0]['url'],
+                          ),
                     Align(
                         alignment: Alignment.topRight,
                         child: InkWell(
@@ -1403,17 +1407,11 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                 width: 100,
                                 height: 100,
                                 // margin: EdgeInsets.only(top: 0, bottom: 10),
-                                decoration: new BoxDecoration(
-                                  // color: Colors.grey.withOpacity(0.4),
-                                  // borderRadius: BorderRadius.circular(100),
-                                  image: DecorationImage(
-                                    image: productModel.galeria.length == 0
-                                        ? AssetImage('images/logoDrug.png')
-                                        : NetworkImage(
-                                            productModel.galeria[0]['url']),
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
+                                child: productModel.galeria.length == 0
+                                    ? Image.asset('images/productPH.jpeg')
+                                    : getNetworkProductImage(
+                                        productModel.galeria[0]['url'],
+                                      ),
                               ),
                             ),
                           ],
@@ -1540,8 +1538,8 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                             Container(
                                 height: MediaQuery.of(context).size.height / 12,
                                 child: productModel.galeria.length == 0
-                                    ? Image.asset('images/logoDrug.png')
-                                    : getNetworkImage(
+                                    ? Image.asset('images/productPH.jpeg')
+                                    : getNetworkProductImage(
                                         productModel.galeria[0]['url'],
                                       )),
                             SizedBox(width: 10),

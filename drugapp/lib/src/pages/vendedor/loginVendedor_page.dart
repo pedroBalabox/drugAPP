@@ -90,7 +90,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                   height: 150,
                                   child: Stack(children: [
                                     Image.asset(
-                                      'images/coverDrug.png',
+                                      'images/storebg.png',
                                       fit: BoxFit.cover,
                                       width: double.maxFinite,
                                       height: 400,
@@ -164,7 +164,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                           flex: 6,
                           child: Stack(fit: StackFit.expand, children: [
                             Image.asset(
-                              'images/coverDrug.png',
+                              'images/storebg.png',
                               fit: BoxFit.cover,
                               width: double.maxFinite,
                               height: 400,
@@ -307,8 +307,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                   gcolor: gradientWhite,
                                   mainText: 'Aviso de privacidad',
                                   textWhite: false,
-                                  pressed: () => Navigator.pushNamed(
-                                      context, '/aviso-de-privacidad/vendor/'),
+                                  pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
                                 ),
                               ),
                               Flexible(
@@ -319,8 +318,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                                   gcolor: gradientBlueLight,
                                   mainText: 'Condiciones de uso',
                                   textWhite: true,
-                                  pressed: () => Navigator.pushNamed(context,
-                                      '/terminos-y-condiciones/vendor/'),
+                                  pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
                                 ),
                               ),
                             ],
@@ -459,8 +457,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/aviso-de-privacidad/vendor/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -470,8 +467,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => Navigator.pushNamed(
-                            context, '/terminos-y-condiciones/vendor/'),
+                        pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
                       ),
                     ),
                   ],
