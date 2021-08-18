@@ -68,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ? Theme.of(context).primaryColor
             : Colors.white.withOpacity(0.0),
         title: Text(
-          '',
+          'Registro',
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -544,7 +544,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Text('Productos para la Salud, en un solo lugar.',
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                    fontSize: constraints.maxWidth < 800 ? 17 : 26,
                     fontWeight: FontWeight.w100,
                     color: Colors.white)),
           ),
@@ -554,7 +554,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Text('Todas tus marcas de confianza.',
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                          fontSize: constraints.maxWidth < 800 ? 17 : 26,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
                 ),

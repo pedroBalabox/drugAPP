@@ -222,9 +222,7 @@ class _NewPassState extends State<NewPass> {
             : SizedBox(
                 height: smallPadding,
               ),
-        !exito
-            ? Container()
-            : Padding(
+        Padding(
                 padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
                 child: BotonRestTest(
                     habilitado: habilitado,
@@ -252,6 +250,7 @@ class _NewPassState extends State<NewPass> {
                       setState(() {
                         exito = true;
                       });
+                      Navigator.pushNamedAndRemoveUntil(context, "login", (route) => false);
                     },
                     errorStyle: TextStyle(
                       color: Colors.red[700],

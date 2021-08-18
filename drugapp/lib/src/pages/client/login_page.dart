@@ -345,8 +345,8 @@ class _LoginPageState extends State<LoginPage> {
             child: BotonRest(
                 primerAction: () {
                   formKey.currentState.save();
-                  print(correo);
-                  print(password);
+                  //print(correo);
+                  //print(password);
                 },
                 url: '$apiUrl/login',
                 method: 'post',
@@ -417,7 +417,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Text('Productos para la Salud, en un solo lugar.',
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                    fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                    fontSize: constraints.maxWidth < 800 ? 17 : 26,
                     fontWeight: FontWeight.w100,
                     color: Colors.white)),
           ),
@@ -427,7 +427,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text('Todas tus marcas de confianza.',
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                          fontSize: constraints.maxWidth < 800 ? 17 : 30,
+                          fontSize: constraints.maxWidth < 800 ? 17 : 26,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
                 ),
@@ -469,7 +469,7 @@ class _LoginPageState extends State<LoginPage> {
         .restService(
             '', '${urlApi}perfil/usuario', sharedPrefs.clientToken, 'get')
         .then((value) {
-      print(value);
+      //print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);

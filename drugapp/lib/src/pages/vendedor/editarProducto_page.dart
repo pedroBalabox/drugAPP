@@ -122,7 +122,7 @@ class _EditarProductoState extends State<EditarProducto> {
           jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
           loadProduct = false;
         });
-        print(productData[0]['nombre']);
+        //print(productData[0]['nombre']);
         getCate();
       } else {
         setState(() {
@@ -261,7 +261,7 @@ class _EditarProductoState extends State<EditarProducto> {
         .then((value) {
       if (value['status'] != 'server_true') {
         var productosResp = value['response'];
-        print(productosResp);
+        //print(productosResp);
       }
     });
   }

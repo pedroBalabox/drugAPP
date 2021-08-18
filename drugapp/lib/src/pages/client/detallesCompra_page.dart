@@ -43,7 +43,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
       prod = orden['relaciones'];
       load = false;
     });
-    print(prod);
+    //print(prod);
   }
 
   gerCompras() async {
@@ -59,7 +59,7 @@ class _DetallesCompraState extends State<DetallesCompra> {
         setState(() {
           orden = dataResp['details'];
         });
-        print('----' + orden.toString());
+        //print('----' + orden.toString());
         getPrducts();
       } else {
         setState(() {

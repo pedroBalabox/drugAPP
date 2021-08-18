@@ -43,6 +43,8 @@ class _HomeClientState extends State<HomeClient> {
         try {
           if (value.contains('registro')) {
             Navigator.pushNamedAndRemoveUntil(context, value, (route) => false);
+          } else if(value.contains('RecuperarClave')) {
+            Navigator.pushNamedAndRemoveUntil(context, value, (route) => false);
           } else {
             Navigator.pushNamed(context, value)
                 .then((value) => setState(() {}));
@@ -376,7 +378,7 @@ class _BodyHomeState extends State<BodyHome> {
               int.parse(banner0['posicion']) >= int.parse(banner1['posicion'])
                   ? 1
                   : 0);
-          print(banner);
+          //print(banner);
           loadBanner = false;
         });
         getProductos();
@@ -403,7 +405,7 @@ class _BodyHomeState extends State<BodyHome> {
             sharedPrefs.clientToken, 'post')
         .then((value) {
       if (value['status'] == 'server_true') {
-        print('okkk');
+        //print('okkk');
         var dataResp = value['response'];
         dataResp = jsonDecode(dataResp)[1]['results'];
         setState(() {
@@ -644,7 +646,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   flex: 2,
                                   child: HomeInfoCard(
                                     title: 'Ofertas',
-                                    image: 'clientbg.png',
+                                    image: 'ofertas.jpeg',
                                     nav: () => Navigator.pushNamed(
                                             context, '/productos')
                                         .then((value) => setState(() {}))
@@ -800,7 +802,7 @@ class _BodyHomeState extends State<BodyHome> {
                       horizontal: medPadding / 2 + smallPadding,
                     ),
                     child: Text(
-                      'NUESTROS ENVIOS',
+                      'NUESTROS ENVÍOS',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: Colors.black,
@@ -823,8 +825,8 @@ class _BodyHomeState extends State<BodyHome> {
                               decoration: BoxDecoration(
                                   color: bgGrey,
                                   image: DecorationImage(
-                                      image: NetworkImage(
-                                          'https://sandbox.app.drugsiteonline.com/app/uploads/servicio2.jpeg'),
+                                      image: AssetImage(
+                                          'images/mismodia.jpg'),
                                       fit: BoxFit.cover)),
                               width: double.infinity,
                               height: MediaQuery.of(context).size.width / 4,
@@ -851,8 +853,8 @@ class _BodyHomeState extends State<BodyHome> {
                               decoration: BoxDecoration(
                                   color: bgGrey,
                                   image: DecorationImage(
-                                      image: NetworkImage(
-                                          'https://sandbox.app.drugsiteonline.com/app/uploads/servicio2.jpeg'),
+                                      image: AssetImage(
+                                          'images/enviostodomexico.jpg'),
                                       fit: BoxFit.cover)),
                               width: double.infinity,
                               height: MediaQuery.of(context).size.width / 4,
@@ -896,7 +898,7 @@ class _BodyHomeState extends State<BodyHome> {
                       horizontal: medPadding / 2 + smallPadding,
                     ),
                     child: Text(
-                      'Trabajamos con los laboratorios y las marcas más importnantes a nivel mundial.',
+                      'Trabajamos con los laboratorios y las marcas más importantes a nivel Mundial.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Colors.black45,
@@ -911,7 +913,7 @@ class _BodyHomeState extends State<BodyHome> {
                       horizontal: medPadding / 2 + smallPadding,
                     ),
                     child: Text(
-                      'Más de 300 empresas con los más altos estándares de calidad mundial, avalados por la COFEPRIS',
+                      'Más de 300 empresas con los más altos estándares de calidad mundial, avalados por la COFEPRIS.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Theme.of(context).accentColor,
@@ -961,7 +963,7 @@ class _BodyHomeState extends State<BodyHome> {
                                   child: cardInfoDrug(
                                       context,
                                       Icons.local_shipping_outlined,
-                                      'Envios a todo México',
+                                      'Envíos a todo México',
                                       'Recibe tu pedido de 2 a 4 días hábiles.')),
                               Flexible(
                                   child: cardInfoDrug(
@@ -983,7 +985,7 @@ class _BodyHomeState extends State<BodyHome> {
                               cardInfoDrug(
                                   context,
                                   Icons.local_shipping_outlined,
-                                  'Envios a todo México',
+                                  'Envíos a todo México',
                                   'Recibe tu pedido de 2 a 4 días hábiles.'),
                               cardInfoDrug(
                                   context,

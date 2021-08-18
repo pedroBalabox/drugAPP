@@ -284,7 +284,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                                     BorderRadius.circular(0)),
                                             hintStyle: TextStyle(),
                                             hintText:
-                                                'Búsca por nombre, sintomas y más...',
+                                                'Busca por nombre, sintomas y más...',
                                             fillColor: Colors.white,
                                             hoverColor: Colors.white,
                                             filled: true),
@@ -524,7 +524,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                         borderRadius: BorderRadius.circular(0)),
                                     hintStyle: TextStyle(),
                                     hintText:
-                                        'Búsca por nombre sintomas y más...',
+                                        'Busca por nombre sintomas y más...',
                                     hoverColor: Colors.white,
                                     fillColor: Colors.white,
                                     filled: true),
@@ -994,7 +994,7 @@ class _DrawerUserState extends State<DrawerUser> {
 //                                         borderRadius: BorderRadius.circular(0)),
 //                                     hintStyle: TextStyle(),
 //                                     hintText:
-//                                         'Búsca una medicina, sítnoma o farmacia...',
+//                                         'Busca una medicina, sítnoma o farmacia...',
 //                                     fillColor: Colors.white,
 //                                     filled: true),
 //                               ),
@@ -1120,7 +1120,7 @@ class _DrawerUserState extends State<DrawerUser> {
 //                                   borderRadius: BorderRadius.circular(0)),
 //                               hintStyle: TextStyle(),
 //                               hintText:
-//                                   'Búsca una medicina, sítnoma o farmacia...',
+//                                   'Busca una medicina, sítnoma o farmacia...',
 //                               fillColor: Colors.white,
 //                               filled: true),
 //                         ),

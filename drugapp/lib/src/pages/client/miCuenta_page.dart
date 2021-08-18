@@ -759,7 +759,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                 errorString = error.message.toString();
               });
               Navigator.pop(context);
-              print(error.toString());
+              //print(error.toString());
             }
 
             return AlertDialog(
@@ -1056,7 +1056,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
         Text(
-          'Accede los dato y solicita una cotización.',
+          'Accede los datos y solicita una cotización.',
           style: TextStyle(
               color: Colors.black45, fontWeight: FontWeight.w600, fontSize: 15),
         ),
@@ -1175,7 +1175,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
               setState(() {
                 contactMail = value;
               });
-              print(contactMail);
+              //print(contactMail);
             },
           ),
           SizedBox(height: medPadding),
@@ -1200,7 +1200,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                   "correo": contactMail
                 },
                 action: (value) {
-                  print(value);
+                  //print(value);
                 },
                 showSuccess: true,
                 contenido: Text(

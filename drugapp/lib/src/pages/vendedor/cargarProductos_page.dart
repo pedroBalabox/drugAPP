@@ -227,7 +227,7 @@ class _CargarProductosState extends State<CargarProductos> {
                 BotonSimple(
                     action: () {
                       launchURL(
-                          "https://app.drugsiteonline.com/descargas/plantilla_productos_drug.csv");
+                          "${baseFrontUrl}/descargas/plantilla_productos_drug.csv");
                     },
                     estilo: estiloBotonPrimary,
                     contenido: Text(

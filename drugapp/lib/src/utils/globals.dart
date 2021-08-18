@@ -9,12 +9,12 @@ import 'package:url_launcher/url_launcher.dart';
 var isSandbox = true;
 
 var apiUrl = isSandbox
-    ? 'https://sandbox.app.drugsiteonline.com'
-    : 'https://api.production.drugsiteonline.com';
+    ? 'https://sandbox.api.drugmexico.com'
+    : 'https://api.drugmexico.com';
 
 var baseFrontUrl = isSandbox
-    ? 'https://sandboxfront.app.drugsiteonline.com'
-    : 'https://app.drugsiteonline.com';
+    ? 'https://sandbox.drugmexico.com'
+    : 'https://drugmexico.com';
 
 messageToUser(key, String message) {
   final snackBar = SnackBar(content: Text(message));
@@ -51,9 +51,15 @@ var dummyDocs =
     '{"avi_func": "active", "act_cons": "active", "comp_dom": "active", "ine": "active", "ced_fis": "rejected"}';
 
 var giroFarmacia = [
-  'Farmacia de medicamentos',
-  'Farmacia productos ',
-  'Farmacia especializada'
+  'Farmacia',
+  'Farmacia Especializada',
+  'Laboratorio',
+  'Marca',
+  'Mayorista',
+  'Minorista',
+  'Importadora',
+  'Comercializadora',
+  'Distribuidor'
 ];
 
 Widget footer(context) {
@@ -154,7 +160,7 @@ isJson(string) {
     jsonDecode(jsonString);
     decodeSucceeded = true;
   } catch (err) {
-    print("Error en la respuesta: " + err.toString());
+    //print("Error en la respuesta: " + err.toString());
   }
   return decodeSucceeded;
 }

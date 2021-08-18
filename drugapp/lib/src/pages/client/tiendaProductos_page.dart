@@ -158,7 +158,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      print("Resumed");
+      //print("Resumed");
     }
   }
 
@@ -166,15 +166,15 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
     setState(() {
       _catalogBloc = CatalogBloc();
       _catalogBloc.sendEvent.add(GetCatalogEvent());
-      print("Primero" + newJsonData.toString());
+      //print("Primero" + newJsonData.toString());
       sharedPrefs.init().then((value) {
         if (storeExist) {
           if (newJsonData['farmacia_id'] != null) {
-            print("Will get farm");
+            //print("Will get farm");
             getFarmacia();
           } else {
-            print("Wont");
-            print("Aquí va" + newJsonData['farmacia'].toString());
+            //print("Wont");
+            //print("Aquí va" + newJsonData['farmacia'].toString());
             getCate();
           }
         } else {
@@ -396,7 +396,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
               newJsonData = widget.jsonData.jsonData;
               newJsonData["farmacia"] = jsonTienda[1];
               newJsonData["farmacia_id"] = famaciaID;
-              print("ID de farmacia: " + newJsonData["farmacia"].toString());
+              //print("ID de farmacia: " + newJsonData["farmacia"].toString());
               loadData();
             });
           } else if (value['message'] ==
@@ -2207,7 +2207,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               Container(
                                 child: Flexible(
                                   child: Text(
-                                    '¡Ve la farmacia ${miFarmacia['nombre']} en Drug! https://app.drugsiteonline.com/productos-tienda/${miFarmacia['farmacia_id'].toString()}/',
+                                    '¡Ve la farmacia ${miFarmacia['nombre']} en Drug! ${baseFrontUrl}/productos-tienda/${miFarmacia['farmacia_id'].toString()}/',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                   ),
@@ -2217,7 +2217,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                                   action: () {
                                     Clipboard.setData(ClipboardData(
                                         text:
-                                            "¡Ve la famrmacia ${miFarmacia['nombre']} en Drug! https://app.drugsiteonline.com/productos-tienda/${miFarmacia['farmacia_id'].toString()}/"));
+                                            "¡Ve la famrmacia ${miFarmacia['nombre']} en Drug! ${baseFrontUrl}/productos-tienda/${miFarmacia['farmacia_id'].toString()}/"));
                                   },
                                   contenido: Text(
                                     'Copiar',

@@ -199,7 +199,7 @@ class _TabRechazadaState extends State<TabRechazada> {
         '/farmacia/miTienda/',
         ModalRoute.withName('/farmacia/miCuenta'),
       ).then((value) => setState(() {}));
-      // print(jsonDetalles['avi_func']['status']);
+      // print(""); //Debugprint-- print(jsonDetalles['avi_func']['status']);
     });
   }
 

@@ -83,13 +83,13 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
         .restService(arrayData, '$apiUrl/obtener/producto',
             sharedPrefs.clientToken, 'post')
         .then((value) {
-      print(value);
+      //print(value);
       if (value['status'] == 'server_true') {
         var dataResp = value['response'];
         dataResp = jsonDecode(dataResp);
         setState(() {
           prod = dataResp;
-          print('*****' + prod[1].length.toString());
+          //print('*****' + prod[1].length.toString());
           if (prod[1].length == 0) {
             load = false;
             error = true;
@@ -126,7 +126,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
             sharedPrefs.clientToken, 'post')
         .then((value) {
       if (value['status'] == 'server_true') {
-        print('okkk');
+        //print('okkk');
         var dataResp = value['response'];
         dataResp = jsonDecode(dataResp)[1]['results'];
         setState(() {
@@ -1566,7 +1566,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                               Container(
                                 child: Flexible(
                                   child: Text(
-                                    '¡Ve ${producto.nombre} en Drug! https://app.drugsiteonline.com/detalles/producto/${producto.idDeProducto}',
+                                    '¡Ve ${producto.nombre} en Drug! ${baseFrontUrl}/detalles/producto/${producto.idDeProducto}',
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                   ),
@@ -1576,7 +1576,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                   action: () {
                                     Clipboard.setData(ClipboardData(
                                         text:
-                                            "¡Ve ${producto.nombre} en Drug! https://app.drugsiteonline.com/detalles/producto/${producto.idDeProducto}"));
+                                            "¡Ve ${producto.nombre} en Drug! ${baseFrontUrl}/detalles/producto/${producto.idDeProducto}"));
                                   },
                                   contenido: Text(
                                     'Copiar',

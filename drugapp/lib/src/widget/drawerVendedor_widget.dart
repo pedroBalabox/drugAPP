@@ -95,7 +95,7 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                     //                 borderRadius: BorderRadius.circular(0)),
                     //             hintStyle: TextStyle(),
                     //             hintText:
-                    //                 'Búsca una medicina, sítnoma o farmacia...',
+                    //                 'Busca una medicina, sítnoma o farmacia...',
                     //             fillColor: Colors.white,
                     //             filled: true),
                     //       ),
@@ -229,7 +229,7 @@ class _ResponsiveAppBarVendedorState extends State<ResponsiveAppBarVendedor> {
                 //               borderRadius: BorderRadius.circular(0)),
                 //           hintStyle: TextStyle(),
                 //           hintText:
-                //               'Búsca una medicina, sítnoma o farmacia...',
+                //               'Busca una medicina, sítnoma o farmacia...',
                 //           fillColor: Colors.white,
                 //           filled: true),
                 //     ),

@@ -41,7 +41,7 @@ Future<bool> validateClientToken() async {
   await  rest
         .restService('', '${urlApi}perfil/usuario', clientToken, 'get')
         .then((value) {
-      print(value);
+      //print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);
@@ -74,7 +74,7 @@ Future<bool> validateVendorToken() async {
   await  rest
         .restService('', '${urlApi}perfil/usuario', clientToken, 'get')
         .then((value) {
-      print(value);
+      //print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);

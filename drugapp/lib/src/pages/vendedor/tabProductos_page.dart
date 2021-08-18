@@ -207,11 +207,11 @@ class _TabProductosState extends State<TabProductos> {
   }
 
   getProductos() async {
-    print('***' + jsonTienda[1]['farmacia_id']);
+    //print('***' + jsonTienda[1]['farmacia_id']);
     // setState(() {
     //   load = true;
     // });
-    print(stock);
+    //print(stock);
     var arrayData = {
       "farmacia_id": jsonTienda[1]['farmacia_id'],
       "userQuery": userQuery,
@@ -396,7 +396,7 @@ class _TabProductosState extends State<TabProductos> {
                                     ],
                                   ),
                                   /* MultiSelectBottomSheetField(
-                                      searchHint: 'Búscar...',
+                                      searchHint: 'Buscar...',
                                       cancelText: Text('Cancelar'),
                                       confirmText: Text('Seleccionar'),
                                       decoration: BoxDecoration(
@@ -606,7 +606,7 @@ class _TabProductosState extends State<TabProductos> {
                                         j++) {
                                       myCats.add(_selectedCat2[j].id);
                                     }
-                                    print('------' + myCats.length.toString());
+                                    //print('------' + myCats.length.toString());
                                     loadProd = true;
                                     getProductos();
                                   });
@@ -808,7 +808,7 @@ class _TabProductosState extends State<TabProductos> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Búscar producto...',
+            hintText: 'Buscar producto...',
             fillColor: bgGrey,
             filled: true),
       ),
@@ -816,7 +816,7 @@ class _TabProductosState extends State<TabProductos> {
   }
 
   listProducts() {
-    print(prod[0].length);
+    //print(prod[0].length);
     return prod[0].length == 0
         ? Container(
             height: MediaQuery.of(context).size.height,
@@ -870,13 +870,13 @@ class _TabProductosState extends State<TabProductos> {
         fdtImageURL = gallery[0]["url"];
       } else {
         fdtImageURL =
-            "https://app.drugsiteonline.com/product-dummy.png";
+            "${baseFrontUrl}/product-dummy.png";
       }
     }
     /* if (ftdImage != null) {
       ftdImage = prod['galeria'][0]['url'];
     } else {
-      ftdImage = "https://sandbox.app.drugsiteonline.com/app/uploads/dummy.jpg";
+      ftdImage = "https://sandbox.api.drugmexico.com/app/uploads/dummy.jpg";
     } */
     ProductModel productModel = ProductModel();
     productModel = ProductModel.fromJson(prod);

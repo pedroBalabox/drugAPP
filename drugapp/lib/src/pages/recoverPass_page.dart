@@ -133,7 +133,7 @@ class _RecoverPassState extends State<RecoverPass> {
             formkey: formKey,
             arrayData: {"mail": correo, "type": widget.tipoUser},
             contenido: Text(
-              'Enviar link de restblecimiento',
+              'Enviar link de restablecimiento',
               textAlign: TextAlign.center,
               overflow: TextOverflow.fade,
               style: TextStyle(

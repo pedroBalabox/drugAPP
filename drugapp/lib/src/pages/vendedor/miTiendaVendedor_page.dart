@@ -67,7 +67,7 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
         .restService('', '${urlApi}obtener/mi-farmacia',
             sharedPrefs.partnerUserToken, 'get')
         .then((value) {
-      print('-----');
+      //print('-----');
       setState(() {
         jsonTienda = jsonDecode(value['response']);
         if (jsonTienda.length == 1) {
@@ -123,7 +123,7 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
                 errorString = error.message.toString();
               });
               Navigator.pop(context);
-              print(error.toString());
+              //print(error.toString());
             }
 
             return AlertDialog(

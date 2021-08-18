@@ -207,7 +207,7 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                                     ],
                                   ),
                                   MultiSelectBottomSheetField(
-                                      searchHint: 'Búscar...',
+                                      searchHint: 'Buscar...',
                                       cancelText: Text('Cancelar'),
                                       confirmText: Text('Seleccionar'),
                                       decoration: BoxDecoration(
@@ -367,7 +367,7 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                           ),
                           SizedBox(height: smallPadding),
                           MultiSelectBottomSheetField(
-                            searchHint: 'Búscar...',
+                            searchHint: 'Buscar...',
                             cancelText: Text('Cancelar'),
                             confirmText: Text('Seleccionar'),
                             decoration: BoxDecoration(
@@ -444,7 +444,7 @@ class _CategoriaProductosState extends State<CategoriaProductos> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Búscar producto...',
+            hintText: 'Buscar producto...',
             fillColor: Colors.white,
             filled: true),
       ),

@@ -16,7 +16,7 @@ class Auth0Manager extends AuthManager {
         productionMode: false,
       );
     } catch (e) {
-      print(e.toString());
+      //print(e.toString());
       deviceSessionId = "error";
     }
     return deviceSessionId;

@@ -220,7 +220,7 @@ class _LobbyClientState extends State<LobbyClient> {
                 (Route<dynamic> route) => false);
         break;
       case '/farmacia/miCuenta':
-        print('ok' + clientAuth.toString());
+        //print('ok' + clientAuth.toString());
         clientAuth
             ? Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => MiCuentaVendedor()),

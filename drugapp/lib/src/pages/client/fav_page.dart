@@ -406,7 +406,7 @@ class _FavClientState extends State<FavClient> {
           listType: MultiSelectListType.CHIP,
           items: _items,
           initialValue: _selectedCat,
-          onConfirm: (values) => print(values),
+          //onConfirm: (values) => //print(values),
         );
       },
     );

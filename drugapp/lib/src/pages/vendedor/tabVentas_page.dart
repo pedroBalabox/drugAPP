@@ -245,10 +245,10 @@ class _TabVentasState extends State<TabVentas> {
         lastDate: DateTime(DateTime.now().year + 2));
     if (picked != null) {
       setState(() {
-        print(picked.month);
-        print(picked.year);
-        print(sharedPrefs.partnerUserToken);
-        launchURL('https://sandbox.app.drugsiteonline.com/report-store.php?DrJWT=' +
+        //print(picked.month);
+        //print(picked.year);
+        //print(sharedPrefs.partnerUserToken);
+        launchURL(apiUrl+'/report-store.php?DrJWT=' +
             sharedPrefs.partnerUserToken+
             "&farmacia_id=" +
             jsonTienda[1]['farmacia_id'] +

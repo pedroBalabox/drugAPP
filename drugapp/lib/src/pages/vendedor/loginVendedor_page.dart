@@ -249,7 +249,6 @@ class _LoginVendedorState extends State<LoginVendedor> {
                         InkWell(
                             onTap: () => Navigator.pushNamed(
                                 context, '/farmacia/registro/'),
-                            // onTap: () => launchURL('https://app.drugsiteonline.com/farmacia/registro/'),
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
@@ -483,7 +482,7 @@ class _LoginVendedorState extends State<LoginVendedor> {
         .restService(
             '', '${urlApi}perfil/usuario', sharedPrefs.partnerUserToken, 'get')
         .then((value) {
-      print(value);
+      //print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);

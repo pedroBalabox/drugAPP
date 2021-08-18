@@ -18,7 +18,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
   @override
   void initState() {
     super.initState();
-    print('----' + widget.ruta);
+    //print('----' + widget.ruta);
     /* print("La ruta es: "+widget.ruta); */
     validateVendorToken().then((value) {
       if (value == 'null') {
@@ -45,7 +45,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
             (Route<dynamic> route) => false);
         break;
       case '/farmacia/login':
-        print("Farmacia Login");
+        //print("Farmacia Login");
         clientAuth
             ? Navigator.pushNamedAndRemoveUntil(
                 context, '/farmacia/miCuenta', (route) => false)
@@ -62,7 +62,7 @@ class _LobbyVendorState extends State<LobbyVendor> {
                 (Route<dynamic> route) => false);
         break;
       case '/farmacia/miCuenta':
-        print('ok' + clientAuth.toString());
+        //print('ok' + clientAuth.toString());
         clientAuth
             ? Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => MiCuentaVendedor()),
@@ -98,8 +98,6 @@ class _LobbyVendorState extends State<LobbyVendor> {
                 context, '/farmacia/login', (route) => false);
         break;
       default:
-        print("Shit happens");
-
         if (clientAuth) {
           Navigator.of(context).pushNamed('/farmacia/miTienda/');
         } else {

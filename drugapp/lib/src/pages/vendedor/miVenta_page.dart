@@ -252,7 +252,7 @@ class VentaDataSource extends DataTableSource {
         index: index, // DONT MISS THIS
         onSelectChanged: (bool value) {
           // _dialogCall(_context, _user.categoria_id, _user);
-          print(value);
+          //print(value);
         },
         cells: <DataCell>[
           DataCell(Text('${_user.name}')),
