@@ -206,7 +206,7 @@ class _TiendasPageState extends State<TiendasPage> {
               // ),
             ),
             Flexible(
-                flex: 3,
+                flex: 2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

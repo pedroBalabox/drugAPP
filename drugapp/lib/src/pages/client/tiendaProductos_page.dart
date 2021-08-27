@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:pagination_view/pagination_view.dart';
@@ -594,8 +595,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                   color: Colors.white,
                 )),
             estilo: estiloBotonPrimary,
-            action: () =>
-                launchURL(baseFrontUrl+'/farmacia/login'),
+            action: () => launchURL(baseFrontUrl + '/farmacia/login'),
           )
         ],
       ),
@@ -696,8 +696,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       color: Colors.white,
                     )),
                 estilo: estiloBotonPrimary,
-                action: () =>
-                    launchURL(baseFrontUrl+'/farmacia/login'),
+                action: () => launchURL(baseFrontUrl + '/farmacia/login'),
               )
             ],
           ),
@@ -791,8 +790,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       color: Colors.white,
                     )),
                 estilo: estiloBotonPrimary,
-                action: () =>
-                    launchURL(baseFrontUrl+'/farmacia/login'),
+                action: () => launchURL(baseFrontUrl + '/farmacia/login'),
               )
             ],
           ),
@@ -890,8 +888,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       color: Colors.white,
                     )),
                 estilo: estiloBotonPrimary,
-                action: () =>
-                    launchURL(baseFrontUrl+'/farmacia/login'),
+                action: () => launchURL(baseFrontUrl + '/farmacia/login'),
               )
             ],
           ),
@@ -987,8 +984,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                       color: Colors.white,
                     )),
                 estilo: estiloBotonPrimary,
-                action: () =>
-                    launchURL(baseFrontUrl+'/farmacia/login'),
+                action: () => launchURL(baseFrontUrl + '/farmacia/login'),
               )
             ],
           ),
@@ -1022,6 +1018,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           MediaQuery.of(context).size.width > 900
               ? Container()
               : Container(
+                  height: 50,
                   decoration: BoxDecoration(boxShadow: [
                     BoxShadow(
                       color: Color.fromRGBO(0, 0, 0, 0.1),
@@ -1123,27 +1120,62 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                                   ),
                                 ],
                               ),
-                              // MultiSelectDialogField<Category>(
-                              //   buttonText: Text('Categoría'),
-                              //   buttonIcon: Icon(Icons.arrow_drop_down),
-                              //   title: Text('Categorias'),
-                              //   cancelText: Text('CANCELAR'),
-                              //   searchable: true,
-                              //   // listType: MultiSelectListType.CHIP,
-                              //   items: _itemsCat,
-                              //   // initialValue: _myCat,
-                              //   onConfirm: (values) {
-                              //     // setState(() {
-                              //     //   _newCats = [];
-                              //     //   for (int j = 0;
-                              //     //       j <= values.length - 1;
-                              //     //       j++) {
-                              //     //     _newCats.add(values[j].id);
-                              //     //   }
-                              //     // });
-                              //   },
-                              //   // maxChildSize: 0.8,
-                              // ),
+                              MultiSelectDialogField<Category>(
+                                decoration: BoxDecoration(
+                                    border:
+                                        new Border(bottom: BorderSide.none)),
+                                chipDisplay: MultiSelectChipDisplay.none(),
+                                buttonText: Text('Categorías'),
+                                buttonIcon: Icon(Icons.arrow_drop_down),
+                                title: Text('Categorias'),
+                                cancelText: Text('CANCELAR'),
+                                searchHint: 'Buscar',
+                                searchable: true,
+                                // listType: MultiSelectListType.CHIP,
+                                items: _itemsCat,
+                                // initialValue: _myCat,
+                                onConfirm: (values) {
+                                  setState(() {
+                                    myCats = [];
+                                    for (int j = 0;
+                                        j <= values.length - 1;
+                                        j++) {
+                                      myCats.add(values[j].id);
+                                    }
+                                    loadProd = true;
+                                    getProductos();
+                                  });
+                                },
+                                // maxChildSize: 0.8,
+                              ),
+                              MultiSelectDialogField<Category>(
+                                decoration: BoxDecoration(
+                                    border:
+                                        new Border(bottom: BorderSide.none)),
+                                chipDisplay: MultiSelectChipDisplay.none(),
+                                buttonText: Text('Etiquetas'),
+                                buttonIcon: Icon(Icons.arrow_drop_down),
+                                title: Text('Etiquetas'),
+                                cancelText: Text('CANCELAR'),
+                                searchHint: 'Buscar',
+                                searchable: true,
+                                // listType: MultiSelectListType.CHIP,
+                                items: _itemsLabel,
+                                initialValue: _myLabels,
+                                onConfirm: (values) {
+                                  setState(() {
+                                    myLabels = [];
+                                    for (int j = 0;
+                                        j <= values.length - 1;
+                                        j++) {
+                                      myLabels.add(values[j].id);
+                                    }
+                                    loadProd = true;
+                                    getProductos();
+                                  });
+                                },
+                                // maxChildSize: 0.8,
+                              ),
                             ],
                           )),
                     ],
@@ -1445,7 +1477,6 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           horizontal: MediaQuery.of(context).size.width > 900
               ? medPadding * 10
               : smallPadding),
-      height: MediaQuery.of(context).size.height / 4,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -1467,6 +1498,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
           Flexible(
             flex: 3,
             child: Container(
+              height: 90,
               decoration: BoxDecoration(
                   image: DecorationImage(
                       image: NetworkImage('${miTienda['logo']}'),
@@ -1486,36 +1518,28 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            textAlign: TextAlign.start,
-                            text: TextSpan(
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 20,
-                                  color: Colors.black),
-                              text: miTienda['nombre'] + ' ',
-                              children: <TextSpan>[
-                                // TextSpan(
-                                //   text: String.fromCharCode(57689), //<-- charCode
-                                //   style: TextStyle(
-                                //     fontFamily: 'MaterialIcons', //<-- fontFamily
-                                //     fontSize: 15.0,
-                                //     color: Colors.green,
-                                //   ),
-                                // )
-                              ],
+                    Flexible(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 20,
+                                    color: Colors.black),
+                                text: miTienda['nombre'] + ' ',
+                              ),
                             ),
-                          ),
-                          miTienda['estatus_verificacion'] == 'not_verified'
-                              ? Container()
-                              : Container(
-                                  child: tiendaVerificada(),
-                                ),
-                        ]),
+                            miTienda['estatus_verificacion'] == 'not_verified'
+                                ? Container()
+                                : Container(
+                                    child: tiendaVerificada(),
+                                  ),
+                          ]),
+                    ),
                     InkWell(
                       onTap: () => _displayDialog(miTienda),
                       // Clipboard.setData(
@@ -1570,8 +1594,8 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               color: Colors.white,
                             )),
                         estilo: estiloBotonPrimary,
-                        action: () => launchURL(
-                            baseFrontUrl+'/farmacia/login'),
+                        action: () =>
+                            launchURL(baseFrontUrl + '/farmacia/login'),
                       )
                 // Align(
                 //   alignment: Alignment.bottomCenter,
@@ -1622,6 +1646,13 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                 }
               },
               textInputAction: TextInputAction.search,
+              onSubmitted: (value) {
+                setState(() {
+                  loadProd = true;
+                  userQuery = buscarStr;
+                });
+                getProductos();
+              },
               textAlignVertical: TextAlignVertical.bottom,
               decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search),
@@ -2029,7 +2060,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                     ),
                     int.parse(productoModel.stock) <= 0
                         ? Text(
-                            'No disponilbe',
+                            'No disponible',
                             style: TextStyle(
                                 color: Colors.red[700],
                                 fontWeight: FontWeight.bold),
@@ -2136,7 +2167,7 @@ class _ProductViewState extends State<ProductView> with WidgetsBindingObserver {
                               Flexible(flex: 1, child: Container()),
                             ],
                           ),
-                    InkWell(
+                  int.parse(productoModel.stock) <= 0 ? Container()  : InkWell(
                         onTap: () {
                           setState(() {
                             inCart

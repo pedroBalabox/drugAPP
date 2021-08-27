@@ -286,7 +286,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                 ),
                 int.parse(productModel.stock) <= 0
                     ? Text(
-                        'No disponilbe',
+                        'No disponible',
                         style: TextStyle(
                             color: Colors.red[700],
                             fontWeight: FontWeight.bold),
@@ -322,15 +322,15 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                   },
                                   borderRadius: BorderRadius.circular(40),
                                   child: new Container(
-                                    width: 22,
-                                    height: 22,
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(40),
                                     ),
                                     child: Icon(
                                       Icons.remove,
                                       color: Colors.white,
-                                      size: 10,
+                                      size: 20,
                                     ),
                                   ),
                                 ),
@@ -339,8 +339,8 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                             Flexible(
                               flex: 3,
                               child: Container(
-                                height: 35,
-                                width: 35,
+                                height: 50,
+                                width: 50,
                                 // padding: EdgeInsets.symmetric(
                                 //     vertical: 0.3, horizontal: 15),
                                 decoration: BoxDecoration(
@@ -352,7 +352,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                         ? snapshot[index].cantidad.toString()
                                         : '0',
                                     style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 20,
                                         color: Theme.of(context).primaryColor,
                                         fontWeight: FontWeight.w700)),
                               ),
@@ -375,15 +375,15 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                   },
                                   borderRadius: BorderRadius.circular(40),
                                   child: Container(
-                                    width: 22,
-                                    height: 22,
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(40),
                                     ),
                                     child: Icon(
                                       Icons.add,
                                       color: Colors.white,
-                                      size: 10,
+                                      size: 20,
                                     ),
                                   ),
                                 ),
@@ -391,22 +391,28 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                             ),
                             Flexible(flex: 3, child: Container()),
                           ]),
-                InkWell(
-                    onTap: () {
-                      setState(() {
-                        inCart
-                            ? productModel.cantidad =
-                                snapshot[index].cantidad + 1
-                            : productModel.cantidad = 1;
-                        _catalogBloc.sendEvent
-                            .add(EditCatalogItemEvent(productModel));
-                      });
-                    },
-                    child: Text('Agregar al carrito',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
-                            decoration: TextDecoration.underline))),
+                SizedBox(
+                  height: 10,
+                ),
+                int.parse(productModel.stock) <= 0
+                    ? Container()
+                    : InkWell(
+                        onTap: () {
+                          setState(() {
+                            inCart
+                                ? productModel.cantidad =
+                                    snapshot[index].cantidad + 1
+                                : productModel.cantidad = 1;
+                            _catalogBloc.sendEvent
+                                .add(EditCatalogItemEvent(productModel));
+                          });
+                        },
+                        child: Text('Agregar al carrito',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Theme.of(context).primaryColor,
+                                decoration: TextDecoration.underline))),
                 SizedBox(
                   height: smallPadding,
                 ),
@@ -466,7 +472,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                       productPrice(),
                       int.parse(productModel.stock) <= 0
                           ? Text(
-                              'No disponilbe',
+                              'No disponible',
                               style: TextStyle(
                                   color: Colors.red[700],
                                   fontWeight: FontWeight.bold),
@@ -579,7 +585,30 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                     ),
                                   ),
                                   Flexible(flex: 3, child: Container()),
-                                ])
+                                ]),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        alignment: Alignment.center,
+                        child: int.parse(productModel.stock) <= 0
+                            ? Container()
+                            : InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    inCart
+                                        ? productModel.cantidad =
+                                            snapshot[index].cantidad + 1
+                                        : productModel.cantidad = 1;
+                                    _catalogBloc.sendEvent.add(
+                                        EditCatalogItemEvent(productModel));
+                                  });
+                                },
+                                child: Text('Agregar al carrito',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).primaryColor,
+                                        decoration: TextDecoration.underline))),
+                      ),
                     ],
                   )),
             ],
@@ -765,7 +794,6 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
               child: InkWell(
                 onTap: () => _displayDialog().then((value) => getProdcut()),
                 child: Container(
-                    width: 60,
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
                         color: Colors.grey.withOpacity(0.8),
@@ -1219,7 +1247,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                     ),
                     int.parse(productoModel.stock) <= 0
                         ? Text(
-                            'No disponilbe',
+                            'No disponible',
                             style: TextStyle(
                                 color: Colors.red[700],
                                 fontWeight: FontWeight.bold),
@@ -1328,22 +1356,24 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                               Flexible(flex: 1, child: Container()),
                             ],
                           ),
-                    InkWell(
-                        onTap: () {
-                          setState(() {
-                            inCart
-                                ? productoModel.cantidad =
-                                    snapshot[index].cantidad + 1
-                                : productoModel.cantidad = 1;
-                            _catalogBloc.sendEvent
-                                .add(EditCatalogItemEvent(productoModel));
-                          });
-                        },
-                        child: Text('Agregar al carrito',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).primaryColor,
-                                decoration: TextDecoration.underline))),
+                    int.parse(productModel.stock) <= 0
+                        ? Container()
+                        : InkWell(
+                            onTap: () {
+                              setState(() {
+                                inCart
+                                    ? productoModel.cantidad =
+                                        snapshot[index].cantidad + 1
+                                    : productoModel.cantidad = 1;
+                                _catalogBloc.sendEvent
+                                    .add(EditCatalogItemEvent(productoModel));
+                              });
+                            },
+                            child: Text('Agregar al carrito',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).primaryColor,
+                                    decoration: TextDecoration.underline))),
                   ],
                 ),
               ),
@@ -1493,7 +1523,7 @@ class _ProductoDetallesState extends State<ProductoDetalles> {
                                   },
                                   token: sharedPrefs.clientToken,
                                   action: (value) => Navigator.pop(context),
-                                  showSuccess: true,
+                                  showSuccess: false,
                                   contenido: Padding(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: smallPadding * 2),

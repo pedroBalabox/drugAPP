@@ -149,6 +149,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
               child: RichText(
                 text: TextSpan(
                   text: 'Al realizar una Compra, selecciona la Opcion: ',
+                  style: TextStyle(color: Colors.black),
                   children: const <TextSpan>[
                     TextSpan(
                         text: 'Repetir este pedido el siguiente mes. ',
@@ -206,10 +207,11 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                 text: TextSpan(
                   text:
                       'En Drug somos conscientes de la importancia de necesitar un producto para la salud de Urgencia. Es por ello que ponemos a su disposición nuestro servicio de ',
+                      style: TextStyle(color: Colors.black),
                   children: const <TextSpan>[
                     TextSpan(
                         text: '”Abasto Express”. ',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
                     TextSpan(
                         text:
                             'Es un un equipo de profesionales que se encarga de localizar tu producto con el Laboratorio, Marca fabricante o con las Tiendas afiliadas a Drug. Poniéndolo a tu disposición en el menor tiempo posible hasta tu domicilio. Resolviendo en un plazo no mayor a 30 minutos. '),
@@ -225,6 +227,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                 text: TextSpan(
                   text:
                       'Drug agrega de manera periódica nuevos productos que salen a la venta, en caso de no tener el producto que estás buscando puedes pedirlo a nuestra área de ',
+                      style: TextStyle(color: Colors.black),
                   children: const <TextSpan>[
                     TextSpan(
                         text: 'Abasto Express. ',
@@ -248,7 +251,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                       text: TextSpan(
                         text: 'Horario de Servicio Tienda Online: ',
                         style:
-                            TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+                            TextStyle(height: 1.5, fontWeight: FontWeight.bold, color: Colors.black),
                         children: const <TextSpan>[
                           TextSpan(
                               text:
@@ -261,7 +264,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                       text: TextSpan(
                         text: 'Horario de Servicio Abasto Express: ',
                         style:
-                            TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+                            TextStyle(height: 1.5, fontWeight: FontWeight.bold, color: Colors.black),
                         children: const <TextSpan>[
                           TextSpan(
                               text:
@@ -274,7 +277,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                       text: TextSpan(
                         text: 'Tiempos de Entrega: ',
                         style:
-                            TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+                            TextStyle(height: 1.5, fontWeight: FontWeight.bold, color: Colors.black),
                         children: const <TextSpan>[
                           TextSpan(
                               text:
@@ -319,7 +322,7 @@ class _PreguntasFrecState extends State<PreguntasFrec> {
                       text: TextSpan(
                         text: 'Importante. ',
                         style:
-                            TextStyle(height: 1.5, fontWeight: FontWeight.bold),
+                            TextStyle(height: 1.5, fontWeight: FontWeight.bold, color: Colors.black),
                         children: const <TextSpan>[
                           TextSpan(
                               text:

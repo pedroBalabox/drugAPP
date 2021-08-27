@@ -648,7 +648,7 @@ class _BodyHomeState extends State<BodyHome> {
                                     title: 'Ofertas',
                                     image: 'ofertas.jpeg',
                                     nav: () => Navigator.pushNamed(
-                                            context, '/productos')
+                                            context, '/productos/Categorias_tlQ8xgZxLDeK/Ofertas')
                                         .then((value) => setState(() {}))
                                         .then((value) => getProductos()),
                                   ),
@@ -1278,7 +1278,7 @@ class _BodyHomeState extends State<BodyHome> {
                     ),
                     int.parse(productoModel.stock) <= 0
                         ? Text(
-                            'No disponilbe',
+                            'No disponible',
                             style: TextStyle(
                                 color: Colors.red[700],
                                 fontWeight: FontWeight.bold),

@@ -978,7 +978,7 @@ class _TabProductosState extends State<TabProductos> {
                     ),
                     prod['stock'] == '0'
                         ? Text(
-                            'No disponilbe',
+                            'No disponible',
                             style: TextStyle(
                                 color: Colors.red[700],
                                 fontWeight: FontWeight.bold),

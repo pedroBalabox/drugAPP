@@ -763,7 +763,7 @@ class _CarritoPageState extends State<CarritoPage> {
               flex: 2,
               child: prodjson.galeria.length == 0
                   ? getAsset('logoDrug.png', 60)
-                  : Image.network(prodjson.galeria[0]['url']),
+                  : getNetworkProductImage(prodjson.galeria[0]['url']),
             ),
             Flexible(
               flex: 5,

@@ -1714,7 +1714,7 @@ class _MiTiendaPageState extends State<MiTiendaPage>
                   ),
                   int.parse(productoModel.stock) <= 0
                       ? Text(
-                          'No disponilbe',
+                          'No disponible',
                           style: TextStyle(
                               color: Colors.red[700],
                               fontWeight: FontWeight.bold),

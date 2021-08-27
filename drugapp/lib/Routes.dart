@@ -26,6 +26,7 @@ import 'package:drugapp/src/pages/vendedor/registerVendedor_page.dart';
 import 'package:drugapp/src/utils/route.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Flurorouter {
   static final FluroRouter router = FluroRouter();
@@ -284,173 +285,173 @@ class Flurorouter {
   static void setupRouter() {
     router.define('/',
         handler: _homeHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/login',
         handler: _loginHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/registro',
         handler: _registroHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/miCuenta',
         handler: _miCuentaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/miCuenta/misCompras/',
         handler: _miCuentaComprasHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/favoritos',
         handler: _favHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/productos',
         handler: _allProductsHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/carrito',
         handler: _carritoHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/categorias',
         handler: _categoriasHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/tiendas',
         handler: _tiendasHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/miTienda',
         handler: _miTiendaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/productos/:cat/:nombre',
         handler: _miCategoriaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/productos-tienda/:tienda/',
         handler: _productosTiendaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/productos-query/:search/',
         handler: _productosSearchHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/productos',
         handler: _productosHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/farmacia/cambiar-contraseña/',
         handler: _chandePasswordHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/cambiar-contraseña',
         handler: _chandePasswordClientHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     // router.define('/producto/:producto',
     //     handler: _detallesProductoHandler,
-    //     transitionType: TransitionType.fadeIn,
+    //     transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
     //     transitionDuration: Duration(milliseconds: 300));
     router.define('/detalles/producto/:producto',
         handler: _detallesProductoHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/miCuenta/compra/:compra',
         handler: _comprasHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/masVendidos',
         handler: _masVendidosHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/ofertas',
         handler: _ofertasHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/preguntas-frecuentes',
         handler: _faqHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/login/',
         handler: _farmacialoginHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/cliente/farmacia/login',
         handler: _farmacia_loginHandler_asClient,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/miTienda/',
         handler: _farmacia_login_miTiendaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/registro/',
         handler: _farmacia_registroHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/miCuenta/',
         handler: _farmacia_miCuentaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/miTienda/',
         handler: _farmacia_miTiendaHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/cargar-productos/',
         handler: _farmacia_cargar_productosHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/editar-producto/:producto',
         handler: _farmacia_editar_productosHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
     router.define('/farmacia/miTienda/mobile',
         handler: _farmaciaMobile_miTienda,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/vendor/restablecer-contrasena/',
         handler: _resPasswordVendorHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/client/restablecer-contrasena/',
         handler: _resPasswordClientHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/RecuperarClave/:correo/:token',
         handler: _recoverPassHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/terminos-y-condiciones/vendor/',
         handler: _farmacia_terminos_y_condicionesHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/terminos-y-condiciones/client/',
         handler: _farmacia_terminos_y_condicionesHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/aviso-de-privacidad/vendor/',
         handler: _farmacia_terminos_y_condicionesHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 
     router.define('/aviso-de-privacidad/client/',
         handler: _farmacia_terminos_y_condicionesHandler,
-        transitionType: TransitionType.fadeIn,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
   }
 }

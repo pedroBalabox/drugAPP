@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image/image.dart' as img;
 
 class TabFalse extends StatefulWidget {
   TabFalse({Key key}) : super(key: key);
@@ -182,22 +183,30 @@ class _TabFalseState extends State<TabFalse> {
   }
 
   pickImage() async {
-    final _picker = ImagePicker();
-    PickedFile image =
-        await _picker.getImage(source: ImageSource.gallery, imageQuality: 80);
-    var imgBase64Str;
-    if (kIsWeb) {
-      http.Response response = await http.get(Uri.parse(image.path));
-      final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
-    } else {
-      List<int> imageBytes = await File(image.path).readAsBytes();
-      imgBase64Str = base64Encode(imageBytes);
+    int maxSize = 500;
+    int quality = 60;
+
+    try {
+      final _picker = ImagePicker();
+      PickedFile image = await _picker.getImage(
+          source: ImageSource.gallery,
+          imageQuality: quality,
+          maxWidth: maxSize.toDouble(),
+          maxHeight: maxSize.toDouble());
+      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      Future.delayed(Duration(milliseconds: 500), () {
+        preprocessImage(image, context, maxSize, quality).then((base64) {
+          if (base64 != "") {
+            setState(() {
+              imagePath = image;
+              base64Image = base64.toString();
+            });
+          }
+        });
+      });
+    } catch (e) {
+      showErrorDialog(context, "Error para obtener la imagen", e.toString());
     }
-    setState(() {
-      imagePath = image;
-      base64Image = imgBase64Str.toString();
-    });
   }
 
   nuevaTienda(context) {

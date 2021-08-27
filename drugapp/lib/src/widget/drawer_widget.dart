@@ -111,9 +111,9 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 InkWell(
-                                  onTap: () =>
-                                      Navigator.pushNamed(context, '/productos')
-                                          .then((value) => setState(() {})),
+                                  onTap: () => Navigator.pushNamed(context,
+                                          '/productos/Categorias_tlQ8xgZxLDeK/Ofertas')
+                                      .then((value) => setState(() {})),
                                   child: Container(
                                     padding: EdgeInsets.all(10),
                                     child: Text(
@@ -270,6 +270,11 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                           }
                                         },
                                         textInputAction: TextInputAction.search,
+                                        onSubmitted: (value) {
+                                          Navigator.pushNamed(context,
+                                                  '/productos-query/$query/')
+                                              .then((value) => setState(() {}));
+                                        },
                                         textAlignVertical:
                                             TextAlignVertical.bottom,
                                         decoration: InputDecoration(
@@ -503,7 +508,7 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                           Flexible(
                             flex: 6,
                             child: Container(
-                              height: 35,
+                              height: 45,
                               child: TextField(
                                 onChanged: (value) {
                                   if (value != null ||
@@ -513,6 +518,11 @@ class _ResponsiveAppBarState extends State<ResponsiveAppBar> {
                                   }
                                 },
                                 textInputAction: TextInputAction.search,
+                                onSubmitted: (value) {
+                                  Navigator.pushNamed(
+                                          context, '/productos-query/$query/')
+                                      .then((value) => setState(() {}));
+                                },
                                 textAlignVertical: TextAlignVertical.bottom,
                                 decoration: InputDecoration(
                                     // prefixIcon: Icon(Icons.search),

@@ -27,7 +27,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MiCuentaClient extends StatefulWidget {
   final int index;
-  
+
   MiCuentaClient({Key key, this.index = 0}) : super(key: key);
 
   @override
@@ -319,24 +319,30 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   }
 
   pickImage() async {
-    final _picker = ImagePicker();
-    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
-    // final imgBase64Str = await kIsWeb
-    //     ? networkImageToBase64(image.path)
-    //     : mobileb64(File(image.path));
-    var imgBase64Str;
-    if (kIsWeb) {
-      http.Response response = await http.get(Uri.parse(image.path));
-      final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
-    } else {
-      List<int> imageBytes = await File(image.path).readAsBytes();
-      imgBase64Str = base64Encode(imageBytes);
+    int maxSize = 500;
+    int quality = 60;
+
+    try {
+      final _picker = ImagePicker();
+      PickedFile image = await _picker.getImage(
+          source: ImageSource.gallery,
+          imageQuality: quality,
+          maxWidth: maxSize.toDouble(),
+          maxHeight: maxSize.toDouble());
+      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      Future.delayed(Duration(milliseconds: 500), () {
+        preprocessImage(image, context, maxSize, quality).then((base64) {
+          if (base64 != "") {
+            setState(() {
+              imagePath = image;
+              base64Image = base64.toString();
+            });
+          }
+        });
+      });
+    } catch (e) {
+      showErrorDialog(context, "Error para obtener la imagen", e.toString());
     }
-    setState(() {
-      imagePath = image;
-      base64Image = imgBase64Str.toString();
-    });
   }
 
   miCuenta(context) {
@@ -433,8 +439,8 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           EntradaTexto(
             requerido: false,
             valorInicial: userModel.second_lastname,
-            estilo: inputPrimarystyle(
-                context, Icons.person_outline, 'Segundo apellido (opcional)', null),
+            estilo: inputPrimarystyle(context, Icons.person_outline,
+                'Segundo apellido (opcional)', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'apellido',
@@ -446,8 +452,8 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
           ),
           EntradaTexto(
             valorInicial: userModel.mail.toString(),
-            estilo: inputPrimarystyle(
-                context, Icons.mail_outline, 'Correo', null),
+            estilo:
+                inputPrimarystyle(context, Icons.mail_outline, 'Correo', null),
             tipoEntrada: TextInputType.phone,
             textCapitalization: TextCapitalization.none,
             tipo: 'correo',
@@ -457,7 +463,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
               });
             },
           ),
-           EntradaTexto(
+          EntradaTexto(
             valorInicial: userModel.phone,
             estilo: inputPrimarystyle(
                 context, Icons.phone_outlined, 'Teléfono', null),

@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Drug</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,6 +24,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Drug necesita acceso a tu cámara para tomar fotos y usarlas para tu perfil</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Drug necesita acceso a tu micrófono para que puedas grabar algún audio para compartirlo en tu perfil</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Drug necesita acceso a tu librería para que puedas seleccionar imágenes de tu dispositivo y usarlas para tu perfil</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

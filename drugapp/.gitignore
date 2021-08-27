@@ -8,6 +8,7 @@
 .buildlog/
 .history
 .svn/
+.vscode/
 
 # IntelliJ related
 *.iml
@@ -44,3 +45,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+Podfile.lock
+project.pbxproj
+pubspeck.lock
