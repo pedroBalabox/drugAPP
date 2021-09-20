@@ -575,8 +575,8 @@ class _MiTiendaVendedorState extends State<MiTiendaVendedor> {
   }
 
   pickImage() async {
-    int maxSize = 500;
-    int quality = 60;
+    int maxSize = 700;
+    int quality = 100;
 
     try {
       final _picker = ImagePicker();

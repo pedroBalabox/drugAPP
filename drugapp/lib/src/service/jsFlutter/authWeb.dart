@@ -21,11 +21,11 @@ class Auth0ManagerForWeb extends AuthManager {
     if (url.contains('farmacia')) {
       await validateVendorToken().then((value) {
         if (!value) {
-           if (url.contains('registro')){
-          returnSmt = window.location.pathname.toString();
-        } else{
-          returnSmt = '/farmacia/login/';
-        }
+          if (url.contains('registro')) {
+            returnSmt = window.location.pathname.toString();
+          } else {
+            returnSmt = '/farmacia/login/';
+          }
         } else {
           if (url.contains('/login') || url.contains('/farmacia/registro/')) {
             returnSmt = '/farmacia/miCuenta/';
@@ -36,7 +36,10 @@ class Auth0ManagerForWeb extends AuthManager {
       });
       return returnSmt;
     } else if (url.contains('terminos-y-condiciones') ||
-        url.contains('aviso-de-privacidad') || url.contains('registro')) {
+        url.contains('aviso-de-privacidad') ||
+        url.contains('registro')) {
+      returnSmt = window.location.pathname.toString();
+    } else if (url.contains('cargo')) {
       returnSmt = window.location.pathname.toString();
     } else {
       await validateClientToken().then((value) {

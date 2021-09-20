@@ -44,6 +44,7 @@ class _CarritoPageState extends State<CarritoPage> {
   List productos = [];
 
   bool compraRealizada = false;
+  bool showPurchaseButton = true;
 
   var docBase64;
   var docName;
@@ -119,7 +120,7 @@ class _CarritoPageState extends State<CarritoPage> {
   bodyCuenta() {
     var size = MediaQuery.of(context).size;
     return Container(
-       color: bgGrey,
+      color: bgGrey,
       child: ListView(children: [
         Container(
           padding: EdgeInsets.symmetric(
@@ -354,67 +355,100 @@ class _CarritoPageState extends State<CarritoPage> {
                         child: errorSession
                             ? Text('Ha ocurrido un error',
                                 style: estiloErrorStr)
-                            : BotonRestTest(
-                                primerAction: () {
-                                  setState(() {
-                                    productos = [];
-                                  });
-                                  for (int i = 0; i < data.length; i++) {
-                                    // productos.add(ProductosOrden(
-                                    //     id_de_producto: data[i].idDeProducto,
-                                    //     cantidad: data[i].cantidad));
-                                    productos.add({
-                                      "id_de_producto": data[i].idDeProducto,
-                                      "cantidad": data[i].cantidad
-                                    });
-                                  }
-                                  if (formKey.currentState.validate()) {
-                                    formKey.currentState.save();
-                                  }
-                                  ;
-                                },
-                                arrayData: {
-                                  "receta_medica": docBase64,
-                                  "calle": calle,
-                                  "colonia": colonia,
-                                  "numero_exterior": numero_exterior,
-                                  "numero_interior": numero_interior,
-                                  "codigo_postal": codigo_postal,
-                                  "referencias": referencias,
-                                  "telefono_contacto": telefono_contacto,
-                                  "comentarios": comentarios,
-                                  "card_id": card_id,
-                                  "device_session_id": _deviceSessionId,
-                                  "productos": productos,
-                                },
-                                showSuccess: true,
-                                url: '$apiUrl/crear/orden',
-                                method: 'post',
-                                formkey: formKey,
-                                token: sharedPrefs.clientToken,
-                                contenido: Text(
-                                  'Comprar ahora',
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.fade,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                action: (value) {
-                                  setState(() {
+                            : !showPurchaseButton
+                                ? SizedBox()
+                                : BotonRestTest(
+                                    primerAction: () {
+                                      setState(() {
+                                        productos = [];
+                                      });
+                                      for (int i = 0; i < data.length; i++) {
+                                        // productos.add(ProductosOrden(
+                                        //     id_de_producto: data[i].idDeProducto,
+                                        //     cantidad: data[i].cantidad));
+                                        productos.add({
+                                          "id_de_producto":
+                                              data[i].idDeProducto,
+                                          "cantidad": data[i].cantidad
+                                        });
+                                      }
+                                      if (formKey.currentState.validate()) {
+                                        formKey.currentState.save();
+                                      }
+                                      ;
+                                    },
+                                    arrayData: {
+                                      "receta_medica": docBase64,
+                                      "calle": calle,
+                                      "colonia": colonia,
+                                      "numero_exterior": numero_exterior,
+                                      "numero_interior": numero_interior,
+                                      "codigo_postal": codigo_postal,
+                                      "referencias": referencias,
+                                      "telefono_contacto": telefono_contacto,
+                                      "comentarios": comentarios,
+                                      "card_id": card_id,
+                                      "device_session_id": _deviceSessionId,
+                                      "productos": productos,
+                                    },
+                                    showSuccess: true,
+                                    url: '$apiUrl/crear/orden',
+                                    method: 'post',
+                                    formkey: formKey,
+                                    token: sharedPrefs.clientToken,
+                                    contenido: Text(
+                                      'Comprar ahora',
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.fade,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    action: (value) {
+                                      if (isJson(value["response"])) {
+                                        var response =
+                                            jsonDecode(value["response"]);
+                                        String redirectUrl =
+                                            response[1]["redirect_url"];
+                                        setState(() {
+                                          showPurchaseButton = false;
+                                        });
+                                        showSuccessDialog(
+                                            context,
+                                            "Link de verificación de pago generado",
+                                            "Te va a solicitar abrir una nueva pestaña, haz click en aceptar para proceder con el pago. Y si ya has completado tu compra, dirígete a tu cuenta y accede a tus compras.",
+                                            () {
+                                          Navigator.pushReplacementNamed(
+                                              context, '/miCuenta');
+                                        });
+                                        launchURL(redirectUrl);
+                                      } else {
+                                        showErrorDialog(
+                                            context,
+                                            "Parece que hubo un error",
+                                            "Consulta con nuestro equipo de soporte para recibir ayuda.");
+                                      }
+                                      /* setState(() {
                                     _catalogBloc.sendEvent
                                         .add(RemoveAllCatalogItemEvent());
-                                    // compraRealizada = true;
-                                    Navigator.pushNamed(context, '/miCuenta/misCompras/');
-                                  });
-                                },
-                                errorStyle: TextStyle(
-                                  color: Colors.red[700],
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                estilo: estiloBotonPrimary),
+                                    compraRealizada = true;
+                                    showSuccessDialog(
+                                        context,
+                                        "Compra realizada con éxito",
+                                        "Tu compra se realizó con éxito, en la sección de compras podrás ver los detalles de tu pedido.",
+                                        () {
+                                      Navigator.pushNamed(
+                                          context, '/miCuenta/misCompras/');
+                                    });
+                                  }); */
+                                    },
+                                    errorStyle: TextStyle(
+                                      color: Colors.red[700],
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    estilo: estiloBotonPrimary),
                       ),
       ],
     );

@@ -5,7 +5,7 @@ class EntradaTextoTest extends StatefulWidget {
   final String tipo;
   final FormFieldSetter<String> onSaved;
   final FormFieldSetter<String> onChanged;
-  final FormFieldSetter<String> onSub;
+  final onSub;
   final Function onEditingComplete;
   final bool habilitado;
   final int lineasMax;

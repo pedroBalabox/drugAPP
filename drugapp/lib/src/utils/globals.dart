@@ -251,6 +251,36 @@ void showErrorDialog(context, title, message) {
   );
 }
 
+void showSuccessDialog(context, title, message, function) {
+  // flutter defined function
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: Row(children: [
+          Icon(
+            Icons.check_circle,
+            size: 17,
+            color: Colors.green.withOpacity(0.8),
+          ),
+          SizedBox(width: 5,),
+          new Text(title),
+        ]),
+        content: new Text(message),
+        actions: <Widget>[
+          // usually buttons at the bottom of the dialog
+          new InkWell(
+            child: new Text("Aceptar"),
+            onTap: function,
+          ),
+        ],
+      );
+    },
+  );
+}
+
 void showLoadingDialog(context, title, message) {
   // flutter defined function
   showDialog(

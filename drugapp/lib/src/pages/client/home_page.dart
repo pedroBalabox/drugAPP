@@ -43,7 +43,9 @@ class _HomeClientState extends State<HomeClient> {
         try {
           if (value.contains('registro')) {
             Navigator.pushNamedAndRemoveUntil(context, value, (route) => false);
-          } else if(value.contains('RecuperarClave')) {
+          } else if (value.contains('RecuperarClave')) {
+            Navigator.pushNamedAndRemoveUntil(context, value, (route) => false);
+          } else if (value.contains('cargo')) {
             Navigator.pushNamedAndRemoveUntil(context, value, (route) => false);
           } else {
             Navigator.pushNamed(context, value)
@@ -647,8 +649,8 @@ class _BodyHomeState extends State<BodyHome> {
                                   child: HomeInfoCard(
                                     title: 'Ofertas',
                                     image: 'ofertas.jpeg',
-                                    nav: () => Navigator.pushNamed(
-                                            context, '/productos/Categorias_tlQ8xgZxLDeK/Ofertas')
+                                    nav: () => Navigator.pushNamed(context,
+                                            '/productos/Categorias_tlQ8xgZxLDeK/Ofertas')
                                         .then((value) => setState(() {}))
                                         .then((value) => getProductos()),
                                   ),
@@ -825,8 +827,7 @@ class _BodyHomeState extends State<BodyHome> {
                               decoration: BoxDecoration(
                                   color: bgGrey,
                                   image: DecorationImage(
-                                      image: AssetImage(
-                                          'images/mismodia.jpg'),
+                                      image: AssetImage('images/mismodia.jpg'),
                                       fit: BoxFit.cover)),
                               width: double.infinity,
                               height: MediaQuery.of(context).size.width / 4,

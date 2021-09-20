@@ -54,6 +54,11 @@ Gradient gradientDrug = LinearGradient(
     // end: Alignment.bottomLeft,
     colors: [Color(0xff00DAC4), Color(0xff114667), Color(0xffF836FF)]);
 
+Gradient gradientGray = LinearGradient(
+    // begin: Alignment.centerLeft,
+    // end: Alignment.bottomLeft,
+    colors: [const Color(0xff4e4e4e), const Color(0xff4e4e4e)]);
+
 // padding
 var smallPadding = 10.0;
 var medPadding = 30.0;
@@ -69,6 +74,18 @@ BoxDecoration estiloBotonPrimary = BoxDecoration(boxShadow: [
     ),
   )
 ], gradient: gradientBlueDark);
+
+BoxDecoration estiloBotonDisabled = BoxDecoration(boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(0, 0, 0, 0.1),
+    blurRadius: 5.0, // soften the shadow
+    spreadRadius: 1.0, //extend the shadow
+    offset: Offset(
+      0.0, // Move to right 10  horizontally
+      3.0, // Move to bottom 10 Vertically867
+    ),
+  )
+], gradient: gradientGray);
 
 BoxDecoration estiloBotonSecundary = BoxDecoration(boxShadow: [
   BoxShadow(

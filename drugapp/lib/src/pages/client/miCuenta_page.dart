@@ -21,6 +21,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:openpay/openpay.dart';
 
 // import 'package:flutter_openpay/flutter_openpay.dart'
 //     if (dart.library.html) 'dart:js' as js;
@@ -35,6 +36,10 @@ class MiCuentaClient extends StatefulWidget {
 }
 
 class _MiCuentaClientState extends State<MiCuentaClient> {
+  final openpay = Openpay(
+      'mroipipydkwe3txxqfht', 'pk_0450626f5da34f87b4a0279a4c34fa1c',
+      isSandboxMode: true);
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formKeyPedido = GlobalKey<FormState>();
   String name;
@@ -108,6 +113,29 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
 
     sharedPrefs.init().then((value) {
       getUserData();
+    });
+  }
+
+  RestFun restFunction = RestFun();
+  String cardToken;
+
+  Future saveCard() async {
+    var arrayData = {
+      "token_id": cardToken.toString(),
+      "device_session_id": _deviceSessionId
+    };
+
+    await restFunction
+        .restService(
+            arrayData, '$apiUrl/crear/tarjeta', sharedPrefs.clientToken, 'post')
+        .then((value) {
+      if (value['status'] == 'server_true') {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      } else {
+        Navigator.pop(context);
+        showErrorDialog(context, "Parece que hubo un error", value['message']);
+      }
     });
   }
 
@@ -319,8 +347,8 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
   }
 
   pickImage() async {
-    int maxSize = 500;
-    int quality = 60;
+    int maxSize = 700;
+    int quality = 100;
 
     try {
       final _picker = ImagePicker();
@@ -956,28 +984,95 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                       height: smallPadding * 3,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image(
+                          image: AssetImage("images/openpayLogo.png"),
+                          height: 50,
+                        ),
+                        Image(
+                          image: AssetImage("images/cardBrands.png"),
+                          height: 50,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        /* BotonSimple(
-                            action: () => Navigator.pop(context),
-                            contenido: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: smallPadding),
-                              child: Text('Cancelar',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.normal)),
-                            ),
-                            estilo: estiloBotonPrimary),
-                        SizedBox(
-                          width: 25,
-                        ), */
                         errorSession
                             ? Text('Ha ocurrido un error',
                                 style: estiloErrorStr)
                             : Flexible(
-                                child: BotonRestTest(
+                                child: InkWell(
+                                child: Container(
+                                  width: 200,
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: toSendCardNumber.toString() !=
+                                              "" &&
+                                          toSendCardNumber.toString() != "" &&
+                                          cardHolder.toString() != "" &&
+                                          year.toString() != "" &&
+                                          month.toString() != "" &&
+                                          cvc.toString() != "" &&
+                                          toSendCardNumber != null &&
+                                          toSendCardNumber != null &&
+                                          cardHolder != null &&
+                                          year != null &&
+                                          month != null &&
+                                          cvc != null
+                                      ? estiloBotonPrimary
+                                      : estiloBotonDisabled,
+                                  child: Text('Agregar tarjeta',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.normal)),
+                                ),
+                                onTap: () {
+                                  if (toSendCardNumber.toString() != "" &&
+                                      toSendCardNumber.toString() != "" &&
+                                      cardHolder.toString() != "" &&
+                                      year.toString() != "" &&
+                                      month.toString() != "" &&
+                                      cvc.toString() != "" &&
+                                      toSendCardNumber != null &&
+                                      toSendCardNumber != null &&
+                                      cardHolder != null &&
+                                      year != null &&
+                                      month != null &&
+                                      cvc != null) {
+                                    showLoadingDialog(
+                                        context,
+                                        "Guardando tarjeta",
+                                        "Espera un momento...");
+                                    openpay
+                                        .createToken(
+                                      CardInfo(
+                                        toSendCardNumber.toString(),
+                                        cardHolder,
+                                        year.toString(),
+                                        month.toString(),
+                                        cvc.toString(),
+                                      ),
+                                    )
+                                        .then((value) {
+                                      setState(() {
+                                        cardToken = value.id.toString();
+                                        saveCard();
+                                      });
+                                    }).catchError((error, stackTrace) {
+                                      Navigator.pop(context);
+                                      showErrorDialog(
+                                          context,
+                                          "Parece que hay un error",
+                                          error.toString());
+                                    });
+                                  }
+                                },
+                              )
+                                /* BotonRestTest(
                                     primerAction: () {},
                                     formkey: _formKey,
                                     token: sharedPrefs.clientToken,
@@ -985,7 +1080,7 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                     method: 'post',
                                     arrayData: {
                                       "card_number": toSendCardNumber,
-                                      "holder_name": cardHolder,
+                                      "holder_name": ,
                                       "expiration_year": year,
                                       "expiration_month": month,
                                       "cvv2": cvc,
@@ -1004,8 +1099,8 @@ class _MiCuentaClientState extends State<MiCuentaClient> {
                                               color: Colors.white,
                                               fontWeight: FontWeight.normal)),
                                     ),
-                                    estilo: estiloBotonPrimary),
-                              ),
+                                    estilo: estiloBotonPrimary), */
+                                ),
                       ],
                     ),
                   ],

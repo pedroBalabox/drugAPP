@@ -3,6 +3,7 @@ import 'package:drugapp/src/pages/Lobby/lobbyVendor.dart';
 import 'package:drugapp/src/pages/changePass_page.dart';
 import 'package:drugapp/src/pages/client/carrito_page.dart';
 import 'package:drugapp/src/pages/client/categorie_page.dart';
+import 'package:drugapp/src/pages/client/chargeResult.dart';
 import 'package:drugapp/src/pages/client/detallesCompra_page.dart';
 import 'package:drugapp/src/pages/client/home_page.dart';
 import 'package:drugapp/src/pages/client/login_page.dart';
@@ -282,6 +283,12 @@ class Flurorouter {
             token: params['token'][0],
           ));
 
+  static Handler _chargeResultHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          ChargeResult(
+            chargeId: params['chargeId'][0],
+          ));
+
   static void setupRouter() {
     router.define('/',
         handler: _homeHandler,
@@ -367,6 +374,11 @@ class Flurorouter {
 
     router.define('/miCuenta/compra/:compra',
         handler: _comprasHandler,
+        transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
+        transitionDuration: Duration(milliseconds: 300));
+
+    router.define('/cargo/:chargeId',
+        handler: _chargeResultHandler,
         transitionType: kIsWeb ? TransitionType.fadeIn : TransitionType.native,
         transitionDuration: Duration(milliseconds: 300));
 

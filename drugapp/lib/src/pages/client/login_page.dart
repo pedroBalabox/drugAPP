@@ -252,7 +252,8 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientWhite,
                                   mainText: 'Aviso de privacidad',
                                   textWhite: false,
-                                  pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
+                                  pressed: () => launchURL(
+                                      'https://drugsiteonline.com/aviso-de-privacidad/'),
                                 ),
                               ),
                               Flexible(
@@ -263,7 +264,8 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientBlueLight,
                                   mainText: 'Condiciones de uso',
                                   textWhite: true,
-                                  pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
+                                  pressed: () => launchURL(
+                                      'https://drugsiteonline.com/terminos-y-condiciones/'),
                                 ),
                               ),
                             ],
@@ -310,6 +312,7 @@ class _LoginPageState extends State<LoginPage> {
             textCapitalization: TextCapitalization.none,
             tipo: 'correo',
             longMaxima: 100,
+            onSub: (_) => FocusScope.of(context).nextFocus(),
             onChanged: (value) {
               setState(() {
                 correo = value;
@@ -443,7 +446,8 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => launchURL('https://drugsiteonline.com/aviso-de-privacidad/'),
+                        pressed: () => launchURL(
+                            'https://drugsiteonline.com/aviso-de-privacidad/'),
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -453,7 +457,8 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => launchURL('https://drugsiteonline.com/terminos-y-condiciones/'),
+                        pressed: () => launchURL(
+                            'https://drugsiteonline.com/terminos-y-condiciones/'),
                       ),
                     ),
                   ],
